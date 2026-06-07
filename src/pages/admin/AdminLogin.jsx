@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { api } from '../../utils/api';
 import CustomModal from '../../components/CustomModal';
@@ -10,6 +10,19 @@ const AdminLogin = () => {
   const [modalConfig, setModalConfig] = useState({ isOpen: false, title: '', message: '', type: 'info' });
   
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const userStr = localStorage.getItem('currentUser');
+    const token = localStorage.getItem('token');
+    if (userStr && token) {
+      const user = JSON.parse(userStr);
+      if (user.role === 'ROLE_ADMIN' || user.role === 'ADMIN') {
+        navigate('/admin/dashboard');
+      } else {
+        navigate('/');
+      }
+    }
+  }, [navigate]);
 
   const handleLogin = async (e) => {
     e.preventDefault();

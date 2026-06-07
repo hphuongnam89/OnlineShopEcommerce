@@ -26,7 +26,7 @@ const AdminLayout = () => {
 
     const user = JSON.parse(userStr);
     if (user.role !== 'ROLE_ADMIN' && user.role !== 'ADMIN') {
-      navigate('/admin/login');
+      navigate('/');
       return;
     }
 

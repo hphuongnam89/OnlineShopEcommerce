@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Outlet, Navigate } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import Home from './pages/Home';
@@ -22,6 +22,30 @@ import { CartProvider } from './context/CartContext';
 import ScrollToTop from './components/ScrollToTop';
 import { PRODUCTS } from './data/products';
 
+const CustomerLayout = () => {
+  return (
+    <div className="min-h-screen flex flex-col font-sans">
+      <Navbar />
+      <main className="flex-grow">
+        <Outlet />
+      </main>
+      <Footer />
+    </div>
+  );
+};
+
+const AdminRedirect = () => {
+  const userStr = localStorage.getItem('currentUser');
+  const token = localStorage.getItem('token');
+  if (userStr && token) {
+    const user = JSON.parse(userStr);
+    if (user.role === 'ROLE_ADMIN' || user.role === 'ADMIN') {
+      return <Navigate to="/admin/dashboard" replace />;
+    }
+  }
+  return <Navigate to="/admin/login" replace />;
+};
+
 function App() {
   useEffect(() => {
     // Initialize products or update if size is different (meaning catalog updated)
@@ -35,31 +59,31 @@ function App() {
     <CartProvider>
       <Router>
         <ScrollToTop />
-        <div className="min-h-screen flex flex-col font-sans">
-          <Navbar />
-          <main className="flex-grow">
-            <Routes>
-              <Route path="/" element={<Home />} />
-              <Route path="/products" element={<Products />} />
-              <Route path="/product/:id" element={<ProductDetail />} />
-              <Route path="/about" element={<About />} />
-              <Route path="/contact" element={<Contact />} />
-              <Route path="/auth" element={<Auth />} />
-              <Route path="/cart" element={<Cart />} />
-              <Route path="/my-orders" element={<MyOrders />} />
-              <Route path="/track-order" element={<TrackOrder />} />
-              <Route path="/admin/login" element={<AdminLogin />} />
-              <Route path="/admin" element={<AdminLayout />}>
-                <Route path="dashboard" element={<AdminDashboard />} />
-                <Route path="products" element={<AdminProducts />} />
-                <Route path="customers" element={<AdminCustomers />} />
-                <Route path="orders" element={<AdminOrders />} />
-                <Route path="reviews" element={<AdminReviews />} />
-              </Route>
-            </Routes>
-          </main>
-          <Footer />
-        </div>
+        <Routes>
+          {/* Customer Routes (With Navbar & Footer) */}
+          <Route element={<CustomerLayout />}>
+            <Route path="/" element={<Home />} />
+            <Route path="/products" element={<Products />} />
+            <Route path="/product/:id" element={<ProductDetail />} />
+            <Route path="/about" element={<About />} />
+            <Route path="/contact" element={<Contact />} />
+            <Route path="/auth" element={<Auth />} />
+            <Route path="/cart" element={<Cart />} />
+            <Route path="/my-orders" element={<MyOrders />} />
+            <Route path="/track-order" element={<TrackOrder />} />
+          </Route>
+
+          {/* Admin Routes (Separated completely - No Navbar & Footer) */}
+          <Route path="/admin" element={<AdminRedirect />} />
+          <Route path="/admin/login" element={<AdminLogin />} />
+          <Route path="/admin" element={<AdminLayout />}>
+            <Route path="dashboard" element={<AdminDashboard />} />
+            <Route path="products" element={<AdminProducts />} />
+            <Route path="customers" element={<AdminCustomers />} />
+            <Route path="orders" element={<AdminOrders />} />
+            <Route path="reviews" element={<AdminReviews />} />
+          </Route>
+        </Routes>
       </Router>
     </CartProvider>
   );
