@@ -258,10 +258,10 @@ const AdminCustomers = () => {
               className="w-full bg-slate-950 border border-slate-800 text-white rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
             >
               <option value="">Tất cả hạng</option>
-              <option value="5">Bạch kim (PLATINUM - Chi tiêu > 50M)</option>
-              <option value="4">Vàng (GOLD - Chi tiêu > 20M)</option>
-              <option value="3">Bạc (SILVER - Chi tiêu > 10M)</option>
-              <option value="2">VIP (Chi tiêu > 5M)</option>
+              <option value="5">Bạch kim (PLATINUM - Chi tiêu &gt; 50M)</option>
+              <option value="4">Vàng (GOLD - Chi tiêu &gt; 20M)</option>
+              <option value="3">Bạc (SILVER - Chi tiêu &gt; 10M)</option>
+              <option value="2">VIP (Chi tiêu &gt; 5M)</option>
               <option value="1">Đồng (BRONZE)</option>
             </select>
           </div>
