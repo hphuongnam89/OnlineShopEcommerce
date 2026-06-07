@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="contact-style.css">
+    <title>Think Tank - Liên Hệ</title>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            document.addEventListener('scroll', () => {
+                let navBar = document.querySelector('nav');
+                if (window.scrollY > 0) {
+                    navBar.style.background = 'white';
+                    navBar.style.boxShadow = '0 5px 20px rgba(190, 190, 190, 0.15)';
+                }
+                else {
+                    navBar.style.background = 'transparent';
+                    navBar.style.boxShadow = 'none';
+                }
+            })
+        })
+    </script>
+</head>
+<body>
+    <nav>
+        <div id="navbar">
+            <div id="navbar-logo">
+                <img src="/images/thinktanklogo.png" width="140px" height="70px" alt="logo">
+            </div>
+            <div id="navbar-links">
+                <ul>
+                    <li><a href="index.html">Trang chủ</a></li>
+                    <li><a href="product.html">Sản phẩm</a></li>
+                    <li><a href="about.html">Giới thiệu</a></li>
+                    <li><a href="contact.html">Liên hệ</a></li>
+                    <li><a href="auth.html">Đăng Nhập</a></li>
+                </ul>
+                <button class="blue-button">
+                    <a href="cart.html">Giỏ hàng</a>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- CONTACT HERO -->
+    <div class="contact-hero">
+        <h1>Liên Hệ Chúng Tôi</h1>
+        <p>Chúng tôi luôn sẵn sàng lắng nghe và hỗ trợ bạn</p>
+    </div>
+
+    <!-- CONTACT CONTAINER -->
+    <div class="contact-container">
+        <!-- CONTACT INFO -->
+        <div class="contact-info">
+            <h2>Thông Tin Liên Hệ</h2>
+
+            <div class="info-item">
+                <div class="info-icon">📍</div>
+                <div class="info-content">
+                    <h3>Địa Chỉ</h3>
+                    <p>123 Đường Nguyễn Huệ, Quận 1, TP.HCM, Việt Nam</p>
+                </div>
+            </div>
+
+            <div class="info-item">
+                <div class="info-icon">📞</div>
+                <div class="info-content">
+                    <h3>Điện Thoại</h3>
+                    <p>+84 28 1234 5678</p>
+                    <p>+84 908 765 4321</p>
+                </div>
+            </div>
+
+            <div class="info-item">
+                <div class="info-icon">✉️</div>
+                <div class="info-content">
+                    <h3>Email</h3>
+                    <p>info@thinktank.com</p>
+                    <p>support@thinktank.com</p>
+                </div>
+            </div>
+
+            <div class="info-item">
+                <div class="info-icon">🕐</div>
+                <div class="info-content">
+                    <h3>Giờ Hoạt Động</h3>
+                    <p>Thứ Hai - Thứ Sáu: 8:00 - 17:00</p>
+                    <p>Thứ Bảy: 9:00 - 13:00</p>
+                    <p>Chủ Nhật: Đóng cửa</p>
+                </div>
+            </div>
+
+            <div class="social-links">
+                <h3>Theo Dõi Chúng Tôi</h3>
+                <div class="social-icons">
+                    <a href="#" class="social-icon">f</a>
+                    <a href="#" class="social-icon">📷</a>
+                    <a href="#" class="social-icon">𝕏</a>
+                    <a href="#" class="social-icon">in</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- CONTACT FORM -->
+        <div class="contact-form-wrapper">
+            <h2>Gửi Tin Nhắn</h2>
+            <p class="form-subtitle">Điền thông tin dưới đây, chúng tôi sẽ liên hệ với bạn sớm nhất.</p>
+
+            <form class="contact-form" action="#" method="POST">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="name">Họ và Tên</label>
+                        <input type="text" id="name" name="name" placeholder="Nhập tên của bạn" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Email</label>
+                        <input type="email" id="email" name="email" placeholder="example@email.com" required>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="phone">Số Điện Thoại</label>
+                        <input type="tel" id="phone" name="phone" placeholder="0123456789" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="subject">Chủ Đề</label>
+                        <select id="subject" name="subject" required>
+                            <option value="">Chọn chủ đề</option>
+                            <option value="product">Hỏi về sản phẩm</option>
+                            <option value="order">Về đơn hàng</option>
+                            <option value="shipping">Về giao hàng</option>
+                            <option value="return">Về hoàn trả</option>
+                            <option value="other">Khác</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group full-width">
+                    <label for="message">Tin Nhắn</label>
+                    <textarea id="message" name="message" placeholder="Nhập tin nhắn của bạn..." rows="5" required></textarea>
+                </div>
+
+                <div class="form-agree">
+                    <input type="checkbox" id="agree" name="agree" required>
+                    <label for="agree">Tôi đồng ý với <a href="#">Chính sách bảo mật</a></label>
+                </div>
+
+                <button type="submit" class="blue-button submit-btn">Gửi Tin Nhắn</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- MAP SECTION (Optional) -->
+    <div class="map-section">
+        <h2>Vị Trí Của Chúng Tôi</h2>
+        <div class="map-container">
+            <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3919.298265379127!2d106.68066331533303!3d10.771882892316598!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x31752f4a26e0e24f%3A0xc3d9f1b9e3b3b3b3!2sThink%20Tank!5e0!3m2!1svi!2svn!4v1234567890" width="100%" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+        </div>
+    </div>
+
+    <!-- FOOTER -->
+    <footer>
+        <div id="footer-top">
+            <h3>Think Tank</h3>
+            <p>Balo máy ảnh chuyên nghiệp cho những người yêu nhiếp ảnh. Chúng tôi cam kết mang lại sản phẩm chất lượng cao nhất với giá cả phải chăng.</p>
+        </div>
+        <div id="footer-socials-wrapper">
+            <div class="footer-social">
+                <span>Facebook</span>
+            </div>
+            <div class="footer-social">
+                <span>Instagram</span>
+            </div>
+            <div class="footer-social">
+                <span>Twitter</span>
+            </div>
+        </div>
+        <div id="footer-bottom">
+            <span>&copy; 2024 Think Tank. Bảo lưu mọi quyền.</span>
+            <ul>
+                <li><a href="#">Chính Sách Bảo Mật</a></li>
+                <li><a href="#">Điều Khoản Dịch Vụ</a></li>
+                <li><a href="#">Liên Hệ</a></li>
+            </ul>
+        </div>
+    </footer>
+</body>
+</html>

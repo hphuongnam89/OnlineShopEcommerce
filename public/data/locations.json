@@ -1,0 +1,29 @@
+{
+  "Hồ Chí Minh": {
+    "districts": ["Quận 1", "Quận 3", "Quận Bình Thạnh", "Quận Phú Nhuận", "Quận 7"],
+    "wards": {
+      "Quận 1": ["Phường Bến Nghé", "Phường Bến Thành", "Phường Phạm Ngũ Lão"],
+      "Quận 3": ["Phường Võ Thị Sáu", "Phường 3", "Phường 5"],
+      "Quận Bình Thạnh": ["Phường 15", "Phường 22", "Phường 25"],
+      "Quận Phú Nhuận": ["Phường 1", "Phường 5", "Phường 9"],
+      "Quận 7": ["Phường Tân Phong", "Phường Tân Kiểng", "Phường Tân Thuận Đông"]
+    }
+  },
+  "Hà Nội": {
+    "districts": ["Quận Cầu Giấy", "Quận Hoàn Kiếm", "Quận Đống Đa", "Quận Ba Đình"],
+    "wards": {
+      "Quận Cầu Giấy": ["Phường Dịch Vọng", "Phường Nghĩa Tân", "Phường Mai Dịch"],
+      "Quận Hoàn Kiếm": ["Phường Hàng Đào", "Phường Hàng Bạc", "Phường Tràng Tiền"],
+      "Quận Đống Đa": ["Phường Cát Linh", "Phường Láng Hạ", "Phường Ô Chợ Dừa"],
+      "Quận Ba Đình": ["Phường Cống Vị", "Phường Giảng Võ", "Phường Kim Mã"]
+    }
+  },
+  "Đà Nẵng": {
+    "districts": ["Quận Hải Châu", "Quận Thanh Khê", "Quận Sơn Trà"],
+    "wards": {
+      "Quận Hải Châu": ["Phường Hòa Cường Bắc", "Phường Hòa Cường Nam", "Phường Thạch Thang"],
+      "Quận Thanh Khê": ["Phường An Khê", "Phường Chính Gián", "Phường Vĩnh Trung"],
+      "Quận Sơn Trà": ["Phường An Hải Bắc", "Phường An Hải Tây", "Phường Mân Thái"]
+    }
+  }
+}

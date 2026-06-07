@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="product-style.css">
+    <title>Think Tank - Sản Phẩm</title>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            document.addEventListener('scroll', () => {
+                let navBar = document.querySelector('nav');
+                if (window.scrollY > 0) {
+                    navBar.style.background = 'white';
+                    navBar.style.boxShadow = '0 5px 20px rgba(190, 190, 190, 0.15)';
+                }
+                else {
+                    navBar.style.background = 'transparent';
+                    navBar.style.boxShadow = 'none';
+                }
+            })
+        })
+    </script>
+</head>
+<body>
+    <nav>
+        <div id="navbar">
+            <div id="navbar-logo">
+                <img src="/images/thinktanklogo.png" width="140px" height="70px" alt="logo">
+            </div>
+            <div id="navbar-links">
+                <ul>
+                    <li><a href="index.html">Trang chủ</a></li>
+                    <li><a href="product.html">Sản phẩm</a></li>
+                    <li><a href="about.html">Giới thiệu</a></li>
+                    <li><a href="contact.html">Liên hệ</a></li>
+                    <li><a href="auth.html">Đăng Nhập</a></li>
+                </ul>
+                <button class="blue-button">
+                    <a href="cart.html">Giỏ hàng</a>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- PRODUCT HEADER -->
+    <div class="product-header">
+        <h1>Sản Phẩm</h1>
+        <p>Khám phá bộ sưu tập đầy đủ các sản phẩm balo máy ảnh chuyên nghiệp</p>
+    </div>
+
+    <!-- PRODUCT FILTER -->
+    <div class="product-container">
+        <div class="filter-sidebar">
+            <h3>Bộ Lọc</h3>
+            
+            <div class="filter-group">
+                <h4>Danh Mục</h4>
+                <label><input type="checkbox"> Balo Máy Ảnh</label>
+                <label><input type="checkbox"> Túi Máy Ảnh</label>
+                <label><input type="checkbox"> Vali Máy Ảnh</label>
+            </div>
+
+            <div class="filter-group">
+                <h4>Giá</h4>
+                <label><input type="checkbox"> Dưới 500K</label>
+                <label><input type="checkbox"> 500K - 1 Triệu</label>
+                <label><input type="checkbox"> 1 Triệu - 2 Triệu</label>
+                <label><input type="checkbox"> Trên 2 Triệu</label>
+            </div>
+
+            <div class="filter-group">
+                <h4>Màu Sắc</h4>
+                <label><input type="checkbox"> Đen</label>
+                <label><input type="checkbox"> Xám</label>
+                <label><input type="checkbox"> Xanh</label>
+                <label><input type="checkbox"> Nâu</label>
+            </div>
+
+            <button class="blue-button" style="width: 100%; margin-top: 20px;">Lọc Sản Phẩm</button>
+        </div>
+
+        <!-- PRODUCT GRID -->
+        <div class="product-grid">
+            <!-- PRODUCT 1 -->
+            <div class="product-card">
+                <div class="product-image-container">
+                    <img src="/images/AirportCommuter.jpg" alt="Balo Pro Series">
+                    <span class="product-badge">Hot</span>
+                </div>
+                <div class="product-info">
+                    <h3>Balo Pro Series Đen</h3>
+                    <p class="product-desc">Dung tích 30L, chống nước, nhiều ngăn</p>
+                    <div class="product-rating">
+                        <span class="stars">★★★★★</span>
+                        <span class="review-count">(128 đánh giá)</span>
+                    </div>
+                    <div class="product-footer">
+                        <span class="price">1,299,000đ</span>
+                        <button class="blue-button btn-small">Thêm Giỏ</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PRODUCT 2 -->
+            <div class="product-card">
+                <div class="product-image-container">
+                    <img src="/images/AirportCommuter.jpg" alt="Balo Travel">
+                    <span class="product-badge sale">Sale</span>
+                </div>
+                <div class="product-info">
+                    <h3>Balo Travel Xám</h3>
+                    <p class="product-desc">Dung tích 25L, nhẹ, phù hợp du lịch</p>
+                    <div class="product-rating">
+                        <span class="stars">★★★★☆</span>
+                        <span class="review-count">(95 đánh giá)</span>
+                    </div>
+                    <div class="product-footer">
+                        <span class="price">899,000đ</span>
+                        <button class="blue-button btn-small">Thêm Giỏ</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PRODUCT 3 -->
+            <div class="product-card">
+                <div class="product-image-container">
+                    <img src="/images/AirportCommuter.jpg" alt="Balo Compact">
+                </div>
+                <div class="product-info">
+                    <h3>Balo Compact Xanh</h3>
+                    <p class="product-desc">Dung tích 15L, gọn nhẹ, dễ xách</p>
+                    <div class="product-rating">
+                        <span class="stars">★★★★★</span>
+                        <span class="review-count">(82 đánh giá)</span>
+                    </div>
+                    <div class="product-footer">
+                        <span class="price">599,000đ</span>
+                        <button class="blue-button btn-small">Thêm Giỏ</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PRODUCT 4 -->
+            <div class="product-card">
+                <div class="product-image-container">
+                    <img src="/images/AirportCommuter.jpg" alt="Túi Shoulder">
+                </div>
+                <div class="product-info">
+                    <h3>Túi Shoulder Nâu</h3>
+                    <p class="product-desc">Dung tích 10L, đeo chéo, tiện lợi</p>
+                    <div class="product-rating">
+                        <span class="stars">★★★★☆</span>
+                        <span class="review-count">(67 đánh giá)</span>
+                    </div>
+                    <div class="product-footer">
+                        <span class="price">449,000đ</span>
+                        <button class="blue-button btn-small">Thêm Giỏ</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PRODUCT 5 -->
+            <div class="product-card">
+                <div class="product-image-container">
+                    <img src="/images/AirportCommuter.jpg" alt="Vali Premium">
+                    <span class="product-badge">Hot</span>
+                </div>
+                <div class="product-info">
+                    <h3>Vali Premium Đen</h3>
+                    <p class="product-desc">Dung tích 40L, khóa kỹ thuật số, premium</p>
+                    <div class="product-rating">
+                        <span class="stars">★★★★★</span>
+                        <span class="review-count">(156 đánh giá)</span>
+                    </div>
+                    <div class="product-footer">
+                        <span class="price">1,999,000đ</span>
+                        <button class="blue-button btn-small">Thêm Giỏ</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PRODUCT 6 -->
+            <div class="product-card">
+                <div class="product-image-container">
+                    <img src="/images/AirportCommuter.jpg" alt="Túi Chéo Studio">
+                </div>
+                <div class="product-info">
+                    <h3>Túi Chéo Studio Xám</h3>
+                    <p class="product-desc">Dung tích 8L, chống nước, phong cách</p>
+                    <div class="product-rating">
+                        <span class="stars">★★★★★</span>
+                        <span class="review-count">(73 đánh giá)</span>
+                    </div>
+                    <div class="product-footer">
+                        <span class="price">349,000đ</span>
+                        <button class="blue-button btn-small">Thêm Giỏ</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- PAGINATION -->
+    <div class="pagination">
+        <button class="page-btn">← Trước</button>
+        <button class="page-btn active">1</button>
+        <button class="page-btn">2</button>
+        <button class="page-btn">3</button>
+        <button class="page-btn">Tiếp →</button>
+    </div>
+
+    <!-- FOOTER -->
+    <footer>
+        <div id="footer-top">
+            <h3>Think Tank</h3>
+            <p>Balo máy ảnh chuyên nghiệp cho những người yêu nhiếp ảnh. Chúng tôi cam kết mang lại sản phẩm chất lượng cao nhất với giá cả phải chăng.</p>
+        </div>
+        <div id="footer-socials-wrapper">
+            <div class="footer-social">
+                <span>Facebook</span>
+            </div>
+            <div class="footer-social">
+                <span>Instagram</span>
+            </div>
+            <div class="footer-social">
+                <span>Twitter</span>
+            </div>
+        </div>
+        <div id="footer-bottom">
+            <span>&copy; 2024 Think Tank. Bảo lưu mọi quyền.</span>
+            <ul>
+                <li><a href="#">Chính Sách Bảo Mật</a></li>
+                <li><a href="#">Điều Khoản Dịch Vụ</a></li>
+                <li><a href="#">Liên Hệ</a></li>
+            </ul>
+        </div>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,59 @@
+package com.onlinestore.thinktank.modules.admin.controller;
+
+import com.onlinestore.thinktank.modules.admin.dto.AdminUserResponse;
+import com.onlinestore.thinktank.modules.admin.dto.CreateAdminRequest;
+import com.onlinestore.thinktank.modules.role.entity.Role;
+import com.onlinestore.thinktank.modules.role.repository.RoleRepository;
+import com.onlinestore.thinktank.modules.user.entity.User;
+import com.onlinestore.thinktank.modules.user.repository.UserRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.Set;
+
+@RestController
+@RequestMapping("/api/admin/users")
+@RequiredArgsConstructor
+public class AdminUserController {
+
+    private final UserRepository userRepository;
+    private final RoleRepository roleRepository;
+    private final PasswordEncoder passwordEncoder;
+
+    @PostMapping("/admins")
+    public AdminUserResponse createAdmin(@RequestBody CreateAdminRequest req) {
+        if (req.getEmail() == null || req.getEmail().isBlank()) {
+            throw new RuntimeException("Email không được để trống");
+        }
+        if (req.getPassword() == null || req.getPassword().isBlank()) {
+            throw new RuntimeException("Mật khẩu không được để trống");
+        }
+        if (userRepository.existsByEmail(req.getEmail())) {
+            throw new RuntimeException("Email đã được sử dụng!");
+        }
+
+        Role adminRole = roleRepository.findByName("ROLE_ADMIN")
+                .orElseThrow(() -> new RuntimeException("Admin role not found"));
+
+        User admin = User.builder()
+                .email(req.getEmail().trim())
+                .passwordHash(passwordEncoder.encode(req.getPassword()))
+                .fullName(req.getFullName())
+                .phone(req.getPhone())
+                .enabled(true)
+                .roles(Set.of(adminRole))
+                .build();
+
+        User saved = userRepository.save(admin);
+
+        return AdminUserResponse.builder()
+                .id(saved.getId())
+                .email(saved.getEmail())
+                .fullName(saved.getFullName())
+                .phone(saved.getPhone())
+                .role("ROLE_ADMIN")
+                .enabled(saved.getEnabled())
+                .build();
+    }
+}

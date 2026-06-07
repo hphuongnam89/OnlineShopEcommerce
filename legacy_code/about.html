@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="about-style.css">
+    <title>Think Tank - Giới Thiệu</title>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            document.addEventListener('scroll', () => {
+                let navBar = document.querySelector('nav');
+                if (window.scrollY > 0) {
+                    navBar.style.background = 'white';
+                    navBar.style.boxShadow = '0 5px 20px rgba(190, 190, 190, 0.15)';
+                }
+                else {
+                    navBar.style.background = 'transparent';
+                    navBar.style.boxShadow = 'none';
+                }
+            })
+        })
+    </script>
+</head>
+<body>
+    <nav>
+        <div id="navbar">
+            <div id="navbar-logo">
+                <img src="/images/thinktanklogo.png" width="140px" height="70px" alt="logo">
+            </div>
+            <div id="navbar-links">
+                <ul>
+                    <li><a href="index.html">Trang chủ</a></li>
+                    <li><a href="product.html">Sản phẩm</a></li>
+                    <li><a href="about.html">Giới thiệu</a></li>
+                    <li><a href="contact.html">Liên hệ</a></li>
+                    <li><a href="auth.html">Đăng Nhập</a></li>
+                </ul>
+                <button class="blue-button">
+                    <a href="cart.html">Giỏ hàng</a>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- HERO SECTION -->
+    <div class="about-hero">
+        <h1>Về Think Tank</h1>
+        <p>Hành trình của chúng tôi bắt đầu từ đam mê nhiếp ảnh</p>
+    </div>
+
+    <!-- ABOUT CONTENT -->
+    <div class="about-container">
+        <!-- SECTION 1 -->
+        <section class="about-section">
+            <div class="about-text">
+                <h2>Chúng Tôi Là Ai?</h2>
+                <p>Think Tank là thương hiệu hàng đầu trong lĩnh vực cung cấp các giải pháp bảo vệ thiết bị quang học chuyên dụng. Với hơn 15 năm kinh nghiệm, chúng tôi hiểu rõ những nhu cầu và thách thức mà các nhiếp ảnh gia phải đối mặt hàng ngày.</p>
+                <p>Mỗi sản phẩm của Think Tank được thiết kế với sự tỉ mỉ, sử dụng những vật liệu chất lượng cao nhất để đảm bảo an toàn tối đa cho các thiết bị quý giá của bạn.</p>
+            </div>
+            <div class="about-image">
+                <img src="/images/AirportCommuter.jpg" alt="Think Tank">
+            </div>
+        </section>
+
+        <!-- SECTION 2 -->
+        <section class="about-section reverse">
+            <div class="about-image">
+                <img src="/images/AirportCommuter.jpg" alt="Sứ Mệnh">
+            </div>
+            <div class="about-text">
+                <h2>Sứ Mệnh Của Chúng Tôi</h2>
+                <p>Sứ mệnh của chúng tôi là cung cấp các giải pháp bảo vệ tối ưu cho những người đam mê nhiếp ảnh, từ các chuyên gia đến những người mới bắt đầu. Chúng tôi tin rằng mỗi người xứng đáng có quyền truy cập vào các sản phẩm cao cấp với giá cả hợp lý.</p>
+                <p>Chúng tôi cam kết không ngừng đổi mới và cải tiến để mang lại những giải pháp tốt nhất cho cộng đồng nhiếp ảnh toàn cầu.</p>
+            </div>
+        </section>
+
+        <!-- SECTION 3 - VALUES -->
+        <section class="about-values">
+            <h2>Giá Trị Của Chúng Tôi</h2>
+            <div class="values-grid">
+                <div class="value-card">
+                    <div class="value-icon">🎯</div>
+                    <h3>Chất Lượng</h3>
+                    <p>Chúng tôi chỉ sử dụng những vật liệu và công nghệ tốt nhất để tạo ra sản phẩm bền bỉ và đáng tin cậy.</p>
+                </div>
+                <div class="value-card">
+                    <div class="value-icon">💡</div>
+                    <h3>Sáng Tạo</h3>
+                    <p>Mỗi thiết kế của chúng tôi là kết quả của nghiên cứu sâu sắc và sáng tạo không ngừng.</p>
+                </div>
+                <div class="value-card">
+                    <div class="value-icon">❤️</div>
+                    <h3>Đam Mê</h3>
+                    <p>Chúng tôi yêu thích những gì chúng tôi làm và điều đó phản ánh trong từng sản phẩm.</p>
+                </div>
+                <div class="value-card">
+                    <div class="value-icon">🌍</div>
+                    <h3>Bền Vững</h3>
+                    <p>Chúng tôi cam kết sản xuất bền vững và chịu trách nhiệm với môi trường.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 4 - STATS -->
+        <section class="about-stats">
+            <div class="stat-item">
+                <h3>15+</h3>
+                <p>Năm Kinh Nghiệm</p>
+            </div>
+            <div class="stat-item">
+                <h3>100K+</h3>
+                <p>Khách Hàng Hài Lòng</p>
+            </div>
+            <div class="stat-item">
+                <h3>50+</h3>
+                <p>Sản Phẩm Khác Nhau</p>
+            </div>
+            <div class="stat-item">
+                <h3>30+</h3>
+                <p>Quốc Gia Hoạt Động</p>
+            </div>
+        </section>
+
+        <!-- SECTION 5 - TEAM -->
+        <section class="about-team">
+            <h2>Đội Ngũ Của Chúng Tôi</h2>
+            <p class="team-subtitle">Những người tận tâm và sáng tạo đứng đằng sau mỗi sản phẩm Think Tank</p>
+            <div class="team-grid">
+                <div class="team-member">
+                    <div class="member-avatar">👨‍💼</div>
+                    <h4>Nguyễn Văn A</h4>
+                    <p>Founder & CEO</p>
+                </div>
+                <div class="team-member">
+                    <div class="member-avatar">👩‍🔬</div>
+                    <h4>Trần Thị B</h4>
+                    <p>Design Director</p>
+                </div>
+                <div class="team-member">
+                    <div class="member-avatar">👨‍🏭</div>
+                    <h4>Lê Minh C</h4>
+                    <p>Production Manager</p>
+                </div>
+                <div class="team-member">
+                    <div class="member-avatar">👩‍💻</div>
+                    <h4>Phạm Hồng D</h4>
+                    <p>Customer Service Lead</p>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- FOOTER -->
+    <footer>
+        <div id="footer-top">
+            <h3>Think Tank</h3>
+            <p>Balo máy ảnh chuyên nghiệp cho những người yêu nhiếp ảnh. Chúng tôi cam kết mang lại sản phẩm chất lượng cao nhất với giá cả phải chăng.</p>
+        </div>
+        <div id="footer-socials-wrapper">
+            <div class="footer-social">
+                <span>Facebook</span>
+            </div>
+            <div class="footer-social">
+                <span>Instagram</span>
+            </div>
+            <div class="footer-social">
+                <span>Twitter</span>
+            </div>
+        </div>
+        <div id="footer-bottom">
+            <span>&copy; 2024 Think Tank. Bảo lưu mọi quyền.</span>
+            <ul>
+                <li><a href="#">Chính Sách Bảo Mật</a></li>
+                <li><a href="#">Điều Khoản Dịch Vụ</a></li>
+                <li><a href="#">Liên Hệ</a></li>
+            </ul>
+        </div>
+    </footer>
+</body>
+</html>

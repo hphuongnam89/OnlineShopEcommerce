@@ -1,0 +1,510 @@
+---
+import Head from "@components/_head.astro"
+import Footer from "@components/dashboard/_footer.astro"
+import Topbar from "@components/dashboard/_topbar.astro"
+import Sidenav from "@components/dashboard/_sidenav.astro"
+import Scripts from "@components/_scripts.astro"
+
+const title = "Think Tank | Quản lý Đơn hàng"
+const path = "../dist"
+const mainPage = "admin"
+const page = "orders"
+---
+
+<!doctype html>
+<html lang="en">
+  <!--begin::Head-->
+  <head>
+    <Head title={title} path={path} />
+    <script is:inline>
+      // Auth Guard
+      if (!localStorage.getItem("admin_token")) {
+        window.location.href = "./login.html";
+      }
+    </script>
+  </head>
+  <!--end::Head-->
+  <!--begin::Body-->
+  <body class="layout-fixed sidebar-expand-lg bg-body-tertiary">
+    <!--begin::App Wrapper-->
+    <div class="app-wrapper">
+      <Topbar path={path} />
+      <Sidenav path={path} mainPage={mainPage} page={page} />
+      <!--begin::App Main-->
+      <main class="app-main">
+        <!--begin::App Content Header-->
+        <div class="app-content-header">
+          <div class="container-fluid">
+            <div class="row">
+              <div class="col-sm-6">
+                <h3 class="mb-0">Quản lý Đơn hàng</h3>
+              </div>
+              <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-end">
+                  <li class="breadcrumb-item"><a href="./index.html">Admin</a></li>
+                  <li class="breadcrumb-item active" aria-current="page">Đơn hàng</li>
+                </ol>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!--end::App Content Header-->
+        <!--begin::App Content-->
+        <div class="app-content">
+          <div class="container-fluid">
+            
+            <!-- Alert message -->
+            <div id="alert-box" class="alert alert-dismissible fade show d-none" role="alert">
+              <span id="alert-message"></span>
+              <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+
+            <!-- Filters & Actions -->
+            <div class="card mb-4 shadow-sm border-0">
+              <div class="card-body">
+                <div class="row g-3 align-items-center">
+                  <!-- Search Keyword -->
+                  <div class="col-md-3">
+                    <label for="filter-search" class="form-label fw-bold small text-secondary">Tìm kiếm đơn hàng</label>
+                    <input
+                      type="text"
+                      id="filter-search"
+                      class="form-control"
+                      placeholder="Mã ĐH, tên, SĐT..."
+                    />
+                  </div>
+                  <!-- Status Filter -->
+                  <div class="col-md-2">
+                    <label for="filter-status" class="form-label fw-bold small text-secondary">Trạng thái</label>
+                    <select id="filter-status" class="form-select">
+                      <option value="">Tất cả</option>
+                      <option value="PENDING">Chờ duyệt (PENDING)</option>
+                      <option value="APPROVED">Đã duyệt (APPROVED)</option>
+                      <option value="SHIPPED">Đang giao (SHIPPED)</option>
+                      <option value="DELIVERED">Đã giao (DELIVERED)</option>
+                      <option value="CANCELLED">Đã hủy (CANCELLED)</option>
+                    </select>
+                  </div>
+                  <!-- Start Date -->
+                  <div class="col-md-2">
+                    <label for="filter-start-date" class="form-label fw-bold small text-secondary">Từ ngày</label>
+                    <input type="date" id="filter-start-date" class="form-control" />
+                  </div>
+                  <!-- End Date -->
+                  <div class="col-md-2">
+                    <label for="filter-end-date" class="form-label fw-bold small text-secondary">Đến ngày</label>
+                    <input type="date" id="filter-end-date" class="form-control" />
+                  </div>
+                  <!-- Actions -->
+                  <div class="col-md-3 text-end pt-4">
+                    <button id="btn-filter" class="btn btn-primary px-3">
+                      <i class="bi bi-funnel-fill"></i> Lọc
+                    </button>
+                    <button id="btn-export-excel" class="btn btn-success ms-2 px-3">
+                      <i class="bi bi-file-earmark-excel-fill"></i> Xuất Excel
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Orders List Table -->
+            <div class="card shadow-sm border-0 mb-4">
+              <div class="card-body p-0">
+                <div class="table-responsive">
+                  <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light">
+                      <tr>
+                        <th width="100">Mã ĐH</th>
+                        <th>Khách hàng</th>
+                        <th>Số điện thoại</th>
+                        <th class="text-end">Tổng tiền</th>
+                        <th class="text-center">Ngày đặt</th>
+                        <th class="text-center">Trạng thái</th>
+                        <th class="text-end" width="220">Hành động</th>
+                      </tr>
+                    </thead>
+                    <tbody id="orders-table-body">
+                      <tr>
+                        <td colspan="7" class="text-center py-5 text-muted">
+                          <div class="spinner-border spinner-border-sm text-primary me-2" role="status"></div>
+                          Đang tải danh sách đơn hàng...
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+              <div class="card-footer bg-transparent border-top-0 d-flex justify-content-between align-items-center py-3">
+                <div class="text-muted small" id="orders-count-info">
+                  Tìm thấy 0 đơn hàng phù hợp
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+        <!--end::App Content-->
+      </main>
+      <!--end::App Main-->
+
+      <!--begin::Order Detail Modal-->
+      <div class="modal fade" id="orderDetailModal" tabindex="-1" aria-labelledby="orderDetailModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title fw-bold" id="orderDetailModalLabel">Chi tiết đơn hàng <span id="detail-order-id" class="text-primary"></span></h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" id="order-detail-content">
+              <!-- Dynamically populated via JS -->
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!--end::Order Detail Modal-->
+
+      <Footer />
+    </div>
+    <!--end::App Wrapper-->
+
+    <!--begin::Script-->
+    <Scripts path={path} />
+
+    <script is:inline>
+      document.addEventListener("DOMContentLoaded", async () => {
+        const token = localStorage.getItem("admin_token");
+        const BASE_URL = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1" 
+          ? "http://localhost:8080" 
+          : "";
+
+        const headers = {
+          "Authorization": `Bearer ${token}`,
+          "Content-Type": "application/json"
+        };
+
+        // Cache for detail lookups
+        let ordersList = [];
+        let detailModal = null;
+
+        if (typeof bootstrap !== 'undefined') {
+          detailModal = new bootstrap.Modal(document.getElementById('orderDetailModal'));
+        }
+
+        // Return status badge
+        function getStatusBadge(status) {
+          switch (status) {
+            case "PENDING":
+              return `<span class="badge text-bg-warning">Chờ duyệt</span>`;
+            case "APPROVED":
+              return `<span class="badge text-bg-primary">Đã duyệt</span>`;
+            case "SHIPPED":
+              return `<span class="badge text-bg-info text-white">Đang giao</span>`;
+            case "DELIVERED":
+              return `<span class="badge text-bg-success">Đã giao</span>`;
+            case "CANCELLED":
+              return `<span class="badge text-bg-danger">Đã hủy</span>`;
+            default:
+              return `<span class="badge text-bg-secondary">${status}</span>`;
+          }
+        }
+
+        // Action Buttons based on status flow
+        function getActionButtons(order) {
+          const id = order.id;
+          if (order.status === "PENDING") {
+            return `
+              <button class="btn btn-xs btn-success py-0 px-2 btn-status-update" data-id="${id}" data-status="APPROVED">Duyệt</button>
+              <button class="btn btn-xs btn-danger py-0 px-2 btn-status-update" data-id="${id}" data-status="CANCELLED">Hủy</button>
+              <button class="btn btn-xs btn-outline-secondary py-0 px-2 btn-detail" data-id="${id}">Chi tiết</button>
+            `;
+          } else if (order.status === "APPROVED") {
+            return `
+              <button class="btn btn-xs btn-info text-white py-0 px-2 btn-status-update" data-id="${id}" data-status="SHIPPED">Giao hàng</button>
+              <button class="btn btn-xs btn-danger py-0 px-2 btn-status-update" data-id="${id}" data-status="CANCELLED">Hủy</button>
+              <button class="btn btn-xs btn-outline-secondary py-0 px-2 btn-detail" data-id="${id}">Chi tiết</button>
+            `;
+          } else if (order.status === "SHIPPED") {
+            return `
+              <button class="btn btn-xs btn-success py-0 px-2 btn-status-update" data-id="${id}" data-status="DELIVERED">Đã giao</button>
+              <button class="btn btn-xs btn-outline-secondary py-0 px-2 btn-detail" data-id="${id}">Chi tiết</button>
+            `;
+          } else {
+            return `
+              <span class="text-muted small">Không hành động</span>
+              <button class="btn btn-xs btn-outline-secondary py-0 px-2 ms-2 btn-detail" data-id="${id}">Chi tiết</button>
+            `;
+          }
+        }
+
+        // Alert Helper
+        function showAlert(msg, type = "success") {
+          const alertBox = document.getElementById("alert-box");
+          const alertMsg = document.getElementById("alert-message");
+          alertBox.className = `alert alert-${type} alert-dismissible fade show`;
+          alertMsg.textContent = msg;
+          alertBox.classList.remove("d-none");
+          setTimeout(() => {
+            alertBox.classList.add("d-none");
+          }, 4000);
+        }
+
+        // Fetch and Render Orders
+        async function fetchOrders() {
+          const search = document.getElementById("filter-search").value.trim();
+          const status = document.getElementById("filter-status").value;
+          const start = document.getElementById("filter-start-date").value;
+          const end = document.getElementById("filter-end-date").value;
+
+          const query = new URLSearchParams();
+          if (search) query.append("search", search);
+          if (status) query.append("status", status);
+          
+          if (start) {
+            // Spring expect ISO date time, convert date to start of day ISO
+            query.append("startDate", new Date(start + "T00:00:00").toISOString());
+          }
+          if (end) {
+            query.append("endDate", new Date(end + "T23:59:59").toISOString());
+          }
+
+          const tbody = document.getElementById("orders-table-body");
+          tbody.innerHTML = `
+            <tr>
+              <td colspan="7" class="text-center py-5 text-muted">
+                <div class="spinner-border spinner-border-sm text-primary me-2" role="status"></div>
+                Đang tải danh sách đơn hàng...
+              </td>
+            </tr>
+          `;
+
+          try {
+            const res = await fetch(`${BASE_URL}/api/admin/orders?${query.toString()}`, { headers });
+            if (!res.ok) throw new Error("Không thể tải danh sách đơn hàng");
+            ordersList = await res.json();
+            
+            tbody.innerHTML = "";
+
+            if (ordersList.length === 0) {
+              tbody.innerHTML = `<tr><td colspan="7" class="text-center py-5 text-muted">Không tìm thấy đơn hàng nào!</td></tr>`;
+              document.getElementById("orders-count-info").textContent = "Tìm thấy 0 đơn hàng phù hợp";
+              return;
+            }
+
+            // Sort orders descending by ID
+            ordersList.sort((a, b) => b.id - a.id).forEach(o => {
+              const dateStr = new Date(o.createdAt || o.date).toLocaleString("vi-VN", {
+                year: "numeric",
+                month: "numeric",
+                day: "numeric",
+                hour: "2-digit",
+                minute: "2-digit"
+              });
+
+              tbody.innerHTML += `
+                <tr>
+                  <td><strong class="text-primary">TT-${o.id}</strong></td>
+                  <td><div class="fw-bold">${o.fullName}</div><div class="text-muted small">${o.email || ''}</div></td>
+                  <td><span class="font-monospace">${o.phone}</span></td>
+                  <td class="text-end fw-bold text-dark">${o.finalAmount.toLocaleString("vi-VN")}đ</td>
+                  <td class="text-center small">${dateStr}</td>
+                  <td class="text-center">${getStatusBadge(o.status)}</td>
+                  <td class="text-end">${getActionButtons(o)}</td>
+                </tr>
+              `;
+            });
+
+            document.getElementById("orders-count-info").textContent = `Tìm thấy ${ordersList.length} đơn hàng phù hợp`;
+          } catch (err) {
+            console.error(err);
+            tbody.innerHTML = `<tr><td colspan="7" class="text-center py-5 text-danger fw-bold">Không kết nối được với Server!</td></tr>`;
+          }
+        }
+
+        // Update Order Status
+        async function updateStatus(id, newStatus) {
+          try {
+            const res = await fetch(`${BASE_URL}/api/admin/orders/${id}/status`, {
+              method: "PUT",
+              headers,
+              body: JSON.stringify({ status: newStatus })
+            });
+
+            if (!res.ok) {
+              const errData = await res.json();
+              throw new Error(errData.message || "Lỗi khi cập nhật trạng thái đơn hàng");
+            }
+
+            showAlert(`Đã chuyển trạng thái đơn hàng sang ${newStatus}!`);
+            fetchOrders();
+          } catch (err) {
+            alert(err.message);
+          }
+        }
+
+        // Render Order Details Modal
+        function showOrderDetail(id) {
+          const o = ordersList.find(order => order.id == id);
+          if (!o) return;
+
+          document.getElementById("detail-order-id").textContent = `TT-${o.id}`;
+          
+          let itemsHtml = "";
+          const items = o.items || [];
+          
+          items.forEach(it => {
+            const p = it.product || {};
+            const v = it.variant || {};
+            const varName = v.name ? `<span class="badge text-bg-light border small font-sans ms-2">${v.name}</span>` : "";
+            
+            itemsHtml += `
+              <tr>
+                <td>
+                  <div class="fw-bold text-dark">${p.name || 'Sản phẩm đã xóa'} ${varName}</div>
+                  <div class="text-muted small font-monospace">SKU: ${v.sku || p.sku || 'N/A'}</div>
+                </td>
+                <td class="text-end">${it.price.toLocaleString("vi-VN")}đ</td>
+                <td class="text-center">${it.quantity}</td>
+                <td class="text-end fw-bold">${it.subtotal.toLocaleString("vi-VN")}đ</td>
+              </tr>
+            `;
+          });
+
+          const disc = o.discountAmount || 0;
+          const tierInfo = o.customer && o.customer.tier ? `Hạng thẻ: ${o.customer.tier.name}` : "Hạng thẻ: Đồng (Bronze)";
+
+          const contentDiv = document.getElementById("order-detail-content");
+          contentDiv.innerHTML = `
+            <div class="row g-3">
+              <!-- Customer Info -->
+              <div class="col-md-6">
+                <h6 class="fw-bold border-bottom pb-2 text-secondary"><i class="bi bi-person-fill"></i> Thông tin khách hàng</h6>
+                <table class="table table-sm table-borderless font-sans small mb-0">
+                  <tr><th width="120">Họ và tên:</th><td>${o.fullName}</td></tr>
+                  <tr><th>Số điện thoại:</th><td>${o.phone}</td></tr>
+                  <tr><th>Email:</th><td>${o.email || 'Không có'}</td></tr>
+                  <tr><th>Mức ưu đãi:</th><td><span class="badge bg-secondary">${tierInfo}</span></td></tr>
+                </table>
+              </div>
+              
+              <!-- Shipping Info -->
+              <div class="col-md-6">
+                <h6 class="fw-bold border-bottom pb-2 text-secondary"><i class="bi bi-geo-alt-fill"></i> Thông tin giao nhận</h6>
+                <table class="table table-sm table-borderless font-sans small mb-0">
+                  <tr><th width="120">Địa chỉ giao:</th><td>${o.address}</td></tr>
+                  <tr><th>Ngày đặt:</th><td>${new Date(o.createdAt).toLocaleString("vi-VN")}</td></tr>
+                  <tr><th>Ghi chú đơn:</th><td><span class="text-muted italic">${o.notes || 'Không có ghi chú'}</span></td></tr>
+                </table>
+              </div>
+
+              <!-- Order Items -->
+              <div class="col-12 mt-4">
+                <h6 class="fw-bold text-secondary mb-2"><i class="bi bi-cart-check-fill"></i> Sản phẩm đã mua</h6>
+                <table class="table table-bordered align-middle small">
+                  <thead class="table-light">
+                    <tr>
+                      <th>Sản phẩm</th>
+                      <th class="text-end" width="120">Đơn giá</th>
+                      <th class="text-center" width="80">Số lượng</th>
+                      <th class="text-end" width="120">Thành tiền</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    ${itemsHtml}
+                  </tbody>
+                  <tfoot>
+                    <tr>
+                      <td colspan="3" class="text-end fw-bold">Tổng tiền hàng:</td>
+                      <td class="text-end">${o.totalAmount.toLocaleString("vi-VN")}đ</td>
+                    </tr>
+                    <tr>
+                      <td colspan="3" class="text-end fw-bold text-danger">Đã giảm giá (Thành viên):</td>
+                      <td class="text-end text-danger fw-bold">-${disc.toLocaleString("vi-VN")}đ</td>
+                    </tr>
+                    <tr class="table-warning">
+                      <td colspan="3" class="text-end fw-bold">Số tiền thanh toán:</td>
+                      <td class="text-end fw-bold text-primary" style="font-size: 1.1rem;">${o.finalAmount.toLocaleString("vi-VN")}đ</td>
+                    </tr>
+                  </tfoot>
+                </table>
+              </div>
+            </div>
+          `;
+
+          detailModal.show();
+        }
+
+        // Table actions click routing
+        document.getElementById("orders-table-body").addEventListener("click", (e) => {
+          const btnStatus = e.target.closest(".btn-status-update");
+          const btnDetail = e.target.closest(".btn-detail");
+
+          if (btnStatus) {
+            const id = btnStatus.getAttribute("data-id");
+            const status = btnStatus.getAttribute("data-status");
+            if (confirm(`Bạn có chắc chắn muốn chuyển trạng thái đơn hàng sang ${status}?`)) {
+              updateStatus(id, status);
+            }
+          }
+
+          if (btnDetail) {
+            const id = btnDetail.getAttribute("data-id");
+            showOrderDetail(id);
+          }
+        });
+
+        // Export Excel Action with JWT Headers
+        document.getElementById("btn-export-excel").addEventListener("click", async () => {
+          const search = document.getElementById("filter-search").value.trim();
+          const status = document.getElementById("filter-status").value;
+          const start = document.getElementById("filter-start-date").value;
+          const end = document.getElementById("filter-end-date").value;
+
+          const query = new URLSearchParams();
+          if (search) query.append("search", search);
+          if (status) query.append("status", status);
+          if (start) query.append("startDate", new Date(start + "T00:00:00").toISOString());
+          if (end) query.append("endDate", new Date(end + "T23:59:59").toISOString());
+
+          const exportBtn = document.getElementById("btn-export-excel");
+          const originalHtml = exportBtn.innerHTML;
+          exportBtn.disabled = true;
+          exportBtn.innerHTML = `<span class="spinner-border spinner-border-sm me-2" role="status"></span> Đang xuất...`;
+
+          try {
+            const res = await fetch(`${BASE_URL}/api/admin/reports/export/orders?${query.toString()}`, {
+              headers
+            });
+
+            if (!res.ok) throw new Error("Lỗi khi kết xuất file Excel!");
+
+            const blob = await res.blob();
+            const downloadUrl = window.URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            a.href = downloadUrl;
+            a.download = `Danh_Sach_Don_Hang_${new Date().toISOString().split('T')[0]}.xlsx`;
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+          } catch (err) {
+            alert(err.message);
+          } finally {
+            exportBtn.disabled = false;
+            exportBtn.innerHTML = originalHtml;
+          }
+        });
+
+        // Trigger filters
+        document.getElementById("btn-filter").addEventListener("click", () => {
+          fetchOrders();
+        });
+
+        // Initial load
+        await fetchOrders();
+      });
+    </script>
+  </body><!--end::Body-->
+</html>

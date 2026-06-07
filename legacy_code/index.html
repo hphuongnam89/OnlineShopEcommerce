@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <title>Think Tank - Balo Máy Ảnh</title>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            document.addEventListener('scroll', () => {
+                let navBar = document.querySelector('nav');
+                if (window.scrollY > 0) {
+                    navBar.style.background = 'white';
+                    navBar.style.boxShadow = '0 5px 20px rgba(190, 190, 190, 0.15)';
+                }
+                else {
+                    navBar.style.background = 'transparent';
+                    navBar.style.boxShadow = 'none';
+                }
+            })
+        })
+    </script>
+</head>
+<body>
+    <nav>
+    <div id="navbar">
+        <div id="navbar-logo">
+            <img src="/images/thinktanklogo.png" width="140px" height="70px" alt="logo">
+        </div>
+        <div id="navbar-links">
+            <ul>
+                <li><a href="index.html">Trang chủ</a></li>
+                <li><a href="product.html">Sản phẩm</a></li>
+                <li><a href="about.html">Giới thiệu</a></li>
+                <li><a href="contact.html">Liên hệ</a></li>
+                <li><a href="auth.html">Đăng Nhập</a></li>
+            </ul>
+        <button class="blue-button">
+            <a href="cart.html">Giỏ hàng</a>
+        </button>
+        </div>
+    </div>
+    </nav>
+
+    <!-- TOP -->
+     <div id="home-top-container">
+        <div id="home-top-wrapper">
+            <div id="home-top-text">
+                <h1>Balo Máy ảnh</h1>
+                <p>Được thiết kế để bảo vệ máy ảnh của bạn khỏi va đập và thời tiết, túi balo máy ảnh là người bạn đồng hành lý tưởng cho các nhiếp ảnh gia di động. Với nhiều ngăn và túi nhỏ để tổ chức phụ kiện, chúng giúp bạn dễ dàng mang theo tất cả những gì bạn cần cho một buổi chụp hình thành công.</p>
+                <button class="blue-button">
+                    Bộ sưu tập
+                </button>
+            </div>
+            <div id="home-top-image">
+                <img src="/images/AirportCommuter.jpg" width="500px" height="400px" alt="home-top-image">
+            </div>
+        </div>
+     </div>
+
+     <!-- OUR COLLECTION -->
+     <div id="collection-container">
+        <h1>Bộ Sưu Tập</h1>
+        <div id="collection-items-wrapper">
+            <div class="collection-item">
+                <div class="collection-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" fill="currentColor" class="bi bi-bag" viewBox="0 0 16 16">
+                        <path d="M8 1a2 2 0 0 1 2 2v4H6V3a2 2 0 0 1 2-2zm3 6V3a3 3 0 0 0-6 0v4a2 2 0 0 0-2 2v5a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2v-5a2 2 0 0 0-2-2z"/>
+                    </svg>
+                </div>
+                <span class="collection-name">Balo máy ảnh</span>
+            </div>
+            <div class="collection-item">
+                <div class="collection-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" fill="currentColor" class="bi bi-bag" viewBox="0 0 16 16">
+                        <path d="M8 1a2 2 0 0 1 2 2v4H6V3a2 2 0 0 1 2-2zm3 6V3a3 3 0 0 0-6 0v4a2 2 0 0 0-2 2v5a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2v-5a2 2 0 0 0-2-2z"/>
+                    </svg>
+                </div>
+                <span class="collection-name">Túi máy ảnh</span>
+            </div>
+            <div class="collection-item">
+                <div class="collection-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" fill="currentColor" class="bi bi-bag" viewBox="0 0 16 16">
+                        <path d="M8 1a2 2 0 0 1 2 2v4H6V3a2 2 0 0 1 2-2zm3 6V3a3 3 0 0 0-6 0v4a2 2 0 0 0-2 2v5a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2v-5a2 2 0 0 0-2-2z"/>
+                    </svg>
+                </div>
+                <span class="collection-name">Vali máy ảnh</span>
+            </div>
+        </div>
+     </div>
+
+     <!-- BEST SELLERS -->
+     <div class="product-section-container">
+        <h1>Sản Phẩm Nổi Bật</h1>
+        <span class="product-section-description">
+            Khám phá những sản phẩm được yêu thích nhất từ ThinkTank - được thiết kế đặc biệt cho các nhiếp ảnh gia chuyên nghiệp và người yêu nhiếp ảnh.
+        </span>
+        <ul class="product-section-items-wrapper">
+            <li class="product-item">
+                <div class="product-image">
+                    <img src="/images/AirportCommuter.jpg" alt="Balo Chuyên Nghiệp">
+                </div>
+                <div class="product-text">
+                    <span class="product-title">
+                        Balo Chuyên Nghiệp<br>
+                        Cho Nhiếp Ảnh Gia
+                    </span>
+                    <div class="product-purchase">
+                        <span class="product-price">
+                            1,299,000đ
+                        </span>
+                        <button class="blue-button add-to-cart">
+                            Thêm Giỏ
+                        </button>
+                    </div>
+                </div>
+            </li>
+            <li class="product-item">
+                <div class="product-image">
+                    <img src="/images/AirportCommuter.jpg" alt="Balo Du Lịch">
+                </div>
+                <div class="product-text">
+                    <span class="product-title">
+                        Balo Du Lịch<br>
+                        Khả Năng Cao
+                    </span>
+                    <div class="product-purchase">
+                        <span class="product-price">
+                            899,000đ
+                        </span>
+                        <button class="blue-button add-to-cart">
+                            Thêm Giỏ
+                        </button>
+                    </div>
+                </div>
+            </li>
+            <li class="product-item">
+                <div class="product-image">
+                    <img src="/images/AirportCommuter.jpg" alt="Balo Nhỏ Gọn">
+                </div>
+                <div class="product-text">
+                    <span class="product-title">
+                        Balo Nhỏ Gọn<br>
+                        Tiện Lợi
+                    </span>
+                    <div class="product-purchase">
+                        <span class="product-price">
+                            599,000đ
+                        </span>
+                        <button class="blue-button add-to-cart">
+                            Thêm Giỏ
+                        </button>
+                    </div>
+                </div>
+            </li>
+        </ul>
+     </div>
+
+     <!-- PROMO -->
+     <div class="promo-container">
+        <div class="promo-box">
+            <div class="promo-image">
+                <img src="/images/AirportCommuter.jpg" alt="Khuyến Mãi">
+            </div>
+            <div class="promo-content">
+                <h1>Ưu Đãi Đặc Biệt</h1>
+                <h2>Giảm 30%</h2>
+                <p>Cho tất cả các sản phẩm balo chuyên dụng trong tháng này. Đừng bỏ lỡ cơ hội tuyệt vời này!</p>
+                <button class="white-button">
+                    Mua Ngay
+                </button>
+            </div>
+        </div>
+     </div>
+
+     <!-- FOOTER -->
+     <footer>
+        <div id="footer-top">
+            <h3>Think Tank</h3>
+            <p>Balo máy ảnh chuyên nghiệp cho những người yêu nhiếp ảnh. Chúng tôi cam kết mang lại sản phẩm chất lượng cao nhất với giá cả phải chăng.</p>
+        </div>
+        <div id="footer-socials-wrapper">
+            <div class="footer-social">
+                <span>Facebook</span>
+            </div>
+            <div class="footer-social">
+                <span>Instagram</span>
+            </div>
+            <div class="footer-social">
+                <span>Twitter</span>
+            </div>
+        </div>
+        <div id="footer-bottom">
+            <span>&copy; 2024 Think Tank. Bảo lưu mọi quyền.</span>
+            <ul>
+                <li><a href="#">Chính Sách Bảo Mật</a></li>
+                <li><a href="#">Điều Khoản Dịch Vụ</a></li>
+                <li><a href="#">Liên Hệ</a></li>
+            </ul>
+        </div>
+     </footer>
+</body>
+</html>

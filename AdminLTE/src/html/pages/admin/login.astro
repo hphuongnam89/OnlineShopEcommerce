@@ -1,0 +1,147 @@
+---
+import Head from "@components/_head.astro"
+import Scripts from "@components/_scripts.astro"
+
+const title = "Think Tank | Admin Login"
+const path = "../../../dist"
+---
+
+<!DOCTYPE html>
+<html lang="en">
+  <!--begin::Head-->
+  <head>
+    <Head title={title} path={path} />
+  </head>
+  <!--end::Head-->
+  <!--begin::Body-->
+  <body class="login-page bg-dark-subtle">
+    <div class="login-box">
+      <div class="login-logo">
+        <a href="#" class="text-decoration-none text-dark font-sans fw-bold">
+          <b>Think Tank</b> Admin
+        </a>
+      </div>
+      <!-- /.login-logo -->
+      <div class="card shadow border-0 rounded-4">
+        <div class="card-body login-card-body p-4">
+          <p class="login-box-msg fw-bold text-secondary">Đăng nhập tài khoản quản trị viên</p>
+
+          <form id="admin-login-form">
+            <div id="error-message" class="alert alert-danger d-none" role="alert"></div>
+
+            <div class="input-group mb-3">
+              <input type="email" id="email" class="form-control rounded-start-3" placeholder="Email" required />
+              <div class="input-group-text bg-white border-start-0 rounded-end-3">
+                <span class="bi bi-envelope text-muted"></span>
+              </div>
+            </div>
+            <div class="input-group mb-3">
+              <input
+                type="password"
+                id="password"
+                class="form-control rounded-start-3"
+                placeholder="Mật khẩu"
+                required
+              />
+              <div class="input-group-text bg-white border-start-0 rounded-end-3">
+                <span class="bi bi-lock-fill text-muted"></span>
+              </div>
+            </div>
+            <!--begin::Row-->
+            <div class="row align-items-center mt-4">
+              <div class="col-8">
+                <div class="form-check">
+                  <input
+                    class="form-check-input"
+                    type="checkbox"
+                    value=""
+                    id="rememberMe"
+                  />
+                  <label class="form-check-label text-muted" for="rememberMe">
+                    Ghi nhớ
+                  </label>
+                </div>
+              </div>
+              <!-- /.col -->
+              <div class="col-4">
+                <div class="d-grid">
+                  <button type="submit" class="btn btn-primary rounded-3">Vào bếp</button>
+                </div>
+              </div>
+              <!-- /.col -->
+            </div>
+            <!--end::Row-->
+          </form>
+        </div>
+        <!-- /.login-card-body -->
+      </div>
+    </div>
+    <!-- /.login-box -->
+
+    <Scripts path={path} />
+    <!--end::Script-->
+
+    <script is:inline>
+      document.addEventListener("DOMContentLoaded", () => {
+        // Redirect if already logged in
+        if (localStorage.getItem("admin_token")) {
+          window.location.href = "./index.html";
+        }
+
+        const loginForm = document.getElementById("admin-login-form");
+        const errorDiv = document.getElementById("error-message");
+
+        loginForm.addEventListener("submit", async (e) => {
+          e.preventDefault();
+          errorDiv.classList.add("d-none");
+
+          const email = document.getElementById("email").value.trim();
+          const password = document.getElementById("password").value;
+
+          const BASE_URL = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1" 
+            ? "http://localhost:8080" 
+            : "";
+
+          try {
+            const response = await fetch(`${BASE_URL}/api/auth/login`, {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json"
+              },
+              body: JSON.stringify({ email, password })
+            });
+
+            if (!response.ok) {
+              let msg = "Tài khoản hoặc mật khẩu không chính xác.";
+              try {
+                const err = await response.json();
+                msg = err.message || msg;
+              } catch (e) {}
+              throw new Error(msg);
+            }
+
+            const data = await response.json();
+            
+            // Check if user is Admin
+            if (data.role !== "ROLE_ADMIN") {
+              throw new Error("Tài khoản của bạn không có quyền truy cập trang quản trị!");
+            }
+
+            // Save details
+            localStorage.setItem("admin_token", data.token);
+            localStorage.setItem("admin_user", JSON.stringify({
+              email: data.email,
+              fullName: data.fullName,
+              role: data.role
+            }));
+
+            window.location.href = "./index.html";
+          } catch (error) {
+            errorDiv.textContent = error.message;
+            errorDiv.classList.remove("d-none");
+          }
+        });
+      });
+    </script>
+  </body><!--end::Body-->
+</html>
