@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { api } from '../../utils/api';
-import { Plus, Edit3, Trash2, Search, Download, Filter, UserCheck, AlertCircle } from 'lucide-react';
+import { Plus, Edit3, Trash2, Search, Download, UserCheck, AlertCircle } from 'lucide-react';
 import CustomModal from '../../components/CustomModal';
 
 const AdminCustomers = () => {
@@ -187,11 +187,11 @@ const AdminCustomers = () => {
 
   const getTierClass = (tierName) => {
     switch (tierName) {
-      case 'PLATINUM': return 'bg-sky-500/10 text-sky-400 border border-sky-500/20';
-      case 'GOLD': return 'bg-amber-500/10 text-amber-400 border border-amber-500/20';
-      case 'SILVER': return 'bg-slate-300/10 text-slate-300 border border-slate-300/20';
-      case 'VIP': return 'bg-purple-500/10 text-purple-400 border border-purple-500/20';
-      default: return 'bg-slate-500/10 text-slate-400 border border-slate-500/10';
+      case 'PLATINUM': return 'badge-metallic-platinum';
+      case 'GOLD': return 'badge-metallic-gold';
+      case 'SILVER': return 'badge-metallic-silver';
+      case 'VIP': return 'badge-metallic-vip';
+      default: return 'bg-slate-800 text-slate-400 border border-slate-700/50';
     }
   };
 
@@ -200,22 +200,22 @@ const AdminCustomers = () => {
       {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h1 className="text-3xl font-extrabold tracking-tight text-white">Quản Lý Khách Hàng</h1>
-          <p className="text-slate-400 mt-1">Danh sách khách hàng, phân hạng Bạch kim/Vàng/Bạc và lịch sử chi tiêu.</p>
+          <h1 className="text-3xl font-black tracking-tight text-white bg-gradient-to-r from-slate-100 to-slate-300 bg-clip-text text-transparent">Quản Lý Khách Hàng</h1>
+          <p className="text-slate-400 text-sm mt-1">Quản lý hồ sơ, chi tiêu tích lũy và cập nhật thứ hạng tự động.</p>
         </div>
         <div className="flex gap-3 w-full sm:w-auto">
           <button
             onClick={handleExportCustomers}
-            className="flex-1 sm:flex-initial bg-slate-800 hover:bg-slate-700 text-white font-semibold py-2.5 px-4 rounded-xl border border-slate-700 flex items-center justify-center gap-2 text-sm transition-colors cursor-pointer"
+            className="flex-1 sm:flex-initial bg-slate-900 hover:bg-slate-850 text-white font-semibold py-2.5 px-4 rounded-xl border border-slate-800 flex items-center justify-center gap-2 text-xs transition-colors cursor-pointer"
           >
-            <Download size={16} />
+            <Download size={14} />
             <span>Xuất Excel Nhóm</span>
           </button>
           <button
             onClick={handleOpenCreate}
-            className="flex-1 sm:flex-initial bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2.5 px-4 rounded-xl flex items-center justify-center gap-2 text-sm transition-all duration-200 shadow-lg shadow-blue-500/25 hover:-translate-y-0.5 cursor-pointer"
+            className="flex-1 sm:flex-initial admin-glow-btn text-white font-bold py-2.5 px-4 rounded-xl flex items-center justify-center gap-2 text-xs transition-all duration-200 cursor-pointer"
           >
-            <Plus size={16} />
+            <Plus size={14} />
             <span>Thêm Khách Hàng</span>
           </button>
         </div>
@@ -229,33 +229,33 @@ const AdminCustomers = () => {
       )}
 
       {/* Filter Options */}
-      <div className="bg-slate-900 border border-slate-800 p-5 rounded-2xl space-y-4">
+      <div className="admin-glass-card p-5 rounded-3xl space-y-4">
         <form onSubmit={handleSearchSubmit} className="flex gap-3">
           <div className="relative flex-grow">
             <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500" size={18} />
             <input
               type="text"
-              placeholder="Tìm theo tên, email hoặc số điện thoại..."
+              placeholder="Tìm theo họ tên, email hoặc số điện thoại..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full bg-slate-950 border border-slate-800 text-white rounded-xl pl-11 pr-4 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 placeholder-slate-600"
+              className="w-full bg-slate-950 border border-slate-800 text-white rounded-xl pl-11 pr-4 py-2.5 text-xs focus:outline-none focus:ring-1 focus:ring-indigo-500 placeholder-slate-700 font-medium"
             />
           </div>
           <button 
             type="submit"
-            className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2.5 px-6 rounded-xl text-sm transition-colors cursor-pointer"
+            className="bg-slate-900 hover:bg-slate-850 text-white font-semibold py-2.5 px-6 rounded-xl border border-slate-800 text-xs transition-colors cursor-pointer"
           >
             Tìm kiếm
           </button>
         </form>
 
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-2 border-t border-slate-800/60">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-4 border-t border-slate-800/50">
           <div>
-            <label className="block text-slate-400 text-xs font-semibold mb-1 uppercase">Hạng thành viên</label>
+            <label className="block text-slate-500 text-[10px] font-bold mb-1.5 uppercase tracking-wider">Hạng thành viên</label>
             <select
               value={selectedTier}
               onChange={(e) => setSelectedTier(e.target.value)}
-              className="w-full bg-slate-950 border border-slate-800 text-white rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
+              className="w-full bg-slate-950 border border-slate-800 text-white rounded-xl px-3 py-2 text-xs focus:outline-none focus:ring-1 focus:ring-indigo-500 font-semibold"
             >
               <option value="">Tất cả hạng</option>
               <option value="5">Bạch kim (PLATINUM - Chi tiêu &gt; 50M)</option>
@@ -267,66 +267,66 @@ const AdminCustomers = () => {
           </div>
 
           <div>
-            <label className="block text-slate-400 text-xs font-semibold mb-1 uppercase">Chi tiêu tối thiểu (đ)</label>
+            <label className="block text-slate-500 text-[10px] font-bold mb-1.5 uppercase tracking-wider">Chi tiêu tối thiểu (đ)</label>
             <input
               type="number"
               placeholder="Ví dụ: 5000000"
               value={minSpent}
               onChange={(e) => setMinSpent(e.target.value)}
-              className="w-full bg-slate-950 border border-slate-800 text-white rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 placeholder-slate-700"
+              className="w-full bg-slate-950 border border-slate-800 text-white rounded-xl px-3 py-2 text-xs focus:outline-none focus:ring-1 focus:ring-indigo-500 placeholder-slate-800 font-semibold"
             />
           </div>
 
           <div>
-            <label className="block text-slate-400 text-xs font-semibold mb-1 uppercase">Chi tiêu tối đa (đ)</label>
+            <label className="block text-slate-500 text-[10px] font-bold mb-1.5 uppercase tracking-wider">Chi tiêu tối đa (đ)</label>
             <input
               type="number"
               placeholder="Ví dụ: 20000000"
               value={maxSpent}
               onChange={(e) => setMaxSpent(e.target.value)}
-              className="w-full bg-slate-950 border border-slate-800 text-white rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 placeholder-slate-700"
+              className="w-full bg-slate-950 border border-slate-800 text-white rounded-xl px-3 py-2 text-xs focus:outline-none focus:ring-1 focus:ring-indigo-500 placeholder-slate-800 font-semibold"
             />
           </div>
         </div>
       </div>
 
-      {/* Customers List */}
-      <div className="bg-slate-900 border border-slate-800 rounded-3xl overflow-hidden">
+      {/* Customers List Table */}
+      <div className="admin-glass-card rounded-3xl overflow-hidden">
         {loading ? (
           <div className="py-20 text-center text-slate-500">Đang tải danh sách khách hàng...</div>
         ) : customers.length === 0 ? (
-          <div className="py-20 text-center text-slate-500">Không tìm thấy khách hàng nào.</div>
+          <div className="py-20 text-center text-slate-500">Không tìm thấy khách hàng nào trên hệ thống.</div>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse">
               <thead>
-                <tr className="border-b border-slate-800 text-slate-400 text-xs font-bold uppercase tracking-wider bg-slate-900/50">
-                  <th className="px-6 py-4">Họ và tên</th>
+                <tr className="border-b border-slate-800/80 text-slate-400 text-xs font-bold uppercase tracking-wider bg-slate-900/40">
+                  <th className="px-6 py-4">Khách hàng</th>
                   <th className="px-6 py-4">Số điện thoại</th>
                   <th className="px-6 py-4">Email</th>
                   <th className="px-6 py-4">Hạng thành viên</th>
-                  <th className="px-6 py-4 font-semibold text-right">Tổng chi tiêu</th>
+                  <th className="px-6 py-4 font-bold text-right">Tổng chi tiêu</th>
                   <th className="px-6 py-4 text-right">Thao tác</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-800/60 text-slate-300 text-sm">
+              <tbody className="divide-y divide-slate-800/50 text-slate-350 text-xs font-medium">
                 {customers.map((c) => (
-                  <tr key={c.id} className="hover:bg-slate-800/20 transition-colors">
-                    <td className="px-6 py-4 font-semibold text-white">
+                  <tr key={c.id} className="hover:bg-slate-800/10 transition-colors">
+                    <td className="px-6 py-4 font-bold text-white text-sm">
                       {c.user?.fullName || 'Khách vãng lai'}
                     </td>
-                    <td className="px-6 py-4">
+                    <td className="px-6 py-4 font-semibold">
                       {c.user?.phone || 'Chưa cập nhật'}
                     </td>
-                    <td className="px-6 py-4 text-slate-400">
+                    <td className="px-6 py-4 text-slate-500">
                       {c.user?.email || 'N/A'}
                     </td>
                     <td className="px-6 py-4">
-                      <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold ${getTierClass(c.tier?.name)}`}>
+                      <span className={`px-2.5 py-1 rounded-full text-[9px] font-black uppercase tracking-wider ${getTierClass(c.tier?.name)}`}>
                         {c.tier?.name || 'BRONZE'}
                       </span>
                     </td>
-                    <td className="px-6 py-4 font-mono font-bold text-emerald-400 text-right">
+                    <td className="px-6 py-4 font-mono font-extrabold text-emerald-450 text-right text-sm">
                       {c.totalSpent?.toLocaleString('vi-VN')} đ
                     </td>
                     <td className="px-6 py-4 text-right">
@@ -336,14 +336,14 @@ const AdminCustomers = () => {
                           className="p-2 text-blue-400 hover:text-blue-300 hover:bg-blue-500/10 rounded-lg transition-all cursor-pointer"
                           title="Sửa khách hàng"
                         >
-                          <Edit3 size={15} />
+                          <Edit3 size={14} />
                         </button>
                         <button
                           onClick={() => handleDelete(c.id)}
-                          className="p-2 text-rose-400 hover:text-rose-300 hover:bg-rose-500/10 rounded-lg transition-all cursor-pointer"
+                          className="p-2 text-rose-450 hover:text-rose-400 hover:bg-rose-500/10 rounded-lg transition-all cursor-pointer"
                           title="Xóa khách hàng"
                         >
-                          <Trash2 size={15} />
+                          <Trash2 size={14} />
                         </button>
                       </div>
                     </td>
@@ -360,7 +360,7 @@ const AdminCustomers = () => {
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 overflow-y-auto pt-24 pb-12">
           <div className="w-full max-w-lg bg-slate-900 border border-slate-800 rounded-3xl overflow-hidden shadow-2xl my-auto">
             <div className="px-6 py-4 border-b border-slate-800 flex justify-between items-center bg-slate-900/50">
-              <h3 className="text-lg font-bold text-white">
+              <h3 className="text-base font-bold text-white">
                 {formMode === 'create' ? 'Thêm Khách Hàng Mới' : 'Sửa Khách Hàng'}
               </h3>
               <button
@@ -373,43 +373,43 @@ const AdminCustomers = () => {
 
             <form onSubmit={handleSubmit} className="p-6 space-y-4">
               <div>
-                <label className="block text-slate-400 text-xs font-bold uppercase tracking-wider mb-1.5">Họ và tên *</label>
+                <label className="block text-slate-400 text-[10px] font-bold uppercase tracking-wider mb-1.5">Họ và tên *</label>
                 <input
                   type="text"
                   required
                   value={fullName}
                   onChange={(e) => setFullName(e.target.value)}
                   placeholder="Nguyễn Văn A"
-                  className="w-full bg-slate-950 border border-slate-800 text-white rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
+                  className="w-full bg-slate-950 border border-slate-800 text-white rounded-xl px-4 py-2.5 text-xs focus:outline-none focus:ring-1 focus:ring-indigo-500 font-semibold"
                 />
               </div>
 
               <div>
-                <label className="block text-slate-400 text-xs font-bold uppercase tracking-wider mb-1.5">Số điện thoại *</label>
+                <label className="block text-slate-400 text-[10px] font-bold uppercase tracking-wider mb-1.5">Số điện thoại *</label>
                 <input
                   type="text"
                   required
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}
                   placeholder="0901234567"
-                  className="w-full bg-slate-950 border border-slate-800 text-white rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
+                  className="w-full bg-slate-950 border border-slate-800 text-white rounded-xl px-4 py-2.5 text-xs focus:outline-none focus:ring-1 focus:ring-indigo-500 font-semibold"
                 />
               </div>
 
               <div>
-                <label className="block text-slate-400 text-xs font-bold uppercase tracking-wider mb-1.5">Email *</label>
+                <label className="block text-slate-400 text-[10px] font-bold uppercase tracking-wider mb-1.5">Email *</label>
                 <input
                   type="email"
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="email@example.com"
-                  className="w-full bg-slate-950 border border-slate-800 text-white rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
+                  className="w-full bg-slate-950 border border-slate-800 text-white rounded-xl px-4 py-2.5 text-xs focus:outline-none focus:ring-1 focus:ring-indigo-500 font-semibold"
                 />
               </div>
 
               <div>
-                <label className="block text-slate-400 text-xs font-bold uppercase tracking-wider mb-1.5">
+                <label className="block text-slate-400 text-[10px] font-bold uppercase tracking-wider mb-1.5">
                   Mật khẩu {formMode === 'edit' && '(Chỉ điền nếu muốn đổi mới)'}
                 </label>
                 <input
@@ -418,19 +418,19 @@ const AdminCustomers = () => {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••"
-                  className="w-full bg-slate-950 border border-slate-800 text-white rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
+                  className="w-full bg-slate-950 border border-slate-800 text-white rounded-xl px-4 py-2.5 text-xs focus:outline-none focus:ring-1 focus:ring-indigo-500 font-semibold"
                 />
               </div>
 
               <div>
-                <label className="block text-slate-400 text-xs font-bold uppercase tracking-wider mb-1.5">Tổng chi tiêu (đ)</label>
+                <label className="block text-slate-400 text-[10px] font-bold uppercase tracking-wider mb-1.5">Tổng chi tiêu (đ)</label>
                 <input
                   type="number"
                   min="0"
                   value={totalSpent}
                   onChange={(e) => setTotalSpent(e.target.value)}
                   placeholder="0"
-                  className="w-full bg-slate-950 border border-slate-800 text-white rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
+                  className="w-full bg-slate-950 border border-slate-800 text-white rounded-xl px-4 py-2.5 text-xs focus:outline-none focus:ring-1 focus:ring-indigo-500 font-semibold"
                 />
               </div>
 
@@ -438,13 +438,13 @@ const AdminCustomers = () => {
                 <button
                   type="button"
                   onClick={() => setIsFormOpen(false)}
-                  className="bg-slate-800 hover:bg-slate-700 text-white font-semibold py-2.5 px-4 rounded-xl text-sm transition-colors cursor-pointer"
+                  className="bg-slate-850 hover:bg-slate-800 text-white font-semibold py-2.5 px-4 rounded-xl text-xs transition-colors cursor-pointer"
                 >
                   Hủy bỏ
                 </button>
                 <button
                   type="submit"
-                  className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2.5 px-5 rounded-xl text-sm transition-colors cursor-pointer"
+                  className="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2.5 px-5 rounded-xl text-xs transition-colors cursor-pointer"
                 >
                   Lưu thay đổi
                 </button>

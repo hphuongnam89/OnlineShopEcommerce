@@ -1,0 +1,129 @@
+/* admin-theme.css - Premium Deep Space Glassmorphism Design Tokens */
+
+/* Theme Variables */
+:root {
+  --admin-bg: #030712;
+  --admin-card-bg: rgba(17, 24, 39, 0.7);
+  --admin-card-border: rgba(255, 255, 255, 0.08);
+  --admin-sidebar-bg: #090d16;
+  --admin-sidebar-border: rgba(255, 255, 255, 0.05);
+  --admin-input-bg: rgba(3, 7, 18, 0.6);
+  --admin-input-border: rgba(255, 255, 255, 0.1);
+  --admin-text-primary: #f8fafc;
+  --admin-text-secondary: #94a3b8;
+  --admin-accent: #6366f1;
+  --admin-accent-glow: rgba(99, 102, 241, 0.15);
+}
+
+/* Glassmorphism Classes */
+.admin-glass-card {
+  background: var(--admin-card-bg);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--admin-card-border);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.admin-glass-card:hover {
+  border-color: rgba(255, 255, 255, 0.15);
+  box-shadow: 0 12px 40px 0 rgba(99, 102, 241, 0.08);
+  transform: translateY(-2px);
+}
+
+/* Glowing buttons */
+.admin-glow-btn {
+  background: linear-gradient(135deg, #4f46e5 0%, #6366f1 100%);
+  box-shadow: 0 4px 14px 0 rgba(99, 102, 241, 0.3);
+  transition: all 0.2s ease;
+}
+
+.admin-glow-btn:hover:not(:disabled) {
+  box-shadow: 0 6px 20px 0 rgba(99, 102, 241, 0.45);
+  transform: translateY(-1px);
+}
+
+.admin-glow-btn:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+/* Custom Scrollbar for Admin Area */
+.admin-scrollbar::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.admin-scrollbar::-webkit-scrollbar-track {
+  background: rgba(3, 7, 18, 0.2);
+}
+
+.admin-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 99px;
+}
+
+.admin-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+/* Custom Metallic Badges */
+.badge-metallic-platinum {
+  background: linear-gradient(135deg, #e2e8f0 0%, #cbd5e1 50%, #94a3b8 100%);
+  color: #0f172a;
+  text-shadow: 0 1px 1px rgba(255, 255, 255, 0.5);
+  box-shadow: 0 2px 8px rgba(148, 163, 184, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+}
+
+.badge-metallic-gold {
+  background: linear-gradient(135deg, #fef08a 0%, #facc15 50%, #ca8a04 100%);
+  color: #451a03;
+  text-shadow: 0 1px 1px rgba(255, 255, 255, 0.4);
+  box-shadow: 0 2px 8px rgba(234, 179, 8, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+}
+
+.badge-metallic-silver {
+  background: linear-gradient(135deg, #f1f5f9 0%, #cbd5e1 100%);
+  color: #334155;
+  box-shadow: 0 2px 8px rgba(203, 213, 225, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.badge-metallic-vip {
+  background: linear-gradient(135deg, #e9d5ff 0%, #c084fc 50%, #7e22ce 100%);
+  color: #ffffff;
+  box-shadow: 0 2px 8px rgba(192, 132, 252, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+/* Interactive SVG tooltip animations */
+.chart-tooltip {
+  pointer-events: none;
+  transition: all 0.15s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+/* Order Progress Timeline Nodes */
+.timeline-step {
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+.timeline-step::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 100%;
+  width: 100%;
+  height: 2px;
+  background: #334155;
+  z-index: 1;
+}
+
+.timeline-step:last-child::after {
+  display: none;
+}
+
+.timeline-step.completed::after {
+  background: #10b981;
+}

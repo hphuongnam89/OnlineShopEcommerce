@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { api } from '../../utils/api';
-import { Plus, Edit3, Trash2, Search, Package, AlertCircle } from 'lucide-react';
+import { Plus, Edit3, Trash2, Search, Package, AlertCircle, Eye, Info } from 'lucide-react';
 import CustomModal from '../../components/CustomModal';
 
 const AdminProducts = () => {
@@ -19,6 +19,9 @@ const AdminProducts = () => {
   const [formMode, setFormMode] = useState('create'); // 'create' or 'edit'
   const [editingId, setEditingId] = useState(null);
   
+  // Tab control in Form Modal
+  const [activeTab, setActiveTab] = useState('general'); // 'general', 'pricing', 'attributes', 'images'
+
   const [name, setName] = useState('');
   const [categoryId, setCategoryId] = useState('');
   const [description, setDescription] = useState('');
@@ -40,7 +43,6 @@ const AdminProducts = () => {
     setLoading(true);
     setError(null);
     try {
-      // Fetch products using standard products list
       const data = await api.products.getAll();
       setProducts(data || []);
     } catch (err) {
@@ -62,6 +64,7 @@ const AdminProducts = () => {
   const handleOpenCreate = () => {
     setFormMode('create');
     setEditingId(null);
+    setActiveTab('general');
     setName('');
     setCategoryId(categories[0]?.id || '');
     setDescription('');
@@ -79,6 +82,7 @@ const AdminProducts = () => {
   const handleOpenEdit = (p) => {
     setFormMode('edit');
     setEditingId(p.id);
+    setActiveTab('general');
     setName(p.name || p.title || '');
     setCategoryId(p.category_id || (p.category && typeof p.category === 'object' ? p.category.id : ''));
     setDescription(p.description || p.desc || '');
@@ -192,14 +196,14 @@ const AdminProducts = () => {
       {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h1 className="text-3xl font-extrabold tracking-tight text-white">Quản Lý Sản Phẩm</h1>
-          <p className="text-slate-400 mt-1">Quản lý kho hàng, giá bán, biến thể và thuộc tính sản phẩm.</p>
+          <h1 className="text-3xl font-black tracking-tight text-white bg-gradient-to-r from-slate-100 to-slate-300 bg-clip-text text-transparent">Quản Lý Sản Phẩm</h1>
+          <p className="text-slate-400 text-sm mt-1">Quản lý kho hàng, SKU, danh mục và các thông số biến thể sản phẩm.</p>
         </div>
         <button
           onClick={handleOpenCreate}
-          className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2.5 px-4 rounded-xl flex items-center gap-2 text-sm transition-all duration-200 shadow-lg shadow-blue-500/25 hover:-translate-y-0.5 cursor-pointer"
+          className="w-full sm:w-auto admin-glow-btn text-white font-bold py-2.5 px-4 rounded-xl flex items-center justify-center gap-2 text-xs transition-all duration-200 cursor-pointer shadow-lg"
         >
-          <Plus size={16} />
+          <Plus size={14} />
           <span>Thêm Sản Phẩm</span>
         </button>
       </div>
@@ -212,7 +216,7 @@ const AdminProducts = () => {
       )}
 
       {/* Filter and Search Bar */}
-      <div className="flex flex-col sm:flex-row gap-4 bg-slate-900 border border-slate-800 p-4 rounded-2xl">
+      <div className="flex flex-col sm:flex-row gap-4 bg-slate-900 border border-slate-800 p-4 rounded-3xl admin-glass-card">
         <div className="relative flex-grow">
           <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500" size={18} />
           <input
@@ -220,13 +224,13 @@ const AdminProducts = () => {
             placeholder="Tìm theo tên sản phẩm hoặc SKU..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full bg-slate-950 border border-slate-800 text-white rounded-xl pl-11 pr-4 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 placeholder-slate-600"
+            className="w-full bg-slate-950 border border-slate-800 text-white rounded-xl pl-11 pr-4 py-2.5 text-xs focus:outline-none focus:ring-1 focus:ring-indigo-500 placeholder-slate-700 font-medium"
           />
         </div>
         <select
           value={selectedCategory}
           onChange={(e) => setSelectedCategory(e.target.value)}
-          className="bg-slate-950 border border-slate-800 text-white rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 min-w-[180px]"
+          className="bg-slate-950 border border-slate-800 text-white rounded-xl px-4 py-2.5 text-xs focus:outline-none focus:ring-1 focus:ring-indigo-500 font-semibold min-w-[180px]"
         >
           <option value="">Tất cả danh mục</option>
           {categories.map(cat => (
@@ -235,17 +239,17 @@ const AdminProducts = () => {
         </select>
       </div>
 
-      {/* Grid or Table list */}
-      <div className="bg-slate-900 border border-slate-800 rounded-3xl overflow-hidden">
+      {/* Product List Table */}
+      <div className="admin-glass-card rounded-3xl overflow-hidden animate-in fade-in duration-200">
         {loading ? (
           <div className="py-20 text-center text-slate-500">Đang tải danh sách sản phẩm...</div>
         ) : filteredProducts.length === 0 ? (
-          <div className="py-20 text-center text-slate-500">Không tìm thấy sản phẩm nào phù hợp.</div>
+          <div className="py-20 text-center text-slate-500">Không tìm thấy sản phẩm nào.</div>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse">
               <thead>
-                <tr className="border-b border-slate-800 text-slate-400 text-xs font-bold uppercase tracking-wider bg-slate-900/50">
+                <tr className="border-b border-slate-800/80 text-slate-400 text-xs font-bold uppercase tracking-wider bg-slate-900/40">
                   <th className="px-6 py-4">Sản phẩm</th>
                   <th className="px-6 py-4">SKU</th>
                   <th className="px-6 py-4">Giá bán</th>
@@ -253,33 +257,38 @@ const AdminProducts = () => {
                   <th className="px-6 py-4 text-right">Thao tác</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-800/60 text-slate-300 text-sm">
+              <tbody className="divide-y divide-slate-800/50 text-slate-350 text-xs font-semibold">
                 {filteredProducts.map((p) => (
-                  <tr key={p.id} className="hover:bg-slate-800/20 transition-colors">
+                  <tr key={p.id} className="hover:bg-slate-800/10 transition-colors">
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-3">
                         <img 
                           src={p.image || p.imageUrl || '/images/thinktanklogo.png'} 
                           alt={p.name || p.title} 
-                          className="w-10 h-10 object-cover rounded-lg bg-slate-800 border border-slate-850"
+                          className="w-10 h-10 object-cover rounded-xl bg-slate-950 border border-slate-850 flex-shrink-0"
+                          onError={(e) => { e.target.src = '/images/thinktanklogo.png'; }}
                         />
                         <div className="min-w-0">
-                          <p className="font-semibold text-white truncate max-w-[280px]">{p.name || p.title}</p>
-                          <p className="text-xs text-slate-500 truncate">{p.category && typeof p.category === 'object' ? p.category.name : p.category}</p>
+                          <p className="font-bold text-white text-sm truncate max-w-[280px]">{p.name || p.title}</p>
+                          <p className="text-[10px] text-slate-500 font-bold uppercase tracking-wider mt-0.5">{p.category && typeof p.category === 'object' ? p.category.name : p.category}</p>
                         </div>
                       </div>
                     </td>
-                    <td className="px-6 py-4 font-mono text-xs text-slate-400">
+                    <td className="px-6 py-4 font-mono text-slate-400">
                       {p.sku || 'N/A'}
                     </td>
-                    <td className="px-6 py-4 font-bold text-emerald-400">
+                    <td className="px-6 py-4 font-mono font-black text-emerald-450 text-sm">
                       {p.price?.toLocaleString('vi-VN')} đ
                     </td>
                     <td className="px-6 py-4">
-                      <span className={`px-2.5 py-1 rounded-full text-xs font-bold ${
-                        p.stock > 0 ? 'bg-emerald-500/10 text-emerald-400' : 'bg-rose-500/10 text-rose-400'
+                      <span className={`px-2.5 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider ${
+                        p.stock > 3 
+                          ? 'bg-emerald-500/10 text-emerald-450 border border-emerald-500/15' 
+                          : p.stock > 0
+                            ? 'bg-amber-500/10 text-amber-450 border border-amber-500/15'
+                            : 'bg-rose-500/10 text-rose-450 border border-rose-500/15'
                       }`}>
-                        {p.stock} sản phẩm
+                        {p.stock > 0 ? `${p.stock} sản phẩm` : 'Hết hàng'}
                       </span>
                     </td>
                     <td className="px-6 py-4 text-right">
@@ -289,14 +298,14 @@ const AdminProducts = () => {
                           className="p-2 text-blue-400 hover:text-blue-300 hover:bg-blue-500/10 rounded-lg transition-all cursor-pointer"
                           title="Sửa sản phẩm"
                         >
-                          <Edit3 size={15} />
+                          <Edit3 size={14} />
                         </button>
                         <button
                           onClick={() => handleDelete(p.id)}
-                          className="p-2 text-rose-400 hover:text-rose-300 hover:bg-rose-500/10 rounded-lg transition-all cursor-pointer"
+                          className="p-2 text-rose-450 hover:text-rose-400 hover:bg-rose-500/10 rounded-lg transition-all cursor-pointer"
                           title="Xóa sản phẩm"
                         >
-                          <Trash2 size={15} />
+                          <Trash2 size={14} />
                         </button>
                       </div>
                     </td>
@@ -308,12 +317,12 @@ const AdminProducts = () => {
         )}
       </div>
 
-      {/* Add / Edit Form Modal */}
+      {/* Add / Edit Form Modal with tab selection */}
       {isFormOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 overflow-y-auto pt-24 pb-12">
           <div className="w-full max-w-2xl bg-slate-900 border border-slate-800 rounded-3xl overflow-hidden shadow-2xl my-auto">
-            <div className="px-6 py-4 border-b border-slate-800 flex justify-between items-center bg-slate-900/50">
-              <h3 className="text-lg font-bold text-white">
+            <div className="px-6 py-4 border-b border-slate-800/80 flex justify-between items-center bg-slate-900/50">
+              <h3 className="text-base font-bold text-white">
                 {formMode === 'create' ? 'Thêm Sản Phẩm Mới' : 'Cập Nhật Sản Phẩm'}
               </h3>
               <button
@@ -324,148 +333,207 @@ const AdminProducts = () => {
               </button>
             </div>
 
-            <form onSubmit={handleSubmit} className="p-6 space-y-4 max-h-[75vh] overflow-y-auto">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="col-span-2">
-                  <label className="block text-slate-400 text-xs font-bold uppercase tracking-wider mb-1.5">Tên sản phẩm *</label>
-                  <input
-                    type="text"
-                    required
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    placeholder="Nhập tên sản phẩm..."
-                    className="w-full bg-slate-950 border border-slate-800 text-white rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
-                  />
-                </div>
+            {/* Form Tabs */}
+            <div className="flex border-b border-slate-800 bg-slate-900/30 px-6 pt-2">
+              {[
+                { id: 'general', label: 'Thông tin chung' },
+                { id: 'pricing', label: 'Kho & Giá' },
+                { id: 'attributes', label: 'Thông số kỹ thuật' },
+                { id: 'images', label: 'Hình ảnh' },
+              ].map(tab => (
+                <button
+                  key={tab.id}
+                  type="button"
+                  onClick={() => setActiveTab(tab.id)}
+                  className={`px-4 py-3 text-xs font-bold transition-all border-b-2 cursor-pointer ${
+                    activeTab === tab.id 
+                      ? 'border-indigo-500 text-white font-black' 
+                      : 'border-transparent text-slate-500 hover:text-slate-350'
+                  }`}
+                >
+                  {tab.label}
+                </button>
+              ))}
+            </div>
 
-                <div>
-                  <label className="block text-slate-400 text-xs font-bold uppercase tracking-wider mb-1.5">Danh mục *</label>
-                  <select
-                    value={categoryId}
-                    onChange={(e) => setCategoryId(e.target.value)}
-                    className="w-full bg-slate-950 border border-slate-800 text-white rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
-                  >
-                    {categories.map(cat => (
-                      <option key={cat.id} value={cat.id}>{cat.name}</option>
-                    ))}
-                  </select>
-                </div>
+            <form onSubmit={handleSubmit} className="p-6 space-y-4 max-h-[60vh] overflow-y-auto admin-scrollbar">
+              
+              {/* Tab 1: General Info */}
+              {activeTab === 'general' && (
+                <div className="space-y-4 animate-in fade-in duration-200">
+                  <div>
+                    <label className="block text-slate-400 text-[10px] font-bold uppercase tracking-wider mb-1.5">Tên sản phẩm *</label>
+                    <input
+                      type="text"
+                      required
+                      value={name}
+                      onChange={(e) => setName(e.target.value)}
+                      placeholder="Nhập tên sản phẩm..."
+                      className="w-full bg-slate-950 border border-slate-800 text-white rounded-xl px-4 py-2.5 text-xs focus:outline-none focus:ring-1 focus:ring-indigo-500 font-semibold"
+                    />
+                  </div>
 
-                <div>
-                  <label className="block text-slate-400 text-xs font-bold uppercase tracking-wider mb-1.5">SKU *</label>
-                  <input
-                    type="text"
-                    value={sku}
-                    onChange={(e) => setSku(e.target.value)}
-                    placeholder="Ví dụ: TT-ACCELERATOR"
-                    className="w-full bg-slate-950 border border-slate-800 text-white rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
-                  />
-                </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-slate-400 text-[10px] font-bold uppercase tracking-wider mb-1.5">Danh mục *</label>
+                      <select
+                        value={categoryId}
+                        onChange={(e) => setCategoryId(e.target.value)}
+                        className="w-full bg-slate-950 border border-slate-800 text-white rounded-xl px-3 py-2.5 text-xs focus:outline-none focus:ring-1 focus:ring-indigo-500 font-semibold"
+                      >
+                        {categories.map(cat => (
+                          <option key={cat.id} value={cat.id}>{cat.name}</option>
+                        ))}
+                      </select>
+                    </div>
 
-                <div>
-                  <label className="block text-slate-400 text-xs font-bold uppercase tracking-wider mb-1.5">Giá bán (đ) *</label>
-                  <input
-                    type="number"
-                    required
-                    min="0"
-                    value={price}
-                    onChange={(e) => setPrice(e.target.value)}
-                    placeholder="3890000"
-                    className="w-full bg-slate-950 border border-slate-800 text-white rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
-                  />
-                </div>
+                    <div>
+                      <label className="block text-slate-400 text-[10px] font-bold uppercase tracking-wider mb-1.5">SKU *</label>
+                      <input
+                        type="text"
+                        value={sku}
+                        onChange={(e) => setSku(e.target.value)}
+                        placeholder="Ví dụ: TT-ACCELERATOR"
+                        className="w-full bg-slate-950 border border-slate-800 text-white rounded-xl px-4 py-2.5 text-xs focus:outline-none focus:ring-1 focus:ring-indigo-500 font-mono"
+                      />
+                    </div>
+                  </div>
 
-                <div>
-                  <label className="block text-slate-400 text-xs font-bold uppercase tracking-wider mb-1.5">Số lượng tồn kho *</label>
-                  <input
-                    type="number"
-                    required
-                    min="0"
-                    value={stock}
-                    onChange={(e) => setStock(e.target.value)}
-                    placeholder="10"
-                    className="w-full bg-slate-950 border border-slate-800 text-white rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
-                  />
+                  <div>
+                    <label className="block text-slate-400 text-[10px] font-bold uppercase tracking-wider mb-1.5">Mô tả sản phẩm</label>
+                    <textarea
+                      rows="5"
+                      value={description}
+                      onChange={(e) => setDescription(e.target.value)}
+                      placeholder="Mô tả chi tiết về sản phẩm..."
+                      className="w-full bg-slate-950 border border-slate-800 text-white rounded-xl px-4 py-2.5 text-xs focus:outline-none focus:ring-1 focus:ring-indigo-500 resize-y font-semibold"
+                    />
+                  </div>
                 </div>
+              )}
 
-                <div className="col-span-2">
-                  <label className="block text-slate-400 text-xs font-bold uppercase tracking-wider mb-1.5">URL Ảnh sản phẩm</label>
-                  <input
-                    type="text"
-                    value={imageUrl}
-                    onChange={(e) => setImageUrl(e.target.value)}
-                    placeholder="https://..."
-                    className="w-full bg-slate-950 border border-slate-800 text-white rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
-                  />
+              {/* Tab 2: Pricing & Stock */}
+              {activeTab === 'pricing' && (
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 animate-in fade-in duration-200">
+                  <div>
+                    <label className="block text-slate-400 text-[10px] font-bold uppercase tracking-wider mb-1.5">Giá bán lẻ (đ) *</label>
+                    <input
+                      type="number"
+                      required
+                      min="0"
+                      value={price}
+                      onChange={(e) => setPrice(e.target.value)}
+                      placeholder="3890000"
+                      className="w-full bg-slate-950 border border-slate-800 text-white rounded-xl px-4 py-2.5 text-xs focus:outline-none focus:ring-1 focus:ring-indigo-500 font-mono font-bold"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-slate-400 text-[10px] font-bold uppercase tracking-wider mb-1.5">Số lượng tồn kho *</label>
+                    <input
+                      type="number"
+                      required
+                      min="0"
+                      value={stock}
+                      onChange={(e) => setStock(e.target.value)}
+                      placeholder="10"
+                      className="w-full bg-slate-950 border border-slate-800 text-white rounded-xl px-4 py-2.5 text-xs focus:outline-none focus:ring-1 focus:ring-indigo-500 font-mono font-bold"
+                    />
+                  </div>
                 </div>
+              )}
 
-                <div className="col-span-2">
-                  <label className="block text-slate-400 text-xs font-bold uppercase tracking-wider mb-1.5">Mô tả sản phẩm</label>
-                  <textarea
-                    rows="4"
-                    value={description}
-                    onChange={(e) => setDescription(e.target.value)}
-                    placeholder="Mô tả chi tiết sản phẩm..."
-                    className="w-full bg-slate-950 border border-slate-800 text-white rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 resize-y"
-                  />
+              {/* Tab 3: Attributes */}
+              {activeTab === 'attributes' && (
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 animate-in fade-in duration-200">
+                  <div>
+                    <label className="block text-slate-400 text-[10px] font-bold uppercase tracking-wider mb-1.5">Trọng lượng (Weight)</label>
+                    <input
+                      type="text"
+                      value={weight}
+                      onChange={(e) => setWeight(e.target.value)}
+                      placeholder="Ví dụ: 1500 g"
+                      className="w-full bg-slate-950 border border-slate-800 text-white rounded-xl px-4 py-2.5 text-xs focus:outline-none focus:ring-1 focus:ring-indigo-500 font-semibold"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-slate-400 text-[10px] font-bold uppercase tracking-wider mb-1.5">Thể tích (Volume)</label>
+                    <input
+                      type="text"
+                      value={volume}
+                      onChange={(e) => setVolume(e.target.value)}
+                      placeholder="Ví dụ: 25 L"
+                      className="w-full bg-slate-950 border border-slate-800 text-white rounded-xl px-4 py-2.5 text-xs focus:outline-none focus:ring-1 focus:ring-indigo-500 font-semibold"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-slate-400 text-[10px] font-bold uppercase tracking-wider mb-1.5">Chất liệu (Material)</label>
+                    <input
+                      type="text"
+                      value={material}
+                      onChange={(e) => setMaterial(e.target.value)}
+                      placeholder="Ví dụ: Ballistic Nylon"
+                      className="w-full bg-slate-950 border border-slate-800 text-white rounded-xl px-4 py-2.5 text-xs focus:outline-none focus:ring-1 focus:ring-indigo-500 font-semibold"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-slate-400 text-[10px] font-bold uppercase tracking-wider mb-1.5">Kích thước (Dimensions)</label>
+                    <input
+                      type="text"
+                      value={dimensions}
+                      onChange={(e) => setDimensions(e.target.value)}
+                      placeholder="Ví dụ: 30 x 45 x 15 cm"
+                      className="w-full bg-slate-950 border border-slate-800 text-white rounded-xl px-4 py-2.5 text-xs focus:outline-none focus:ring-1 focus:ring-indigo-500 font-semibold"
+                    />
+                  </div>
                 </div>
+              )}
 
-                <div>
-                  <label className="block text-slate-400 text-xs font-bold uppercase tracking-wider mb-1.5">Trọng lượng (Weight)</label>
-                  <input
-                    type="text"
-                    value={weight}
-                    onChange={(e) => setWeight(e.target.value)}
-                    placeholder="Ví dụ: 1500 g"
-                    className="w-full bg-slate-950 border border-slate-800 text-white rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
-                  />
+              {/* Tab 4: Images */}
+              {activeTab === 'images' && (
+                <div className="space-y-4 animate-in fade-in duration-200">
+                  <div>
+                    <label className="block text-slate-400 text-[10px] font-bold uppercase tracking-wider mb-1.5">Đường dẫn ảnh chính (URL)</label>
+                    <input
+                      type="text"
+                      value={imageUrl}
+                      onChange={(e) => setImageUrl(e.target.value)}
+                      placeholder="https://..."
+                      className="w-full bg-slate-950 border border-slate-800 text-white rounded-xl px-4 py-2.5 text-xs focus:outline-none focus:ring-1 focus:ring-indigo-500 font-semibold"
+                    />
+                  </div>
+
+                  {/* Image Preview Window */}
+                  {imageUrl && (
+                    <div className="p-3 bg-slate-950 border border-slate-850 rounded-2xl flex items-center justify-center">
+                      <div className="text-center">
+                        <p className="text-[10px] text-slate-500 font-bold mb-2 uppercase">Ảnh bìa xem trước</p>
+                        <img 
+                          src={imageUrl} 
+                          alt="Xem trước" 
+                          className="w-32 h-32 object-contain bg-slate-900 rounded-xl border border-slate-800"
+                          onError={(e) => { e.target.src = '/images/thinktanklogo.png'; }}
+                        />
+                      </div>
+                    </div>
+                  )}
                 </div>
+              )}
 
-                <div>
-                  <label className="block text-slate-400 text-xs font-bold uppercase tracking-wider mb-1.5">Thể tích (Volume)</label>
-                  <input
-                    type="text"
-                    value={volume}
-                    onChange={(e) => setVolume(e.target.value)}
-                    placeholder="Ví dụ: 25 L"
-                    className="w-full bg-slate-950 border border-slate-800 text-white rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-slate-400 text-xs font-bold uppercase tracking-wider mb-1.5">Chất liệu (Material)</label>
-                  <input
-                    type="text"
-                    value={material}
-                    onChange={(e) => setMaterial(e.target.value)}
-                    placeholder="Ví dụ: Ballistic Nylon"
-                    className="w-full bg-slate-950 border border-slate-800 text-white rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-slate-400 text-xs font-bold uppercase tracking-wider mb-1.5">Kích thước (Dimensions)</label>
-                  <input
-                    type="text"
-                    value={dimensions}
-                    onChange={(e) => setDimensions(e.target.value)}
-                    placeholder="Ví dụ: 30 x 45 x 15 cm"
-                    className="w-full bg-slate-950 border border-slate-800 text-white rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
-                  />
-                </div>
-              </div>
-
-              <div className="flex justify-end gap-3 pt-4 border-t border-slate-800">
+              <div className="flex justify-end gap-3 pt-6 border-t border-slate-800/80">
                 <button
                   type="button"
                   onClick={() => setIsFormOpen(false)}
-                  className="bg-slate-800 hover:bg-slate-700 text-white font-semibold py-2.5 px-4 rounded-xl text-sm transition-colors cursor-pointer"
+                  className="bg-slate-850 hover:bg-slate-800 text-white font-semibold py-2.5 px-4 rounded-xl text-xs transition-colors cursor-pointer"
                 >
                   Hủy bỏ
                 </button>
                 <button
                   type="submit"
-                  className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2.5 px-5 rounded-xl text-sm transition-colors cursor-pointer"
+                  className="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2.5 px-5 rounded-xl text-xs transition-colors cursor-pointer shadow-md shadow-indigo-500/10"
                 >
                   {formMode === 'create' ? 'Lưu sản phẩm' : 'Cập nhật sản phẩm'}
                 </button>
