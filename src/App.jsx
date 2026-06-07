@@ -11,9 +11,13 @@ import Cart from './pages/Cart';
 import ProductDetail from './pages/ProductDetail';
 import MyOrders from './pages/MyOrders';
 import TrackOrder from './pages/TrackOrder';
-import AdminEntry from './pages/AdminEntry';
-import AdminDashboard from './pages/AdminDashboard';
-import AdminModulePage from './pages/AdminModulePage';
+import AdminLogin from './pages/admin/AdminLogin';
+import AdminLayout from './pages/admin/AdminLayout';
+import AdminDashboard from './pages/admin/AdminDashboard';
+import AdminProducts from './pages/admin/AdminProducts';
+import AdminCustomers from './pages/admin/AdminCustomers';
+import AdminOrders from './pages/admin/AdminOrders';
+import AdminReviews from './pages/admin/AdminReviews';
 import { CartProvider } from './context/CartContext';
 import ScrollToTop from './components/ScrollToTop';
 import { PRODUCTS } from './data/products';
@@ -44,48 +48,14 @@ function App() {
               <Route path="/cart" element={<Cart />} />
               <Route path="/my-orders" element={<MyOrders />} />
               <Route path="/track-order" element={<TrackOrder />} />
-              <Route path="/admin" element={<AdminEntry />} />
-              <Route path="/admin/dashboard" element={<AdminDashboard />} />
-              <Route
-                path="/admin/products"
-                element={
-                  <AdminModulePage
-                    title="Quản lý sản phẩm"
-                    description="Tạo, sửa, xoá sản phẩm, quản lý tồn kho, giá bán, SKU và ảnh."
-                    comingSoon
-                  />
-                }
-              />
-              <Route
-                path="/admin/orders"
-                element={
-                  <AdminModulePage
-                    title="Quản lý đơn hàng"
-                    description="Xem danh sách đơn, cập nhật trạng thái và theo dõi xử lý."
-                    comingSoon
-                  />
-                }
-              />
-              <Route
-                path="/admin/customers"
-                element={
-                  <AdminModulePage
-                    title="Quản lý khách hàng"
-                    description="Xem hồ sơ khách, phân nhóm và theo dõi lịch sử mua hàng."
-                    comingSoon
-                  />
-                }
-              />
-              <Route
-                path="/admin/reviews"
-                element={
-                  <AdminModulePage
-                    title="Quản lý đánh giá"
-                    description="Duyệt, ẩn hoặc phản hồi các review của khách hàng."
-                    comingSoon
-                  />
-                }
-              />
+              <Route path="/admin/login" element={<AdminLogin />} />
+              <Route path="/admin" element={<AdminLayout />}>
+                <Route path="dashboard" element={<AdminDashboard />} />
+                <Route path="products" element={<AdminProducts />} />
+                <Route path="customers" element={<AdminCustomers />} />
+                <Route path="orders" element={<AdminOrders />} />
+                <Route path="reviews" element={<AdminReviews />} />
+              </Route>
             </Routes>
           </main>
           <Footer />

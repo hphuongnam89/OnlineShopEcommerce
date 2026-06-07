@@ -1,5 +1,7 @@
 package com.onlinestore.thinktank.modules.order.controller;
 
+import com.onlinestore.thinktank.modules.order.dto.CheckoutRequest;
+import com.onlinestore.thinktank.modules.order.dto.UpdateOrderRequest;
 import com.onlinestore.thinktank.modules.order.entity.Order;
 import com.onlinestore.thinktank.modules.order.service.OrderService;
 import lombok.RequiredArgsConstructor;
@@ -29,6 +31,12 @@ public class AdminOrderController {
         return ResponseEntity.ok(orders);
     }
 
+    @PostMapping
+    public ResponseEntity<Order> createOrder(@RequestBody CheckoutRequest request) {
+        Order order = orderService.createOrder(request);
+        return ResponseEntity.ok(order);
+    }
+
     @PutMapping("/{id}/status")
     public ResponseEntity<Order> updateOrderStatus(
             @PathVariable(name = "id") Long id,
@@ -40,5 +48,20 @@ public class AdminOrderController {
         }
         Order order = orderService.updateOrderStatus(id, status);
         return ResponseEntity.ok(order);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<Order> updateOrder(
+            @PathVariable(name = "id") Long id,
+            @RequestBody UpdateOrderRequest request
+    ) {
+        Order order = orderService.updateOrder(id, request);
+        return ResponseEntity.ok(order);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Map<String, String>> deleteOrder(@PathVariable(name = "id") Long id) {
+        orderService.deleteOrder(id);
+        return ResponseEntity.ok(Map.of("message", "Order deleted and stock updated successfully"));
     }
 }

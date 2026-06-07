@@ -6,6 +6,7 @@ import com.onlinestore.thinktank.modules.customertier.entity.CustomerTier;
 import com.onlinestore.thinktank.modules.customertier.repository.CustomerTierRepository;
 import com.onlinestore.thinktank.modules.order.dto.CheckoutItemRequest;
 import com.onlinestore.thinktank.modules.order.dto.CheckoutRequest;
+import com.onlinestore.thinktank.modules.order.dto.UpdateOrderRequest;
 import com.onlinestore.thinktank.modules.order.entity.Order;
 import com.onlinestore.thinktank.modules.order.entity.OrderItem;
 import com.onlinestore.thinktank.modules.order.repository.OrderItemRepository;
@@ -212,6 +213,85 @@ public class OrderService {
         }
 
         return orderRepository.save(order);
+    }
+
+    public Order updateOrder(Long id, UpdateOrderRequest request) {
+        Order order = orderRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Order not found with id: " + id));
+
+        if (request.getFullName() != null) {
+            order.setFullName(request.getFullName().trim());
+        }
+        if (request.getPhone() != null) {
+            order.setPhone(request.getPhone().trim());
+        }
+        if (request.getAddress() != null) {
+            order.setAddress(request.getAddress().trim());
+        }
+        if (request.getEmail() != null) {
+            order.setEmail(request.getEmail().trim());
+        }
+        if (request.getNotes() != null) {
+            order.setNotes(request.getNotes().trim());
+        }
+
+        return orderRepository.save(order);
+    }
+
+    public void deleteOrder(Long id) {
+        Order order = orderRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Order not found with id: " + id));
+
+        String oldStatus = order.getStatus();
+
+        // 1. If the order was not CANCELLED, restore stock
+        if (!"CANCELLED".equals(oldStatus)) {
+            for (OrderItem item : order.getItems()) {
+                int qty = item.getQuantity();
+                ProductVariant variant = item.getVariant() != null
+                        ? productVariantRepository.findWithLockById(item.getVariant().getId()).orElse(null)
+                        : null;
+                Product product = productRepository.findWithLockById(item.getProduct().getId()).orElse(null);
+
+                if (variant != null) {
+                    variant.setStock(variant.getStock() + qty);
+                    productVariantRepository.save(variant);
+
+                    if (product != null) {
+                        product.setStock(product.getStock() + qty);
+                        productRepository.save(product);
+                    }
+                } else if (product != null) {
+                    product.setStock(product.getStock() + qty);
+                    productRepository.save(product);
+                }
+            }
+        }
+
+        // 2. If the order was DELIVERED, we need to subtract finalAmount from customer's totalSpent and update tier
+        if ("DELIVERED".equals(oldStatus)) {
+            Customer customer = order.getCustomer();
+            if (customer != null) {
+                BigDecimal newTotalSpent = customer.getTotalSpent().subtract(order.getFinalAmount());
+                if (newTotalSpent.compareTo(BigDecimal.ZERO) < 0) {
+                    newTotalSpent = BigDecimal.ZERO;
+                }
+                customer.setTotalSpent(newTotalSpent);
+
+                List<CustomerTier> tiers = customerTierRepository.findAllByOrderByMinSpendingAsc();
+                CustomerTier matchedTier = customer.getTier();
+                for (CustomerTier tier : tiers) {
+                    if (newTotalSpent.compareTo(tier.getMinSpending()) >= 0) {
+                        matchedTier = tier;
+                    }
+                }
+                customer.setTier(matchedTier);
+                customerRepository.save(customer);
+            }
+        }
+
+        // 3. Delete order
+        orderRepository.delete(order);
     }
 
     public Order trackOrder(String orderIdStr, String phone) {
