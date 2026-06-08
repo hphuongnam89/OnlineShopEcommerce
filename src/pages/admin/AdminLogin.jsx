@@ -67,43 +67,43 @@ const AdminLogin = () => {
   };
 
   return (
-    <div className="min-h-screen bg-slate-900 flex items-center justify-center px-4 pt-24 pb-12">
-      <div className="w-full max-w-md bg-slate-800/80 backdrop-blur-md rounded-3xl border border-slate-700/50 shadow-2xl p-8">
+    <div className="min-h-screen bg-slate-50 flex items-center justify-center px-4 pt-24 pb-12 font-sans">
+      <div className="w-full max-w-md bg-white rounded-2xl border border-slate-200/80 shadow-md p-8">
         <div className="text-center mb-8">
-          <div className="inline-block bg-blue-600/10 text-blue-400 p-4 rounded-2xl mb-4 border border-blue-500/20">
-            <span className="text-2xl font-extrabold tracking-wider">THINKTANK</span>
+          <div className="inline-block bg-blue-50 text-blue-600 p-4 rounded-2xl mb-4 border border-blue-100">
+            <span className="text-2xl font-extrabold tracking-wider uppercase font-heading">THINKTANK</span>
           </div>
-          <h2 className="text-2xl font-bold text-white">Quản Trị Hệ Thống</h2>
-          <p className="text-slate-400 text-sm mt-1">Đăng nhập để tiếp tục quản lý cửa hàng</p>
+          <h2 className="text-xl font-bold text-slate-900 font-heading">Quản Trị Hệ Thống</h2>
+          <p className="text-slate-500 text-xs mt-1">Đăng nhập để tiếp tục quản lý cửa hàng</p>
         </div>
 
         <form onSubmit={handleLogin} className="space-y-5">
           <div>
-            <label className="block text-slate-300 text-sm font-semibold mb-2">Email Quản Trị</label>
+            <label className="block text-slate-700 text-xs font-bold mb-2 uppercase tracking-wider">Email Quản Trị</label>
             <input
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="admin@thinktank.com"
-              className="w-full bg-slate-900 border border-slate-700 text-white rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-slate-500"
+              className="w-full bg-white border border-slate-200 text-slate-800 rounded-xl px-4 py-3 text-xs focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-100 placeholder-slate-400 font-medium"
             />
           </div>
 
           <div>
-            <label className="block text-slate-300 text-sm font-semibold mb-2">Mật Khẩu</label>
+            <label className="block text-slate-700 text-xs font-bold mb-2 uppercase tracking-wider">Mật Khẩu</label>
             <input
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="••••••••"
-              className="w-full bg-slate-900 border border-slate-700 text-white rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-slate-500"
+              className="w-full bg-white border border-slate-200 text-slate-800 rounded-xl px-4 py-3 text-xs focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-100 placeholder-slate-400 font-medium"
             />
           </div>
 
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-xl transition-all duration-200 cursor-pointer flex justify-center items-center gap-2 mt-4"
+            className="w-full bg-blue-600 hover:bg-blue-750 text-white font-bold py-3 px-4 rounded-xl transition-all duration-200 cursor-pointer flex justify-center items-center gap-2 mt-4 text-xs"
           >
             {loading ? 'Đang xác thực...' : 'Đăng Nhập'}
           </button>

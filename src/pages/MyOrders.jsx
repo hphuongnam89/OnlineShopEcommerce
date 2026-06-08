@@ -177,8 +177,13 @@ const MyOrders = () => {
                                   <img src={image} alt={title} className="w-full h-full object-contain" />
                                 </div>
                                 <div className="flex-grow min-w-0">
-                                  <h5 className="font-bold text-slate-800 text-xs sm:text-sm truncate">{title}{variantName}</h5>
-                                  <div className="text-[10px] sm:text-xs text-slate-400 mt-0.5">
+                                  <h5 className="font-bold text-slate-800 text-xs sm:text-sm truncate">{title}</h5>
+                                  {item.variant && (
+                                    <p className="text-[10px] text-[#2f5f88] font-bold mt-0.5">
+                                      Phân loại: {item.variant.name || `${item.variant.color || ''}${item.variant.color && item.variant.size ? ' / ' : ''}${item.variant.size || ''}`}
+                                    </p>
+                                  )}
+                                  <div className="text-[10px] sm:text-xs text-slate-450 mt-0.5">
                                     Đơn giá: {item.price.toLocaleString('vi-VN')}đ | Số lượng: {item.quantity}
                                   </div>
                                 </div>

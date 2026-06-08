@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { api } from '../../utils/api';
-import { Plus, Edit3, Trash2, Search, Download, UserCheck, AlertCircle } from 'lucide-react';
+import { Plus, Edit3, Trash2, Search, Download, UserCheck, AlertCircle, ArrowLeft } from 'lucide-react';
 import CustomModal from '../../components/CustomModal';
 
 const AdminCustomers = () => {
@@ -15,7 +15,7 @@ const AdminCustomers = () => {
   const [minSpent, setMinSpent] = useState('');
   const [maxSpent, setMaxSpent] = useState('');
 
-  // Form states (Add/Edit Modal)
+  // Form states (In-place Editor)
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [formMode, setFormMode] = useState('create'); // 'create' or 'edit'
   const [editingId, setEditingId] = useState(null);
@@ -191,29 +191,199 @@ const AdminCustomers = () => {
       case 'GOLD': return 'badge-metallic-gold';
       case 'SILVER': return 'badge-metallic-silver';
       case 'VIP': return 'badge-metallic-vip';
-      default: return 'bg-slate-800 text-slate-400 border border-slate-700/50';
+      default: return 'bg-slate-100 text-slate-655 border border-slate-200';
     }
   };
 
+  if (isFormOpen) {
+    return (
+      <div className="space-y-6 font-sans pb-10 animate-in fade-in duration-200">
+        {/* Breadcrumb & Title */}
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-slate-200/60 pb-5">
+          <div>
+            <nav className="mb-2" aria-label="breadcrumb">
+              <ol className="flex items-center gap-2 text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+                <li><a href="#!" className="hover:text-slate-600 transition-colors">Admin</a></li>
+                <li>/</li>
+                <li><a href="#!" onClick={() => setIsFormOpen(false)} className="hover:text-slate-600 transition-colors">Khách hàng</a></li>
+                <li>/</li>
+                <li className="text-slate-600">{formMode === 'create' ? 'Thêm khách hàng' : 'Cập nhật thông tin'}</li>
+              </ol>
+            </nav>
+            <h1 className="text-xl font-black tracking-tight text-slate-900 font-heading uppercase">
+              {formMode === 'create' ? 'Thêm Khách Hàng Mới' : `Cập nhật: ${fullName}`}
+            </h1>
+            <p className="text-slate-500 text-xs mt-1">Cung cấp hồ sơ cá nhân và quản lý hạn VIP tích lũy.</p>
+          </div>
+          
+          <div className="flex items-center gap-3 w-full sm:w-auto">
+            <button
+              type="button"
+              onClick={() => setIsFormOpen(false)}
+              className="flex-1 sm:flex-none bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 font-bold py-2.5 px-4 rounded-xl text-xs transition-colors cursor-pointer shadow-sm"
+            >
+              Hủy bỏ
+            </button>
+            <button
+              onClick={handleSubmit}
+              className="flex-1 sm:flex-none bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 px-5 rounded-xl text-xs transition-colors cursor-pointer shadow-sm"
+            >
+              Lưu thông tin
+            </button>
+          </div>
+        </div>
+
+        {/* 2-Column Editor Layout */}
+        <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
+          {/* Main Info Column (Left - 2/3 width) */}
+          <div className="xl:col-span-2 space-y-6">
+            <div className="bg-white border border-slate-200/80 p-6 rounded-2xl shadow-xs space-y-4">
+              <h3 className="text-xs font-bold text-slate-800 uppercase tracking-wider border-b border-slate-100 pb-3 font-heading">Hồ Sơ Cá Nhân</h3>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="sm:col-span-2">
+                  <label className="block text-slate-500 text-[10px] font-bold uppercase tracking-wider mb-1.5">Họ và tên *</label>
+                  <input
+                    type="text"
+                    required
+                    value={fullName}
+                    onChange={(e) => setFullName(e.target.value)}
+                    placeholder="Nguyễn Văn A"
+                    className="w-full bg-white border border-slate-200 text-slate-800 rounded-xl px-4 py-2.5 text-xs focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-100 font-semibold"
+                  />
+                </div>
+                <div>
+                  <label className="block text-slate-500 text-[10px] font-bold uppercase tracking-wider mb-1.5">Số điện thoại *</label>
+                  <input
+                    type="text"
+                    required
+                    value={phone}
+                    onChange={(e) => setPhone(e.target.value)}
+                    placeholder="0901234567"
+                    className="w-full bg-white border border-slate-200 text-slate-800 rounded-xl px-4 py-2.5 text-xs focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-100 font-semibold"
+                  />
+                </div>
+                <div>
+                  <label className="block text-slate-500 text-[10px] font-bold uppercase tracking-wider mb-1.5">Email *</label>
+                  <input
+                    type="email"
+                    required
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="email@example.com"
+                    className="w-full bg-white border border-slate-200 text-slate-800 rounded-xl px-4 py-2.5 text-xs focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-100 font-semibold"
+                  />
+                </div>
+                <div className="sm:col-span-2">
+                  <label className="block text-slate-500 text-[10px] font-bold uppercase tracking-wider mb-1.5">
+                    Mật khẩu {formMode === 'edit' && '(Chỉ điền nếu muốn đổi mới)'}
+                  </label>
+                  <input
+                    type="password"
+                    required={formMode === 'create'}
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    placeholder={formMode === 'create' ? "Nhập mật khẩu tài khoản" : "••••••••"}
+                    className="w-full bg-white border border-slate-200 text-slate-850 rounded-xl px-4 py-2.5 text-xs focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-100 font-semibold"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Settings / VIP Tier Info Column (Right - 1/3 width) */}
+          <div className="space-y-6">
+            <div className="bg-white border border-slate-200/80 p-6 rounded-2xl shadow-xs space-y-4">
+              <h3 className="text-xs font-bold text-slate-800 uppercase tracking-wider border-b border-slate-100 pb-3 font-heading">Chi Tiêu Tích Lũy</h3>
+              <div>
+                <label className="block text-slate-500 text-[10px] font-bold uppercase tracking-wider mb-1.5">Tổng chi tiêu (đ)</label>
+                <input
+                  type="number"
+                  min="0"
+                  value={totalSpent}
+                  onChange={(e) => setTotalSpent(e.target.value)}
+                  placeholder="0"
+                  className="w-full bg-white border border-slate-200 text-slate-850 rounded-xl px-4 py-2.5 text-xs focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-100 font-semibold"
+                />
+                <p className="text-[10px] text-slate-400 mt-2 font-medium">Hệ thống sẽ tự động đối chiếu doanh số này để nâng cấp thứ hạng thành viên tương ứng.</p>
+              </div>
+            </div>
+
+            {/* VIP Tiers Policy Card */}
+            <div className="bg-white border border-slate-200/80 p-6 rounded-2xl shadow-xs space-y-4">
+              <h3 className="text-xs font-bold text-slate-800 uppercase tracking-wider border-b border-slate-100 pb-3 font-heading">Chính Sách VIP Tiers</h3>
+              <div className="space-y-2.5 text-xs">
+                <div className="flex justify-between items-center border-b border-slate-100 pb-1.5">
+                  <span className="badge-metallic-platinum px-2 py-0.5 rounded text-[9px] font-bold">PLATINUM</span>
+                  <span className="font-semibold text-slate-700">&gt; 50.000.000 đ</span>
+                </div>
+                <div className="flex justify-between items-center border-b border-slate-100 pb-1.5">
+                  <span className="badge-metallic-gold px-2 py-0.5 rounded text-[9px] font-bold">GOLD</span>
+                  <span className="font-semibold text-slate-700">&gt; 20.000.000 đ</span>
+                </div>
+                <div className="flex justify-between items-center border-b border-slate-100 pb-1.5">
+                  <span className="badge-metallic-silver px-2 py-0.5 rounded text-[9px] font-bold">SILVER</span>
+                  <span className="font-semibold text-slate-700">&gt; 10.000.000 đ</span>
+                </div>
+                <div className="flex justify-between items-center border-b border-slate-100 pb-1.5">
+                  <span className="badge-metallic-vip px-2 py-0.5 rounded text-[9px] font-bold">VIP</span>
+                  <span className="font-semibold text-slate-700">&gt; 5.000.000 đ</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="bg-slate-100 text-slate-655 px-2 py-0.5 border border-slate-250 rounded text-[9px] font-bold">BRONZE</span>
+                  <span className="font-semibold text-slate-500">Khác</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Footer actions */}
+        <div className="flex justify-end gap-3 pt-6 border-t border-slate-200/60 mt-8">
+          <button
+            type="button"
+            onClick={() => setIsFormOpen(false)}
+            className="bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 font-bold py-2.5 px-4 rounded-xl text-xs transition-colors cursor-pointer shadow-sm"
+          >
+            Hủy bỏ
+          </button>
+          <button
+            onClick={handleSubmit}
+            className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 px-5 rounded-xl text-xs transition-colors cursor-pointer shadow-sm"
+          >
+            Lưu thông tin
+          </button>
+        </div>
+
+        <CustomModal
+          isOpen={modalConfig.isOpen}
+          onClose={() => setModalConfig(prev => ({ ...prev, isOpen: false }))}
+          title={modalConfig.title}
+          message={modalConfig.message}
+          type={modalConfig.type}
+        />
+      </div>
+    );
+  }
+
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 font-sans">
       {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h1 className="text-3xl font-black tracking-tight text-white bg-gradient-to-r from-slate-100 to-slate-300 bg-clip-text text-transparent">Quản Lý Khách Hàng</h1>
-          <p className="text-slate-400 text-sm mt-1">Quản lý hồ sơ, chi tiêu tích lũy và cập nhật thứ hạng tự động.</p>
+          <h1 className="text-xl font-black tracking-tight text-slate-900 font-heading uppercase">Quản Lý Khách Hàng</h1>
+          <p className="text-slate-500 text-xs mt-1">Quản lý hồ sơ, chi tiêu tích lũy và cập nhật thứ hạng tự động.</p>
         </div>
         <div className="flex gap-3 w-full sm:w-auto">
           <button
             onClick={handleExportCustomers}
-            className="flex-1 sm:flex-initial bg-slate-900 hover:bg-slate-850 text-white font-semibold py-2.5 px-4 rounded-xl border border-slate-800 flex items-center justify-center gap-2 text-xs transition-colors cursor-pointer"
+            className="flex-1 sm:flex-none bg-white hover:bg-slate-50 text-slate-705 font-bold py-2.5 px-4 rounded-xl border border-slate-200 flex items-center justify-center gap-2 text-xs transition-colors cursor-pointer shadow-sm"
           >
             <Download size={14} />
-            <span>Xuất Excel Nhóm</span>
+            <span>Xuất Excel</span>
           </button>
           <button
             onClick={handleOpenCreate}
-            className="flex-1 sm:flex-initial admin-glow-btn text-white font-bold py-2.5 px-4 rounded-xl flex items-center justify-center gap-2 text-xs transition-all duration-200 cursor-pointer"
+            className="flex-1 sm:flex-none bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 px-4 rounded-xl flex items-center justify-center gap-2 text-xs transition-all duration-200 cursor-pointer shadow-sm"
           >
             <Plus size={14} />
             <span>Thêm Khách Hàng</span>
@@ -222,40 +392,40 @@ const AdminCustomers = () => {
       </div>
 
       {error && (
-        <div className="bg-rose-500/10 border border-rose-500/20 text-rose-400 p-4 rounded-xl flex items-center gap-3">
+        <div className="bg-rose-50 border border-rose-100 text-rose-700 p-4 rounded-xl flex items-center gap-3">
           <AlertCircle size={18} />
-          <p className="text-sm font-medium">{error}</p>
+          <p className="text-xs font-semibold">{error}</p>
         </div>
       )}
 
       {/* Filter Options */}
-      <div className="admin-glass-card p-5 rounded-3xl space-y-4">
+      <div className="bg-white border border-slate-200/80 p-5 rounded-2xl shadow-xs space-y-4 animate-in fade-in duration-200">
         <form onSubmit={handleSearchSubmit} className="flex gap-3">
           <div className="relative flex-grow">
-            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500" size={18} />
+            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
             <input
               type="text"
               placeholder="Tìm theo họ tên, email hoặc số điện thoại..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full bg-slate-950 border border-slate-800 text-white rounded-xl pl-11 pr-4 py-2.5 text-xs focus:outline-none focus:ring-1 focus:ring-indigo-500 placeholder-slate-700 font-medium"
+              className="w-full bg-white border border-slate-200 text-slate-800 rounded-xl pl-11 pr-4 py-2.5 text-xs focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-100 placeholder-slate-400 font-medium"
             />
           </div>
           <button 
             type="submit"
-            className="bg-slate-900 hover:bg-slate-850 text-white font-semibold py-2.5 px-6 rounded-xl border border-slate-800 text-xs transition-colors cursor-pointer"
+            className="bg-white hover:bg-slate-50 text-slate-750 font-bold py-2.5 px-6 rounded-xl border border-slate-200 text-xs transition-colors cursor-pointer shadow-2xs"
           >
             Tìm kiếm
           </button>
         </form>
 
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-4 border-t border-slate-800/50">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-4 border-t border-slate-100/80">
           <div>
             <label className="block text-slate-500 text-[10px] font-bold mb-1.5 uppercase tracking-wider">Hạng thành viên</label>
             <select
               value={selectedTier}
               onChange={(e) => setSelectedTier(e.target.value)}
-              className="w-full bg-slate-950 border border-slate-800 text-white rounded-xl px-3 py-2 text-xs focus:outline-none focus:ring-1 focus:ring-indigo-500 font-semibold"
+              className="w-full bg-white border border-slate-200 text-slate-800 rounded-xl px-3 py-2.5 text-xs focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-100 font-semibold"
             >
               <option value="">Tất cả hạng</option>
               <option value="5">Bạch kim (PLATINUM - Chi tiêu &gt; 50M)</option>
@@ -273,7 +443,7 @@ const AdminCustomers = () => {
               placeholder="Ví dụ: 5000000"
               value={minSpent}
               onChange={(e) => setMinSpent(e.target.value)}
-              className="w-full bg-slate-950 border border-slate-800 text-white rounded-xl px-3 py-2 text-xs focus:outline-none focus:ring-1 focus:ring-indigo-500 placeholder-slate-800 font-semibold"
+              className="w-full bg-white border border-slate-200 text-slate-800 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-100 placeholder-slate-400 font-semibold"
             />
           </div>
 
@@ -284,23 +454,23 @@ const AdminCustomers = () => {
               placeholder="Ví dụ: 20000000"
               value={maxSpent}
               onChange={(e) => setMaxSpent(e.target.value)}
-              className="w-full bg-slate-950 border border-slate-800 text-white rounded-xl px-3 py-2 text-xs focus:outline-none focus:ring-1 focus:ring-indigo-500 placeholder-slate-800 font-semibold"
+              className="w-full bg-white border border-slate-200 text-slate-800 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-100 placeholder-slate-400 font-semibold"
             />
           </div>
         </div>
       </div>
 
       {/* Customers List Table */}
-      <div className="admin-glass-card rounded-3xl overflow-hidden">
+      <div className="bg-white border border-slate-200/80 shadow-xs rounded-2xl overflow-hidden animate-in fade-in duration-200">
         {loading ? (
-          <div className="py-20 text-center text-slate-500">Đang tải danh sách khách hàng...</div>
+          <div className="py-20 text-center text-slate-400 text-xs">Đang tải danh sách khách hàng...</div>
         ) : customers.length === 0 ? (
-          <div className="py-20 text-center text-slate-500">Không tìm thấy khách hàng nào trên hệ thống.</div>
+          <div className="py-20 text-center text-slate-400 text-xs">Không tìm thấy khách hàng nào trên hệ thống.</div>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse">
               <thead>
-                <tr className="border-b border-slate-800/80 text-slate-400 text-xs font-bold uppercase tracking-wider bg-slate-900/40">
+                <tr className="border-b border-slate-200/80 text-slate-500 text-[10px] font-bold uppercase tracking-wider bg-slate-50/50">
                   <th className="px-6 py-4">Khách hàng</th>
                   <th className="px-6 py-4">Số điện thoại</th>
                   <th className="px-6 py-4">Email</th>
@@ -309,38 +479,38 @@ const AdminCustomers = () => {
                   <th className="px-6 py-4 text-right">Thao tác</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-800/50 text-slate-350 text-xs font-medium">
+              <tbody className="divide-y divide-slate-100 text-slate-655 text-xs font-semibold">
                 {customers.map((c) => (
-                  <tr key={c.id} className="hover:bg-slate-800/10 transition-colors">
-                    <td className="px-6 py-4 font-bold text-white text-sm">
+                  <tr key={c.id} className="hover:bg-slate-50/40 transition-colors">
+                    <td className="px-6 py-4 font-bold text-slate-900 text-sm">
                       {c.user?.fullName || 'Khách vãng lai'}
                     </td>
-                    <td className="px-6 py-4 font-semibold">
+                    <td className="px-6 py-4 font-semibold text-slate-700">
                       {c.user?.phone || 'Chưa cập nhật'}
                     </td>
-                    <td className="px-6 py-4 text-slate-500">
+                    <td className="px-6 py-4 text-slate-500 font-mono">
                       {c.user?.email || 'N/A'}
                     </td>
                     <td className="px-6 py-4">
-                      <span className={`px-2.5 py-1 rounded-full text-[9px] font-black uppercase tracking-wider ${getTierClass(c.tier?.name)}`}>
+                      <span className={`px-2.5 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider ${getTierClass(c.tier?.name)}`}>
                         {c.tier?.name || 'BRONZE'}
                       </span>
                     </td>
-                    <td className="px-6 py-4 font-mono font-extrabold text-emerald-450 text-right text-sm">
+                    <td className="px-6 py-4 font-mono font-black text-slate-900 text-right text-sm">
                       {c.totalSpent?.toLocaleString('vi-VN')} đ
                     </td>
                     <td className="px-6 py-4 text-right">
                       <div className="flex justify-end gap-2">
                         <button
                           onClick={() => handleOpenEdit(c)}
-                          className="p-2 text-blue-400 hover:text-blue-300 hover:bg-blue-500/10 rounded-lg transition-all cursor-pointer"
+                          className="p-2 text-blue-600 hover:text-blue-705 hover:bg-blue-50 rounded-lg transition-colors cursor-pointer"
                           title="Sửa khách hàng"
                         >
                           <Edit3 size={14} />
                         </button>
                         <button
                           onClick={() => handleDelete(c.id)}
-                          className="p-2 text-rose-450 hover:text-rose-400 hover:bg-rose-500/10 rounded-lg transition-all cursor-pointer"
+                          className="p-2 text-rose-600 hover:text-rose-700 hover:bg-rose-50 rounded-lg transition-colors cursor-pointer"
                           title="Xóa khách hàng"
                         >
                           <Trash2 size={14} />
@@ -354,105 +524,6 @@ const AdminCustomers = () => {
           </div>
         )}
       </div>
-
-      {/* Add / Edit Form Modal */}
-      {isFormOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 overflow-y-auto pt-24 pb-12">
-          <div className="w-full max-w-lg bg-slate-900 border border-slate-800 rounded-3xl overflow-hidden shadow-2xl my-auto">
-            <div className="px-6 py-4 border-b border-slate-800 flex justify-between items-center bg-slate-900/50">
-              <h3 className="text-base font-bold text-white">
-                {formMode === 'create' ? 'Thêm Khách Hàng Mới' : 'Sửa Khách Hàng'}
-              </h3>
-              <button
-                onClick={() => setIsFormOpen(false)}
-                className="text-slate-400 hover:text-white font-bold text-sm cursor-pointer"
-              >
-                Đóng
-              </button>
-            </div>
-
-            <form onSubmit={handleSubmit} className="p-6 space-y-4">
-              <div>
-                <label className="block text-slate-400 text-[10px] font-bold uppercase tracking-wider mb-1.5">Họ và tên *</label>
-                <input
-                  type="text"
-                  required
-                  value={fullName}
-                  onChange={(e) => setFullName(e.target.value)}
-                  placeholder="Nguyễn Văn A"
-                  className="w-full bg-slate-950 border border-slate-800 text-white rounded-xl px-4 py-2.5 text-xs focus:outline-none focus:ring-1 focus:ring-indigo-500 font-semibold"
-                />
-              </div>
-
-              <div>
-                <label className="block text-slate-400 text-[10px] font-bold uppercase tracking-wider mb-1.5">Số điện thoại *</label>
-                <input
-                  type="text"
-                  required
-                  value={phone}
-                  onChange={(e) => setPhone(e.target.value)}
-                  placeholder="0901234567"
-                  className="w-full bg-slate-950 border border-slate-800 text-white rounded-xl px-4 py-2.5 text-xs focus:outline-none focus:ring-1 focus:ring-indigo-500 font-semibold"
-                />
-              </div>
-
-              <div>
-                <label className="block text-slate-400 text-[10px] font-bold uppercase tracking-wider mb-1.5">Email *</label>
-                <input
-                  type="email"
-                  required
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="email@example.com"
-                  className="w-full bg-slate-950 border border-slate-800 text-white rounded-xl px-4 py-2.5 text-xs focus:outline-none focus:ring-1 focus:ring-indigo-500 font-semibold"
-                />
-              </div>
-
-              <div>
-                <label className="block text-slate-400 text-[10px] font-bold uppercase tracking-wider mb-1.5">
-                  Mật khẩu {formMode === 'edit' && '(Chỉ điền nếu muốn đổi mới)'}
-                </label>
-                <input
-                  type="password"
-                  required={formMode === 'create'}
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder="••••••••"
-                  className="w-full bg-slate-950 border border-slate-800 text-white rounded-xl px-4 py-2.5 text-xs focus:outline-none focus:ring-1 focus:ring-indigo-500 font-semibold"
-                />
-              </div>
-
-              <div>
-                <label className="block text-slate-400 text-[10px] font-bold uppercase tracking-wider mb-1.5">Tổng chi tiêu (đ)</label>
-                <input
-                  type="number"
-                  min="0"
-                  value={totalSpent}
-                  onChange={(e) => setTotalSpent(e.target.value)}
-                  placeholder="0"
-                  className="w-full bg-slate-950 border border-slate-800 text-white rounded-xl px-4 py-2.5 text-xs focus:outline-none focus:ring-1 focus:ring-indigo-500 font-semibold"
-                />
-              </div>
-
-              <div className="flex justify-end gap-3 pt-4 border-t border-slate-800">
-                <button
-                  type="button"
-                  onClick={() => setIsFormOpen(false)}
-                  className="bg-slate-850 hover:bg-slate-800 text-white font-semibold py-2.5 px-4 rounded-xl text-xs transition-colors cursor-pointer"
-                >
-                  Hủy bỏ
-                </button>
-                <button
-                  type="submit"
-                  className="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2.5 px-5 rounded-xl text-xs transition-colors cursor-pointer"
-                >
-                  Lưu thay đổi
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
 
       <CustomModal
         isOpen={modalConfig.isOpen}

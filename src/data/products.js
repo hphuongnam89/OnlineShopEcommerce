@@ -1,7 +1,7 @@
 export const PRODUCTS = [
   {
     "id": 1072184692,
-    "stock": 7,
+    "stock": 2,
     "title": "Áo che mưa chống nước máy ảnh Think Tank Hydrophobia",
     "desc": "Bảo vệ máy ảnh và ống kính của bạn với Áo che mưa chống nước máy ảnh Think Tank Hydrophobia D 300-600 V3 . Vỏ này có lớp phủ chống nước DWR (Durable Water Repellent) bền bỉ và được làm từ ba lớp vật l...",
     "price": 3890000,
@@ -29,11 +29,43 @@ export const PRODUCTS = [
       "dimensions": "33 × 48 × 18 cm",
       "weight": "",
       "warranty": "12 tháng chính hãng"
-    }
+    },
+    "variants": [
+      {
+        "id": 1163725759,
+        "sku": "740631",
+        "name": "DM 300-600 V3 Black",
+        "price": 3890000,
+        "stock": 0,
+        "color": "Black",
+        "size": "DM 300-600 V3",
+        "image_url": "https://cdn.hstatic.net/products/200001063950/db56c42b-e5e6-4dab-b202-bc9e97dcca1d_f37e923541514925907a732acf41b0f8.jpeg"
+      },
+      {
+        "id": 1165841357,
+        "sku": "740629",
+        "name": "D 70-200 V3 Black",
+        "price": 3240000,
+        "stock": 0,
+        "color": "Black",
+        "size": "D 70-200 V3",
+        "image_url": "https://cdn.hstatic.net/products/200001063950/db8-cb4c-4df1-9e6c-d41985153b87_1aabcc629af74cf4a730860cda51928d_large_0904fa280f7d446190e50cf545eab5f6.jpeg"
+      },
+      {
+        "id": 1165841385,
+        "sku": "740627",
+        "name": "D 24-70 V3 Black",
+        "price": 3080000,
+        "stock": 2,
+        "color": "Black",
+        "size": "D 24-70 V3",
+        "image_url": "https://cdn.hstatic.net/products/200001063950/552-3fa2-4f74-9b93-f2c0ed69108d_a4e18c23f50d4833ba286b7e75212652_large_5f05f411941246ec9b6ac81b8d3823c3.jpeg"
+      }
+    ]
   },
   {
     "id": 1072133051,
-    "stock": 12,
+    "stock": 7,
     "title": "Áo che mưa máy ảnh ThinkTank Emergency Rain Cover",
     "desc": "Được thiết kế lý tưởng cho nhiếp ảnh gia thiên nhiên hoang dã và phong cảnh, bao che mưa khẩn cấp Emergency Rain Cover từ Think Tank Photo sở hữu lớp phủ DWR và các đường may được bịt kín, giúp bảo vệ...",
     "price": 1040000,
@@ -61,7 +93,39 @@ export const PRODUCTS = [
       "dimensions": "33 × 48 × 18 cm",
       "weight": "159 g",
       "warranty": "12 tháng chính hãng"
-    }
+    },
+    "variants": [
+      {
+        "id": 1163581292,
+        "sku": "740619",
+        "name": "Medium Black",
+        "price": 1040000,
+        "stock": 2,
+        "color": "Black",
+        "size": "Medium",
+        "image_url": "https://cdn.hstatic.net/products/200001063950/2be851d0-583f-464a-9951-caa4f8ec76b2_cbf8026422bb454c9ebe9223f43bf037.jpg"
+      },
+      {
+        "id": 1165611567,
+        "sku": "740622",
+        "name": "Large Black",
+        "price": 1560000,
+        "stock": 3,
+        "color": "Black",
+        "size": "Large",
+        "image_url": "https://cdn.hstatic.net/products/200001063950/7d4-040f-41ca-9362-2414a470c72b_1dbe90da3a5c4018a6b668b1a7e23b5a_large_d5e232a7577b467a968e491adf19902d.jpg"
+      },
+      {
+        "id": 1165611634,
+        "sku": "740618",
+        "name": "Small Black",
+        "price": 910000,
+        "stock": 2,
+        "color": "Black",
+        "size": "Small",
+        "image_url": "https://cdn.hstatic.net/products/200001063950/1d9-cdda-4964-928e-83a1ce833201_4e807ff1382543dfbbc9e9ee0dfb6a66_large_447c31b5a87043088503ef3a782ba41e.jpg"
+      }
+    ]
   },
   {
     "id": 1074426353,
@@ -93,7 +157,19 @@ export const PRODUCTS = [
       "dimensions": "33 × 47.8 × 17.3 cm",
       "weight": "2500 g",
       "warranty": "12 tháng chính hãng"
-    }
+    },
+    "variants": [
+      {
+        "id": 1168996433,
+        "sku": "720510",
+        "name": "41L",
+        "price": 8200000,
+        "stock": 0,
+        "color": "Black",
+        "size": "41L",
+        "image_url": "https://cdn.hstatic.net/products/200001063950/airport-accelerator-hero-right-gear_b0c0130d5eb3477298dd80e48e6c2d07.jpg"
+      }
+    ]
   },
   {
     "id": 1072184702,
@@ -118,11 +194,23 @@ export const PRODUCTS = [
       "dimensions": "33 × 47.8 × 17.3cm",
       "weight": "2500 g",
       "warranty": "12 tháng chính hãng"
-    }
+    },
+    "variants": [
+      {
+        "id": 1163725769,
+        "sku": "720489",
+        "name": "Black",
+        "price": 4250000,
+        "stock": 0,
+        "color": "Black",
+        "size": "Standard",
+        "image_url": "https://cdn.hstatic.net/products/200001063950/2eaa5752-2222-4a32-b495-dfc9a0e7e2d9_cd224c2fa8d34697ac93b51057b3dff8.png"
+      }
+    ]
   },
   {
     "id": 1074426169,
-    "stock": 16,
+    "stock": 5,
     "title": "Balo máy ảnh Think Tank Airport Commuter 31L",
     "desc": "Think Tank Airport Commuter 31L -  Balo máy ảnh du lịch chuyên nghiệp cân bằng hoàn hảo giữa sức chứa và tính cơ động     Tính năng nổi bật - Kích thước carry-on phù hợp đa số hãng bay - Chứa 2 body g...",
     "price": 7040000,
@@ -148,11 +236,23 @@ export const PRODUCTS = [
       "dimensions": "29.2 × 42.4 × 17.3 cm",
       "weight": "1900 g",
       "warranty": "12 tháng chính hãng"
-    }
+    },
+    "variants": [
+      {
+        "id": 1168995975,
+        "sku": "720509",
+        "name": "31L",
+        "price": 7040000,
+        "stock": 5,
+        "color": "Black",
+        "size": "31L",
+        "image_url": "https://cdn.hstatic.net/products/200001063950/airport-commuter-hero-right-gear_efc274eecf1244988944ec59e8f5eda5.jpg"
+      }
+    ]
   },
   {
     "id": 1072184703,
-    "stock": 14,
+    "stock": 2,
     "title": "Balo máy ảnh Think Tank Airport Commuter Black",
     "desc": "Balo máy ảnh Think Tank Airport Commuter Black Think Tank Airport Commuter Backpack là balo máy ảnh cao cấp có kích thước lớn hơn Airport Essentials, được thiết kế dành riêng cho nhiếp ảnh gia chuyên ...",
     "price": 6080000,
@@ -173,11 +273,23 @@ export const PRODUCTS = [
       "dimensions": "29.2 × 42.4 × 17.3cm",
       "weight": "1900 g",
       "warranty": "12 tháng chính hãng"
-    }
+    },
+    "variants": [
+      {
+        "id": 1163725770,
+        "sku": "720486",
+        "name": "Black",
+        "price": 6080000,
+        "stock": 2,
+        "color": "Black",
+        "size": "Standard",
+        "image_url": "https://cdn.hstatic.net/products/200001063950/f8e4c28f-b1ed-4b3a-b995-ac1234c4e9a2_c6a74bbeb3ac4104beae2580aae875b1.png"
+      }
+    ]
   },
   {
     "id": 1074425883,
-    "stock": 10,
+    "stock": 5,
     "title": "Balo máy ảnh Think Tank Airport Essentials 26L",
     "desc": "Think Tank Airport Essentials 26L  Balo máy ảnh nhỏ gọn cao cấp cho photographer yêu thích sự linh hoạt Tính năng nổi bật - Vừa với 2 thân máy ảnh cỡ tiêu chuẩn có gắn ống kính - Chứa được 2-4 ống kín...",
     "price": 6630000,
@@ -206,11 +318,23 @@ export const PRODUCTS = [
       "dimensions": "30.5 × 53.5 × 18 cm",
       "weight": "2200 g",
       "warranty": "12 tháng chính hãng"
-    }
+    },
+    "variants": [
+      {
+        "id": 1168994770,
+        "sku": "720508",
+        "name": "26L",
+        "price": 6630000,
+        "stock": 5,
+        "color": "Black",
+        "size": "26L",
+        "image_url": "https://cdn.hstatic.net/products/200001063950/airport-essentials-hero-right-gear_60736debd9384e16b5ed884ed1053c74.jpg"
+      }
+    ]
   },
   {
     "id": 1072184704,
-    "stock": 19,
+    "stock": 5,
     "title": "Balo máy ảnh Think Tank Airport Essentials Black",
     "desc": "Mang theo thiết bị chụp ảnh cần thiết của bạn trên cả những chiếc máy bay nhỏ nhất. Phù hợp với ống kính lên tới 300mm f/2.8 CÁC TÍNH NĂNG CHÍNH - Đáp ứng hầu hết các yêu cầu mang theo quốc tế - Khóa ...",
     "price": 4930000,
@@ -231,11 +355,23 @@ export const PRODUCTS = [
       "dimensions": "27.9 × 41.4 × 12.7cm",
       "weight": "1600 g",
       "warranty": "12 tháng chính hãng"
-    }
+    },
+    "variants": [
+      {
+        "id": 1163725771,
+        "sku": "720483",
+        "name": "Default Title",
+        "price": 4930000,
+        "stock": 5,
+        "color": "Black",
+        "size": "Standard",
+        "image_url": "https://cdn.hstatic.net/products/200001063950/0efec23a-d16b-4ea9-91f0-d56b63b4b524_58a86b75c76f475a971843f51d84280b.png"
+      }
+    ]
   },
   {
     "id": 1072133071,
-    "stock": 14,
+    "stock": 11,
     "title": "Balo máy ảnh Think Tank BackLight",
     "desc": "Chúng tôi đã cập nhật dòng ba lô chụp ảnh ngoài trời thành công nhất của mình bằng vải nylon Dynatec siêu bền và hai màu mới đầy cảm hứng, Montane Green và Slate Black . Dòng ba lô máy ảnh BackLight S...",
     "price": 6020000,
@@ -280,11 +416,73 @@ export const PRODUCTS = [
       "dimensions": "24 × 44 × 12 cm",
       "weight": "1300 g",
       "warranty": "12 tháng chính hãng"
-    }
+    },
+    "variants": [
+      {
+        "id": 1165562483,
+        "sku": "520357",
+        "name": "18L Montane Green",
+        "price": 6020000,
+        "stock": 1,
+        "color": "Montane Green",
+        "size": "18L",
+        "image_url": "https://cdn.hstatic.net/products/200001063950/l-montane-green-hero-right-gear_83bb329dd0014c11a90cded64b0c5418_large_2e409d4d38be45f3a800552f7f70f88a.jpg"
+      },
+      {
+        "id": 1165562519,
+        "sku": "520358",
+        "name": "18L Slate Black",
+        "price": 6020000,
+        "stock": 2,
+        "color": "Slate Black",
+        "size": "18L",
+        "image_url": "https://cdn.hstatic.net/products/200001063950/50e-2f7a-4e60-935a-470ab22ad3b8_d67293422aea4439a3cc515d04317bb3_large_382577fd087a40eab3552a52ca04938f.jpg"
+      },
+      {
+        "id": 1163581312,
+        "sku": "520374",
+        "name": "26L Montane Green",
+        "price": 7120000,
+        "stock": 2,
+        "color": "Montane Green",
+        "size": "26L",
+        "image_url": "https://cdn.hstatic.net/products/200001063950/19c2eaed-9a39-47eb-9568-2c38d007940f_df679c889e1e4a6da0e598dfb89c552c.jpg"
+      },
+      {
+        "id": 1165562465,
+        "sku": "520375",
+        "name": "26L Slate Black",
+        "price": 7120000,
+        "stock": 2,
+        "color": "Slate Black",
+        "size": "26L",
+        "image_url": "https://cdn.hstatic.net/products/200001063950/e4a-6c01-4893-b260-5da3bc282bf6_9164e97eff064a18ad9b641d898c36dd_large_6ee54d3ae09047f4aeb4a19f6056b250.jpg"
+      },
+      {
+        "id": 1165562438,
+        "sku": "520376",
+        "name": "36L Montane Green",
+        "price": 8090000,
+        "stock": 2,
+        "color": "Montane Green",
+        "size": "36L",
+        "image_url": "https://cdn.hstatic.net/products/200001063950/e95-c609-4c69-b86b-d001313c0691_b547012eeea34d22bea02c78d417fbcc_large_aa14e205bf1947678a5a385ea2ebd23e.jpg"
+      },
+      {
+        "id": 1165562361,
+        "sku": "520377",
+        "name": "36L Slate Black",
+        "price": 8090000,
+        "stock": 2,
+        "color": "Slate Black",
+        "size": "36L",
+        "image_url": "https://cdn.hstatic.net/products/200001063950/937-0981-4c27-bed3-7d60296dde55_eab609f5c662481594ae0caa6b61b1ab_large_0e79567aa38b414eb082f464df04a96f.jpg"
+      }
+    ]
   },
   {
     "id": 1073362754,
-    "stock": 7,
+    "stock": 2,
     "title": "Balo máy ảnh Think Tank BackLight Elite 45L Storm Grey",
     "desc": "Đi sâu hơn vào vùng hẻo lánh! Tiến sâu hơn vào vùng hẻo lánh với ba lô BackLight® Elite 45L. 45 lít không gian có sẵn cung cấp đủ chỗ cho cả thiết bị máy ảnh và thiết bị phiêu lưu, chẳng hạn như chiều...",
     "price": 11390000,
@@ -307,7 +505,19 @@ export const PRODUCTS = [
       "dimensions": "29 x 49 x 17.3 cm",
       "weight": "3200 g",
       "warranty": "12 tháng chính hãng"
-    }
+    },
+    "variants": [
+      {
+        "id": 1166314998,
+        "sku": "520366",
+        "name": "45L Storm Grey",
+        "price": 11390000,
+        "stock": 2,
+        "color": "Storm Grey",
+        "size": "45L",
+        "image_url": "https://cdn.hstatic.net/products/200001063950/backlight-elite-45l-hero-left-024_8d8489f53de84f8ba4ccfb979d49990d.jpg"
+      }
+    ]
   },
   {
     "id": 1072184708,
@@ -335,7 +545,19 @@ export const PRODUCTS = [
       "dimensions": "31 × 19.5 × 18 cm",
       "weight": "2100 g",
       "warranty": "12 tháng chính hãng"
-    }
+    },
+    "variants": [
+      {
+        "id": 1163725775,
+        "sku": "520378",
+        "name": "Default Title",
+        "price": 6570000,
+        "stock": 0,
+        "color": "Black",
+        "size": "Standard",
+        "image_url": "https://cdn.hstatic.net/products/200001063950/imgi_30_backlight-long-lens-hero-left_cd168d810080485096c386dc6c838f62.jpg"
+      }
+    ]
   },
   {
     "id": 1072184710,
@@ -366,11 +588,33 @@ export const PRODUCTS = [
       "dimensions": "21 × 42 × 14 cm",
       "weight": "1000 g",
       "warranty": "12 tháng chính hãng"
-    }
+    },
+    "variants": [
+      {
+        "id": 1163725777,
+        "sku": "520369",
+        "name": "Green",
+        "price": 2020000,
+        "stock": 0,
+        "color": "Green",
+        "size": "Standard",
+        "image_url": "https://cdn.hstatic.net/products/200001063950/0353cae3-a1cb-4389-82c6-e5d9ee6b3f23_5e54beb1a4a747be8ba3c5908ec66f67.jpg"
+      },
+      {
+        "id": 1165897528,
+        "sku": "520368",
+        "name": "Gray",
+        "price": 2020000,
+        "stock": 0,
+        "color": "Gray",
+        "size": "Standard",
+        "image_url": "https://cdn.hstatic.net/products/200001063950/abe-bcc0-4daf-a500-e791d6940d47_8e3533e522f64b58aa97efaaf1cbc4a1_large_778d71b19f8344fabcc101679baac7da.jpg"
+      }
+    ]
   },
   {
     "id": 1072133075,
-    "stock": 10,
+    "stock": 3,
     "title": "Balo máy ảnh Think Tank BackLight Sprint 15L",
     "desc": "Chúng tôi đã cập nhật dòng ba lô chụp ảnh ngoài trời thành công nhất của mình bằng vải nylon Dynatec siêu bền và hai màu mới đầy cảm hứng,  Montane Green và Slate Black . Dòng  ba lô máy ảnh BackLight...",
     "price": 3570000,
@@ -409,11 +653,33 @@ export const PRODUCTS = [
       "dimensions": "21 × 42 × 14 cm",
       "weight": "1000 g",
       "warranty": "12 tháng chính hãng"
-    }
+    },
+    "variants": [
+      {
+        "id": 1163581316,
+        "sku": "520372",
+        "name": "Montane Green",
+        "price": 3570000,
+        "stock": 1,
+        "color": "Montane Green",
+        "size": "15L",
+        "image_url": "https://cdn.hstatic.net/products/200001063950/916e4aef-66bb-4c46-a8f2-65ed09c8595e_62222c8415914ad3b2b3d4579ac97bfa.jpg"
+      },
+      {
+        "id": 1165562076,
+        "sku": "520373",
+        "name": "Slate Black",
+        "price": 3570000,
+        "stock": 2,
+        "color": "Slate Black",
+        "size": "15L",
+        "image_url": "https://cdn.hstatic.net/products/200001063950/6c7-6cc3-4fca-9ac8-ba328504e273_87c697a952794dbe9ba6fd2d75a9431c_large_a18d6b7c972946d6b7a083e1ab40ec09.jpg"
+      }
+    ]
   },
   {
     "id": 1072184706,
-    "stock": 15,
+    "stock": 5,
     "title": "Balo máy ảnh Think Tank BackLight® Photo Daypack Charcoal",
     "desc": "Balo máy ảnh Think Tank BackLight – Balo máy ảnh chuyên nghiệp cho nhiếp ảnh gia khám phá   Thiết kế tối ưu cho outdoor – Truy cập thiết bị từ mặt lưng Balo máy ảnh Think Tank BackLight (26L và 36L) đ...",
     "price": 4190000,
@@ -440,11 +706,33 @@ export const PRODUCTS = [
       "dimensions": "30.5 × 53.5 × 18 cm",
       "weight": "2200 g",
       "warranty": "12 tháng chính hãng"
-    }
+    },
+    "variants": [
+      {
+        "id": 1163725773,
+        "sku": "520360",
+        "name": "Size 26L",
+        "price": 4190000,
+        "stock": 3,
+        "color": "Charcoal",
+        "size": "26L",
+        "image_url": "https://cdn.hstatic.net/products/200001063950/ba-lo-may-anh-think-tank-backlight_-26l-photo-daypack--charcoal---_10__308788c557b24281b564077107f6003c.jpg"
+      },
+      {
+        "id": 1165897918,
+        "sku": "520363",
+        "name": "Size 36L",
+        "price": 4870000,
+        "stock": 2,
+        "color": "Charcoal",
+        "size": "36L",
+        "image_url": "https://cdn.hstatic.net/products/200001063950/0a0-e799-4ce8-8da2-8d84bdd6abd6_36aa939e84c1407dbf39f8ee7fe339ed_large_251e98eac5544da88d7d9fdf579b7012.jpg"
+      }
+    ]
   },
   {
     "id": 1072184711,
-    "stock": 10,
+    "stock": 5,
     "title": "Balo máy ảnh Think Tank BackStory™ Gray",
     "desc": "Ba lô máy ảnh Think Tank BackStory™ 13 - Balo đựng máy ảnh được thiết kế để tối ưu khả năng truy cập lấy thiết bị một cách nhanh nhất có thể giúp bạn tăng tốc quy trình làm việc hiệu quả hơn. Một ngăn...",
     "price": 3040000,
@@ -466,11 +754,33 @@ export const PRODUCTS = [
       "dimensions": "29 × 35 × 14 cm",
       "weight": "1800 g",
       "warranty": "12 tháng chính hãng"
-    }
+    },
+    "variants": [
+      {
+        "id": 1163725778,
+        "sku": "720448",
+        "name": "Size 13",
+        "price": 3040000,
+        "stock": 2,
+        "color": "Gray",
+        "size": "13",
+        "image_url": "https://cdn.hstatic.net/products/200001063950/imgi_8_ba-lo-may-anh-think-tank-backstory_-13-mau-xam-_1__3a39700953234c269865baa2b2ae040d.jpg"
+      },
+      {
+        "id": 1165897705,
+        "sku": "720449",
+        "name": "Size 15",
+        "price": 3370000,
+        "stock": 3,
+        "color": "Gray",
+        "size": "15",
+        "image_url": "https://cdn.hstatic.net/products/200001063950/-tank-backstory_-15-mau-xam-_5__6355080bc30c421f8dd940e3eafc7ac1_large_b6cfd8544a0e4812a11eed633c8a6e04.jpg"
+      }
+    ]
   },
   {
     "id": 1072184714,
-    "stock": 19,
+    "stock": 11,
     "title": "Balo máy ảnh Think Tank DarkLight",
     "desc": "Chuẩn bị cho chuyến chụp ảnh tiếp theo của bạn với Balo máy ảnh Think Tank DarkLight 14L Montane Green , balo đựng máy ảnh theo phong cách chiến thuật được thiết kế cho các hoạt động chụp ảnh ở thành ...",
     "price": 4010000,
@@ -499,11 +809,53 @@ export const PRODUCTS = [
       "dimensions": "47 × 27.9 × 12.7 cm",
       "weight": "1540 g",
       "warranty": "12 tháng chính hãng"
-    }
+    },
+    "variants": [
+      {
+        "id": 1163725781,
+        "sku": "720503",
+        "name": "14L Montane Green",
+        "price": 4010000,
+        "stock": 2,
+        "color": "Montane Green",
+        "size": "14L",
+        "image_url": "https://cdn.hstatic.net/products/200001063950/imgi_4_darklight-14l-montane-green-hero-right-gear_f08843fd6aad4feba39d668c3038baeb.jpg"
+      },
+      {
+        "id": 1165562560,
+        "sku": "720497",
+        "name": "14L Black",
+        "price": 4010000,
+        "stock": 5,
+        "color": "Black",
+        "size": "14L",
+        "image_url": "https://cdn.hstatic.net/products/200001063950/light-14l-black-hero-right-gear_eeff85c9d0a2450cb8bfedf4fe18ad73_large_7e940fad44dc43ecb25f0d7246ab567d.jpg"
+      },
+      {
+        "id": 1165562579,
+        "sku": "720504",
+        "name": "20L Montane Green",
+        "price": 4780000,
+        "stock": 2,
+        "color": "Montane Green",
+        "size": "20L",
+        "image_url": "https://cdn.hstatic.net/products/200001063950/16c-a4f1-434a-900f-16764135bc7f_5b0adf9821194fa7b43ce036c48b3b3f_large_cfd976f3233047dabadebc1e2b4e5f85.jpg"
+      },
+      {
+        "id": 1165562633,
+        "sku": "720498",
+        "name": "20L Black",
+        "price": 4780000,
+        "stock": 2,
+        "color": "Black",
+        "size": "20L",
+        "image_url": "https://cdn.hstatic.net/products/200001063950/c92-efb3-46a7-92fa-9a226cb93208_c2163b447e51419bb79a031d190f04e0_large_f9dc2b5c21cd4543b6a36a9d32fc4205.jpg"
+      }
+    ]
   },
   {
     "id": 1073362755,
-    "stock": 4,
+    "stock": 6,
     "title": "Balo máy ảnh Think Tank DarkLight 25L",
     "desc": "Chuẩn bị cho chuyến chụp ảnh tiếp theo của bạn với Balo máy ảnh Think Tank DarkLight 25L Montane Green , balo đựng máy ảnh theo phong cách chiến thuật được thiết kế cho các hoạt động chụp ảnh ở thành ...",
     "price": 5610000,
@@ -527,11 +879,33 @@ export const PRODUCTS = [
       "dimensions": "47 × 27.9 × 12.7 cm",
       "weight": "1540 g",
       "warranty": "12 tháng chính hãng"
-    }
+    },
+    "variants": [
+      {
+        "id": 1166314999,
+        "sku": "720511",
+        "name": "Montane Green",
+        "price": 5610000,
+        "stock": 3,
+        "color": "Montane Green",
+        "size": "25L",
+        "image_url": "https://cdn.hstatic.net/products/200001063950/darklight-25l-green-front-left_df9508ff164f4267ad60105ca795571e.jpg"
+      },
+      {
+        "id": 1166315000,
+        "sku": "720512",
+        "name": "Black",
+        "price": 5610000,
+        "stock": 3,
+        "color": "Black",
+        "size": "25L",
+        "image_url": "https://cdn.hstatic.net/products/200001063950/darklight-25l-black-front-left_8628dd8f64d74088a05789cd26217fc4.jpg"
+      }
+    ]
   },
   {
     "id": 1072184715,
-    "stock": 7,
+    "stock": 4,
     "title": "Balo máy ảnh Think Tank FirstLight",
     "desc": "Balo máy ảnh Firstlight 35L+ của Think Tank Photo được thiết kế dành cho các nhiếp ảnh gia ngoài trời. Gói này có nhiều loại túi và phụ kiện đính kèm khiến nó trở nên lý tưởng để đi lại, du lịch hoặc ...",
     "price": 9830000,
@@ -557,11 +931,33 @@ export const PRODUCTS = [
       "dimensions": "34 x 51 x 18.5 cm",
       "weight": "2700 g",
       "warranty": "12 tháng chính hãng"
-    }
+    },
+    "variants": [
+      {
+        "id": 1163725782,
+        "sku": "521351",
+        "name": "35L",
+        "price": 9830000,
+        "stock": 2,
+        "color": "Black",
+        "size": "35L",
+        "image_url": "https://cdn.hstatic.net/products/200001063950/imgi_5_ba-lo-may-anh-think-tank-firstlight-3_a931b32b5e2848e78b3b5fb4ac6deada.jpg"
+      },
+      {
+        "id": 1165894208,
+        "sku": "521353",
+        "name": "46L",
+        "price": 10430000,
+        "stock": 2,
+        "color": "Black",
+        "size": "46L",
+        "image_url": "https://cdn.hstatic.net/products/200001063950/imgi_15_ba-lo-may-anh-think-tank-firstlight-13_0bd2f754e3b7448bbff27d5fe602f320.jpg"
+      }
+    ]
   },
   {
     "id": 1073362756,
-    "stock": 12,
+    "stock": 11,
     "title": "Balo máy ảnh Think Tank FocusPoint Rolltop 22L",
     "desc": "Think Tank FocusPoint RollTop – Balo máy ảnh đa năng cho nhiếp ảnh gia hiện đại Think Tank FocusPoint RollTop Backpack là dòng balo máy ảnh hướng tới những nhiếp ảnh gia năng động, thường xuyên di chu...",
     "price": 5670000,
@@ -587,11 +983,53 @@ export const PRODUCTS = [
       "dimensions": "23.5 x 24.1 x 9.5 cm",
       "weight": "1620 g",
       "warranty": "12 tháng chính hãng"
-    }
+    },
+    "variants": [
+      {
+        "id": 1166315001,
+        "sku": "720201",
+        "name": "Asphalt Black",
+        "price": 5670000,
+        "stock": 3,
+        "color": "Asphalt Black",
+        "size": "22L",
+        "image_url": "https://cdn.hstatic.net/products/200001063950/focuspoint-22l-hero-left-asphalt-black-gear_84a6b029135c46c9bbf188de6b1eb21e.jpg"
+      },
+      {
+        "id": 1166315002,
+        "sku": "720203",
+        "name": "Greenway",
+        "price": 5670000,
+        "stock": 3,
+        "color": "Greenway",
+        "size": "22L",
+        "image_url": "https://cdn.hstatic.net/products/200001063950/focuspoint-22l-hero-left-greenway-gear_159851654c214007af126bab8c6ce839.jpg"
+      },
+      {
+        "id": 1166315003,
+        "sku": "720204",
+        "name": "Golden Hour",
+        "price": 5670000,
+        "stock": 3,
+        "color": "Golden Hour",
+        "size": "22L",
+        "image_url": "https://cdn.hstatic.net/products/200001063950/focuspoint-22l-hero-left-golden-hour-gear_8c3406fa273c4fe79d0db5d83fe09a68.jpg"
+      },
+      {
+        "id": 1166315005,
+        "sku": "720209",
+        "name": "Urban Rust",
+        "price": 5670000,
+        "stock": 2,
+        "color": "Urban Rust",
+        "size": "22L",
+        "image_url": "https://cdn.hstatic.net/products/200001063950/focuspoint-22l-hero-left-urban-rust-gear_ecf0e03b4e7a414d901ca13b3b2c3f72.jpg"
+      }
+    ]
   },
   {
     "id": 1071589874,
-    "stock": 20,
+    "stock": 15,
     "title": "Balo máy ảnh Think Tank FocusPoint RollTop 30L",
     "desc": "  Think Tank FocusPoint RollTop – Dòng balo máy ảnh đa năng, tiện dụng cho nhiếp ảnh gia hiện đại     Think Tank FocusPoint RollTop Backpack là dòng balo máy ảnh mới nhất hướng tới các nhiếp ảnh gia n...",
     "price": 6210000,
@@ -653,7 +1091,49 @@ export const PRODUCTS = [
       "dimensions": "25.4 x 25.4 x 11.4 cm",
       "weight": "1760 g",
       "warranty": "12 tháng chính hãng"
-    }
+    },
+    "variants": [
+      {
+        "id": 1162253615,
+        "sku": "720207",
+        "name": "Greenway",
+        "price": 6210000,
+        "stock": 2,
+        "color": "Greenway",
+        "size": "30L",
+        "image_url": "https://cdn.hstatic.net/products/200001063950/0a85d23b-7c51-4a06-8d05-288b9820bfbe_3ce7328051cb43d2877441b56767685b.jpg"
+      },
+      {
+        "id": 1165611967,
+        "sku": "720205",
+        "name": "Asphalt Black",
+        "price": 6210000,
+        "stock": 4,
+        "color": "Asphalt Black",
+        "size": "30L",
+        "image_url": "https://cdn.hstatic.net/products/200001063950/5b6-13de-4bfe-9364-bce70dc68102_999419a7a3534024b2c29fc419397162_large_d7339d25143f4541b8c17056ed4c2dbd.jpg"
+      },
+      {
+        "id": 1167009582,
+        "sku": "720208",
+        "name": "Golden Hour",
+        "price": 6210000,
+        "stock": 5,
+        "color": "Golden Hour",
+        "size": "30L",
+        "image_url": "https://cdn.hstatic.net/products/200001063950/focuspoint-30l-hero-left-golden-hour-gear_30f84ddf1e7046ea8b1e00285d49088a.jpg"
+      },
+      {
+        "id": 1167009601,
+        "sku": "720210",
+        "name": "Urban Rust",
+        "price": 6210000,
+        "stock": 4,
+        "color": "Urban Rust",
+        "size": "30L",
+        "image_url": "https://cdn.hstatic.net/products/200001063950/focuspoint-30l-hero-left-urban-rust-gear_c8404a3d5206476980d1cf2ec94e1af5.jpg"
+      }
+    ]
   },
   {
     "id": 1072184717,
@@ -677,11 +1157,23 @@ export const PRODUCTS = [
       "dimensions": "22.1 × 49.5 × 21.1 cm",
       "weight": "1800 g",
       "warranty": "12 tháng chính hãng"
-    }
+    },
+    "variants": [
+      {
+        "id": 1163725784,
+        "sku": "720192",
+        "name": "Default Title",
+        "price": 5830000,
+        "stock": 0,
+        "color": "Black",
+        "size": "Standard",
+        "image_url": "https://cdn.hstatic.net/products/200001063950/62e452ce-cd7b-4da3-a742-826facd9d3f7_053a7fb1085846479ef5b91352bd7684.jpg"
+      }
+    ]
   },
   {
     "id": 1072184718,
-    "stock": 16,
+    "stock": 7,
     "title": "Balo máy ảnh Think Tank Mirrorless Mover Backpack",
     "desc": "Khai phá tiềm năng nhiếp ảnh của bạn với Ba lô máy ảnh Mirrorless Mover đa năng!   Được thiết kế cho các hệ máy ảnh không gương lật hiện đại, với dung tích lên đến 18 lít và có các ngăn tùy chỉnh cho ...",
     "price": 3380000,
@@ -731,11 +1223,53 @@ export const PRODUCTS = [
       "dimensions": "25 × 39 × 12 cm",
       "weight": "1300 g",
       "warranty": "12 tháng chính hãng"
-    }
+    },
+    "variants": [
+      {
+        "id": 1163725785,
+        "sku": "720196",
+        "name": "Campfire Orange",
+        "price": 3380000,
+        "stock": 2,
+        "color": "Campfire Orange",
+        "size": "Standard",
+        "image_url": "https://cdn.hstatic.net/products/200001063950/6c95347e-5dc8-43b4-896d-f3b49d54a079_55ef5f8a72f24336af5fbfb2a1125a8c.jpg"
+      },
+      {
+        "id": 1165569863,
+        "sku": "720194",
+        "name": "Coast Green",
+        "price": 3380000,
+        "stock": 2,
+        "color": "Coast Green",
+        "size": "Standard",
+        "image_url": "https://cdn.hstatic.net/products/200001063950/308-b3a7-4f2c-b760-255bd85fc35a_1fc0e7d334bc4f6d82fcf017e27224f4_large_b7d92c600a9b421991612a1f15b84f84.jpg"
+      },
+      {
+        "id": 1165569930,
+        "sku": "720195",
+        "name": "Marine Blue",
+        "price": 3380000,
+        "stock": 2,
+        "color": "Marine Blue",
+        "size": "Standard",
+        "image_url": "https://cdn.hstatic.net/products/200001063950/a87-8a09-499f-bb7a-3fe3b65a0aa1_d5a320d1b00c4826a5891421342c01aa_large_5af2728934fe4d0ab38bfa2fb5e147fe.jpg"
+      },
+      {
+        "id": 1165569971,
+        "sku": "720193",
+        "name": "Cool Grey",
+        "price": 3380000,
+        "stock": 1,
+        "color": "Cool Grey",
+        "size": "Standard",
+        "image_url": "https://cdn.hstatic.net/products/200001063950/3cb-cb34-4478-b793-f443d55a06f2_e2d704d6dcd240f9800659ab51ce6f59_large_136e2623501640428b405c53226b7e7f.jpg"
+      }
+    ]
   },
   {
     "id": 1072184723,
-    "stock": 11,
+    "stock": 9,
     "title": "Balo máy ảnh Think Tank Retrospective Backpack 15",
     "desc": "Balo máy ảnh Think Tank Retrospective® Backpack 15 - Pinestone đầy cảm hứng với phong cách bụi bặm và hoang dã, Retrospective® Backpack 15 lý tưởng cho nhiếp ảnh gia chuyên du lịch mạo hiểm. Chiếc ba ...",
     "price": 7280000,
@@ -760,11 +1294,33 @@ export const PRODUCTS = [
       "dimensions": "29 × 35 × 14 cm",
       "weight": "1800 g",
       "warranty": "12 tháng chính hãng"
-    }
+    },
+    "variants": [
+      {
+        "id": 1163725790,
+        "sku": "720479",
+        "name": "Pinestone",
+        "price": 7280000,
+        "stock": 2,
+        "color": "Pinestone",
+        "size": "Standard",
+        "image_url": "https://cdn.hstatic.net/products/200001063950/-backpack-15_0019_retrospective-backpack-hero-gear-left-sony-pinestone_dd0244d86d3540d59861a11021a52db5.jpg"
+      },
+      {
+        "id": 1165896157,
+        "sku": "720481",
+        "name": "Black",
+        "price": 3640000,
+        "stock": 7,
+        "color": "Black",
+        "size": "Standard",
+        "image_url": "https://cdn.hstatic.net/products/200001063950/4b9-0b2d-4d20-8261-a3c1f648ccf5_ee0ccf7c98754639b958b9542bfb45b6_large_06257aff205647b68b9fdc523defb3fd.jpg"
+      }
+    ]
   },
   {
     "id": 1072184725,
-    "stock": 13,
+    "stock": 6,
     "title": "Balo máy ảnh Think Tank Rotation",
     "desc": "Ba lô máy ảnh Think Tank Rotation  được thiết kế đặc biệt cho các nhiếp ảnh gia chụp ảnh phiêu lưu mạo hiểm, nó cung cấp khả năng thao tác gần như tức thì vào máy ảnh của bạn để bạn có thể chụp và di ...",
     "price": 8460000,
@@ -794,11 +1350,43 @@ export const PRODUCTS = [
       "dimensions": "28.5 × 34 × 18 cm",
       "weight": "2800 g",
       "warranty": "12 tháng chính hãng"
-    }
+    },
+    "variants": [
+      {
+        "id": 1163725792,
+        "sku": "520207",
+        "name": "34L Backpack Gray",
+        "price": 8460000,
+        "stock": 2,
+        "color": "Gray",
+        "size": "34L Backpack",
+        "image_url": "https://cdn.hstatic.net/products/200001063950/imgi_150_mindshift-rotation-34l-backpack_10_f3741b4d92b54cc69e316ad41117c8e4.jpg"
+      },
+      {
+        "id": 1165639597,
+        "sku": "520206",
+        "name": "22L Backpack Gray",
+        "price": 7160000,
+        "stock": 2,
+        "color": "Gray",
+        "size": "22L Backpack",
+        "image_url": "https://cdn.hstatic.net/products/200001063950/e60-745e-4250-9c5f-443db0013287_118621bc8e6b4e6aa25cd3a90413dad7_large_2f0757b0700b42c493ed3a8c436a30ce.jpg"
+      },
+      {
+        "id": 1165639637,
+        "sku": "520208",
+        "name": "Pro 50+L Backpack Gray",
+        "price": 11710000,
+        "stock": 2,
+        "color": "Gray",
+        "size": "Pro 50+L Backpack",
+        "image_url": "https://cdn.hstatic.net/products/200001063950/596-aaf3-4c15-afda-a2fd3addee45_9e17ca870dac47cdac3238398efa0fcf_large_0c1b8d6cc6bb46a7a1753de5746b2167.jpg"
+      }
+    ]
   },
   {
     "id": 1072436158,
-    "stock": 12,
+    "stock": 7,
     "title": "Balo máy ảnh Think Tank Shape Shifter",
     "desc": "Think Tank Shape Shifter – Ba lô nhiếp ảnh mỏng gọn, biến đổi linh hoạt   Thiết kế “biến hình” độc đáo – Tối ưu di chuyển Balo máy ảnh Think Tank Shape Shifter là chiếc ba lô nhiếp ảnh cao cấp với thi...",
     "price": 7120000,
@@ -826,11 +1414,33 @@ export const PRODUCTS = [
       "dimensions": "30 × 43 × 10 – 17.9 cm",
       "weight": "1760 g",
       "warranty": "12 tháng chính hãng"
-    }
+    },
+    "variants": [
+      {
+        "id": 1164231354,
+        "sku": "720468",
+        "name": "25L Black",
+        "price": 7120000,
+        "stock": 4,
+        "color": "Black",
+        "size": "25L",
+        "image_url": "https://cdn.hstatic.net/products/200001063950/balo_m_y__nh_think_tank_shape_shifter_37l_black__21__16645408976d4a85902db4b6fce3d995.jpg"
+      },
+      {
+        "id": 1165639401,
+        "sku": "720469",
+        "name": "37L Black",
+        "price": 7840000,
+        "stock": 3,
+        "color": "Black",
+        "size": "37L",
+        "image_url": "https://cdn.hstatic.net/products/200001063950/nk_shape_shifter_37l_black__21__2aa444fd9bda45ba8b5b8a18897811d0_large_b96c39d1bbf743dca5551d560b313df5.jpg"
+      }
+    ]
   },
   {
     "id": 1072184726,
-    "stock": 7,
+    "stock": 12,
     "title": "Balo máy ảnh Think Tank SpeedTop",
     "desc": "Balo Think Tank SpeedTop có hai ngăn riêng biệt để sắp xếp đồ đạc một cách khoa học. Ngăn trên cùng có nắp từ tính, bạn có thể dễ dàng mở bằng một tay. Nó cũng có các túi có khóa kéo để đựng những vật...",
     "price": 3070000,
@@ -861,7 +1471,29 @@ export const PRODUCTS = [
       "dimensions": "50.8 × 29 × 15.9 cm",
       "weight": "1400 g",
       "warranty": "12 tháng chính hãng"
-    }
+    },
+    "variants": [
+      {
+        "id": 1163725793,
+        "sku": "721260",
+        "name": "Size 20",
+        "price": 3070000,
+        "stock": 10,
+        "color": "Black",
+        "size": "20",
+        "image_url": "https://cdn.hstatic.net/products/200001063950/a23ae965-9426-4206-be89-6940e0907d74_0944921459bd4f46b34af827b8964d92.jpg"
+      },
+      {
+        "id": 1165896389,
+        "sku": "721261",
+        "name": "Size 30",
+        "price": 3390000,
+        "stock": 2,
+        "color": "Black",
+        "size": "30",
+        "image_url": "https://cdn.hstatic.net/products/200001063950/5da-4e5f-43c3-b1cf-327d79f2bfaf_3664cf3880b945f397725131c9b224ab_large_188a8e5fb99d49eca794a2feeb338aee.jpg"
+      }
+    ]
   },
   {
     "id": 1072184728,
@@ -892,11 +1524,23 @@ export const PRODUCTS = [
       "dimensions": "28 x 50 x 18 cm",
       "weight": "2000 g",
       "warranty": "12 tháng chính hãng"
-    }
+    },
+    "variants": [
+      {
+        "id": 1163725795,
+        "sku": "720478",
+        "name": "V2.0 Black",
+        "price": 3750000,
+        "stock": 0,
+        "color": "Black",
+        "size": "V2.0",
+        "image_url": "https://cdn.hstatic.net/products/200001063950/427556ef-e5e5-45ed-9f51-5866810abc4b_b6a19f26a7a341f6b4d424c0fcba73c2.png"
+      }
+    ]
   },
   {
     "id": 1072184729,
-    "stock": 13,
+    "stock": 8,
     "title": "Balo máy ảnh Think Tank StreetWalker Pro V2.0 Black",
     "desc": "Độ bền huyền thoại và sự thoải mái từng đoạt giải thưởng khiến dòng StreetWalker trở thành một trong những sản phẩm được tìm kiếm nhiều nhất trong thế giới nhiếp ảnh. CÁC TÍNH NĂNG CHÍNH - Có thể treo...",
     "price": 3300000,
@@ -915,11 +1559,23 @@ export const PRODUCTS = [
       "dimensions": "24 x 44 x 19 cm",
       "weight": "1600 g",
       "warranty": "12 tháng chính hãng"
-    }
+    },
+    "variants": [
+      {
+        "id": 1163725796,
+        "sku": "720476",
+        "name": "Default Title",
+        "price": 3300000,
+        "stock": 8,
+        "color": "Black",
+        "size": "Standard",
+        "image_url": "https://cdn.hstatic.net/products/200001063950/31e924d4-4742-4793-b0ca-b73a51e28414_12d48e2f0e714f1fa000ba63d0c72bb6.png"
+      }
+    ]
   },
   {
     "id": 1072184730,
-    "stock": 8,
+    "stock": 5,
     "title": "Balo máy ảnh Think Tank StreetWalker V2.0 Black",
     "desc": "Độ bền huyền thoại và sự thoải mái từng đoạt giải thưởng khiến dòng StreetWalker trở thành một trong những sản phẩm được tìm kiếm nhiều nhất trong thế giới nhiếp ảnh.   TÍNH NĂNG NỔI BẬT - Có thể gắn ...",
     "price": 2740000,
@@ -945,11 +1601,23 @@ export const PRODUCTS = [
       "dimensions": "24 x 44 x 19 cm",
       "weight": "1500 g",
       "warranty": "12 tháng chính hãng"
-    }
+    },
+    "variants": [
+      {
+        "id": 1163725797,
+        "sku": "720475",
+        "name": "V2.0 Black",
+        "price": 2740000,
+        "stock": 5,
+        "color": "Black",
+        "size": "V2.0",
+        "image_url": "https://cdn.hstatic.net/products/200001063950/2348d5c0-9fdc-46cd-b967-a16f9f8d06d7_a5672c80cfb5499c8f6cbd666946b1ea.png"
+      }
+    ]
   },
   {
     "id": 1072184731,
-    "stock": 19,
+    "stock": 3,
     "title": "Balo máy ảnh Think Tank TrailScape™ 18L Charcoal",
     "desc": "TrailScape có nội thất rộng rãi, cho phép chứa nhiều thiết bị chụp ảnh nhưng vẫn giữ được kiểu dáng mỏng và nhỏ gọn. Là một nhiếp ảnh gia chụp ảnh ngoài trời, bạn luôn mang theo các thiết bị bổ sung t...",
     "price": 2570000,
@@ -975,11 +1643,23 @@ export const PRODUCTS = [
       "dimensions": "24 × 44 × 12 cm",
       "weight": "1300 g",
       "warranty": "12 tháng chính hãng"
-    }
+    },
+    "variants": [
+      {
+        "id": 1163725798,
+        "sku": "520380",
+        "name": "Default Title",
+        "price": 2570000,
+        "stock": 3,
+        "color": "Charcoal",
+        "size": "18L",
+        "image_url": "https://cdn.hstatic.net/products/200001063950/imgi_14_ba-lo-may-anh-think-tank-trailscape_-18l---_16__6c170005a49741b584020ae91addf37c.jpg"
+      }
+    ]
   },
   {
     "id": 1072184732,
-    "stock": 7,
+    "stock": 5,
     "title": "Balo máy ảnh Think Tank Urban Access Backpack Black",
     "desc": "  CÁC TÍNH NĂNG CHÍNH - Túi đựng laptop chuyên dụng vừa laptop 13\" - Tripod ở phía trước cố định  - Túi sâu phía trước phù hợp với một chiếc áo khoác nhẹ - Dây đeo vai chắc chắn với bộ nâng tải giúp đ...",
     "price": 3270000,
@@ -999,11 +1679,33 @@ export const PRODUCTS = [
       "dimensions": "29 x 37 x 14 cm",
       "weight": "1800 g",
       "warranty": "12 tháng chính hãng"
-    }
+    },
+    "variants": [
+      {
+        "id": 1163725799,
+        "sku": "720495",
+        "name": "Size 13",
+        "price": 3270000,
+        "stock": 3,
+        "color": "Black",
+        "size": "13",
+        "image_url": "https://cdn.hstatic.net/products/200001063950/6b8c37b6-613e-4f97-92f2-2701139158b8_7c1a25aae6c541b1a96a762575d8bd1f.png"
+      },
+      {
+        "id": 1165897135,
+        "sku": "720496",
+        "name": "Size 15",
+        "price": 3590000,
+        "stock": 2,
+        "color": "Black",
+        "size": "15",
+        "image_url": "https://cdn.hstatic.net/products/200001063950/333-8891-447d-88c7-fcd77c3ff5dc_eb1fcecb37e44f16a14216963c6025ce_large_69ae7f5fdb8446cc935707ca71a86735.png"
+      }
+    ]
   },
   {
     "id": 1072184734,
-    "stock": 19,
+    "stock": 1,
     "title": "Balo máy ảnh Think Tank Urban Approach 15 Black",
     "desc": "TÍNH NĂNG NỔI BẬT   - Được thiết kế đặc biệt cho máy ảnh Mirrorless với vật liệu cao cấp và kết cấu chất lượng - Túi dây kéo chuyên dụng cho máy tính bảng và máy tính xách tay 15” - Màu đen mờ và có đ...",
     "price": 2510000,
@@ -1032,11 +1734,23 @@ export const PRODUCTS = [
       "dimensions": "24 x 41.5 x 10-13.5 cm",
       "weight": "1300 g",
       "warranty": "12 tháng chính hãng"
-    }
+    },
+    "variants": [
+      {
+        "id": 1163725801,
+        "sku": "720853",
+        "name": "15 Black",
+        "price": 2510000,
+        "stock": 1,
+        "color": "Black",
+        "size": "15",
+        "image_url": "https://cdn.hstatic.net/products/200001063950/149f3656-0ebb-4065-940d-91bd9d1fc282_edb0a60711ae47888c64590626b41d12.png"
+      }
+    ]
   },
   {
     "id": 1072133084,
-    "stock": 18,
+    "stock": 9,
     "title": "Balo máy ảnh Think Tank Walker Pro Black",
     "desc": "Tiếp nối độ bền huyền thoại và sự thoải mái từng đoạt giải thưởng của StreetWalker Backpack Series, Walker Pro Series sẽ là một trong những sản phẩm được săn đón nhất trong thế giới nhiếp ảnh. Những n...",
     "price": 5820000,
@@ -1085,11 +1799,43 @@ export const PRODUCTS = [
       "dimensions": "26 x 42.9 x 15.87 cm",
       "weight": "1890 g",
       "warranty": "12 tháng chính hãng"
-    }
+    },
+    "variants": [
+      {
+        "id": 1165562010,
+        "sku": "720505",
+        "name": "16L",
+        "price": 5820000,
+        "stock": 3,
+        "color": "Black",
+        "size": "16L",
+        "image_url": "https://cdn.hstatic.net/products/200001063950/319-bcf5-414d-ba75-9b0e05d4285c_1c8b8ba230384003aac7b6e01fb6c192_large_1467f4da1a694b0cba94503ab82de870.jpg"
+      },
+      {
+        "id": 1165561943,
+        "sku": "720506",
+        "name": "24L",
+        "price": 6240000,
+        "stock": 4,
+        "color": "Black",
+        "size": "24L",
+        "image_url": "https://cdn.hstatic.net/products/200001063950/1_c4a15c5ee7c74950af028a4780800593.jpg"
+      },
+      {
+        "id": 1163581325,
+        "sku": "720507",
+        "name": "30L",
+        "price": 7310000,
+        "stock": 2,
+        "color": "Black",
+        "size": "30L",
+        "image_url": "https://cdn.hstatic.net/products/200001063950/755b504b-7647-4cc0-9965-b60ec683bd7a_71c53c5ce4bb4cb88442f4432218ab2e.jpg"
+      }
+    ]
   },
   {
     "id": 1073890958,
-    "stock": 19,
+    "stock": 2,
     "title": "Balo máy ảnh ThinkTank Shape Shifter® 17 V2.0",
     "desc": "Balo máy ảnh ThinkTank Shape Shifter 17 V2.0 – Balo nhiếp ảnh mỏng gọn, linh hoạt cho laptop 17 inch   Thiết kế “biến hình” độc đáo – Gọn nhẹ khi di chuyển Balo máy ảnh ThinkTank Shape Shifter 17 V2.0...",
     "price": 8210000,
@@ -1110,11 +1856,23 @@ export const PRODUCTS = [
       "dimensions": "50.8 x 31.75 x 17.78 cm",
       "weight": "1995 g",
       "warranty": "12 tháng chính hãng"
-    }
+    },
+    "variants": [
+      {
+        "id": 1167600790,
+        "sku": "720472",
+        "name": "Default Title",
+        "price": 8210000,
+        "stock": 2,
+        "color": "Black",
+        "size": "Standard",
+        "image_url": "https://cdn.hstatic.net/products/200001063950/20230306_uyoclgsgrwxq6oap_900bb68d146c4c869ee90545c7f05886.png"
+      }
+    ]
   },
   {
     "id": 1072184748,
-    "stock": 17,
+    "stock": 2,
     "title": "Dây đeo Think Tank Pixel Racing Harness V3.0",
     "desc": "Dây đeo Think Tank Pixel Racing Harness V3.0 màu đen này của Think Tank Photo có thể gắn vào bất kỳ dây đai Think Tank tùy chọn nào để giúp phân bổ trọng lượng lên vai và cho phép bạn mang nhiều đồ hơ...",
     "price": 1050000,
@@ -1140,11 +1898,23 @@ export const PRODUCTS = [
       "dimensions": "33 × 48 × 18 cm",
       "weight": "181.4 g",
       "warranty": "12 tháng chính hãng"
-    }
+    },
+    "variants": [
+      {
+        "id": 1163725815,
+        "sku": "700018",
+        "name": "Default Title",
+        "price": 1050000,
+        "stock": 2,
+        "color": "Black",
+        "size": "Standard",
+        "image_url": "https://cdn.hstatic.net/products/200001063950/imgi_8_day-deo-think-tank-pixel-racing-harness-v3.0-11_3b5b41d6d30a4d5aad71dbcafceaf147.jpg"
+      }
+    ]
   },
   {
     "id": 1072184749,
-    "stock": 14,
+    "stock": 3,
     "title": "Dây đeo Think Tank Thin Skin Belt V3.0 - S-M-L",
     "desc": "Dây đeo Think Tank Thin Skin Belt V3.0 màu đen này của Think Tank Photo là một chiếc thắt lưng nhẹ có thể vừa với những người có vòng eo từ 27 đến 42\" và tạo ra một cách thuận tiện để mang theo và cất...",
     "price": 820000,
@@ -1169,11 +1939,23 @@ export const PRODUCTS = [
       "dimensions": "33 × 48 × 18 cm",
       "weight": "170 g",
       "warranty": "12 tháng chính hãng"
-    }
+    },
+    "variants": [
+      {
+        "id": 1163725816,
+        "sku": "700037",
+        "name": "Default Title",
+        "price": 820000,
+        "stock": 3,
+        "color": "Black",
+        "size": "Standard",
+        "image_url": "https://cdn.hstatic.net/products/200001063950/imgi_3_day-deo-think-tank-thin-skin-belt-v3.0---s-m-l-1_eccb83b87a1945f288698b5817d5f2f2.jpg"
+      }
+    ]
   },
   {
     "id": 1072436168,
-    "stock": 4,
+    "stock": 21,
     "title": "Dây lưng thao tác nhanh Think Tank Pro Speed Belt V3.0 S-M",
     "desc": "Là nền tảng quan trọng trong hệ sinh thái thắt lưng module của Think Tank Photo, Pro Speed Belt V3.0 màu đen mang đến giải pháp mang vác thiết bị linh hoạt, gọn gàng và thoải mái cho nhiếp ảnh gia. Đa...",
     "price": 1050000,
@@ -1197,11 +1979,43 @@ export const PRODUCTS = [
       "dimensions": "33 × 48 × 18 cm",
       "weight": "300 g",
       "warranty": "12 tháng chính hãng"
-    }
+    },
+    "variants": [
+      {
+        "id": 1164231366,
+        "sku": "700005",
+        "name": "Sizes 68-85cm",
+        "price": 1050000,
+        "stock": 8,
+        "color": "Black",
+        "size": "68-85cm",
+        "image_url": "https://cdn.hstatic.net/products/200001063950/_thao_t_c_nhanh_think_tank_pro_speed_belt_v3.0_s-m__sizes_68-85cm___2__67c655c1f107422cb4e035018678f239.jpg"
+      },
+      {
+        "id": 1165906156,
+        "sku": "700008",
+        "name": "Sizes 81-106cm",
+        "price": 1050000,
+        "stock": 5,
+        "color": "Black",
+        "size": "81-106cm",
+        "image_url": "https://cdn.hstatic.net/products/200001063950/lt_v3.0_s-m__sizes_68-85cm___2__79a8ddf93df34ae88cd47c1a2d8a8d75_large_739c6a899f414b25ad4bd0adddba2e11.jpg"
+      },
+      {
+        "id": 1165906159,
+        "sku": "700011",
+        "name": "Sizes 96-122cm",
+        "price": 1050000,
+        "stock": 8,
+        "color": "Black",
+        "size": "96-122cm",
+        "image_url": "https://cdn.hstatic.net/products/200001063950/_thao_t_c_nhanh_think_tank_pro_speed_belt_v3.0_s-m__sizes_68-85cm___2__67c655c1f107422cb4e035018678f239.jpg"
+      }
+    ]
   },
   {
     "id": 1072184771,
-    "stock": 18,
+    "stock": 2,
     "title": "Nắp che chống nước kính ngắm Think Tank EP-NZ",
     "desc": "Nắp che chống nước kính ngắm Think Tank EP-NZ thiết kế dành riêng cho dòng máy ảnh không gương lật Nikon Z của Think Tank Photo là một phụ kiện kín nước cần thiết cho Áo che mưa máy ảnh của bạn.  Nó c...",
     "price": 790000,
@@ -1218,11 +2032,23 @@ export const PRODUCTS = [
       "dimensions": "33 × 48 × 18 cm",
       "weight": "",
       "warranty": "12 tháng chính hãng"
-    }
+    },
+    "variants": [
+      {
+        "id": 1163725840,
+        "sku": "740638",
+        "name": "EP-NZ",
+        "price": 790000,
+        "stock": 2,
+        "color": "Black",
+        "size": "EP-NZ",
+        "image_url": "https://cdn.hstatic.net/products/200001063950/a303c09a-be0f-4e91-b780-0bae09ecd4e7_602ba6d6c9ba4a65a069da3c28eeab59.jpeg"
+      }
+    ]
   },
   {
     "id": 1072184772,
-    "stock": 12,
+    "stock": 2,
     "title": "Nắp che chống nước kính ngắm Think Tank EP-S",
     "desc": "Nắp che chống nước kính ngắm Think Tank EP-S thiết kế dành riêng cho dòng máy ảnh không gương lật và DSLR Sony của Think Tank Photo là một phụ kiện kín nước cần thiết cho Áo che mưa máy ảnh của bạn.  ...",
     "price": 790000,
@@ -1239,7 +2065,19 @@ export const PRODUCTS = [
       "dimensions": "33 × 48 × 18 cm",
       "weight": "",
       "warranty": "12 tháng chính hãng"
-    }
+    },
+    "variants": [
+      {
+        "id": 1163725841,
+        "sku": "740642",
+        "name": "EP-S",
+        "price": 790000,
+        "stock": 2,
+        "color": "Black",
+        "size": "EP-S",
+        "image_url": "https://cdn.hstatic.net/products/200001063950/10317e0e-434c-4c18-aad4-d3ac76ef237d_a2e404c2816241a7929474024a40730d.jpg"
+      }
+    ]
   },
   {
     "id": 1072184773,
@@ -1260,11 +2098,23 @@ export const PRODUCTS = [
       "dimensions": "33 × 48 × 18 cm",
       "weight": "",
       "warranty": "12 tháng chính hãng"
-    }
+    },
+    "variants": [
+      {
+        "id": 1163725842,
+        "sku": "740640",
+        "name": "EP-SP",
+        "price": 790000,
+        "stock": 0,
+        "color": "Black",
+        "size": "EP-SP",
+        "image_url": "https://cdn.hstatic.net/products/200001063950/68a48849-f37c-4cc5-a087-214b00aebea4_dd879e986787446799168818ac32e05e.jpg"
+      }
+    ]
   },
   {
     "id": 1071589835,
-    "stock": 11,
+    "stock": 13,
     "title": "Tấm che mưa Think Tank Camo Hydrophobia (RealTree APX)",
     "desc": "Bảo vệ máy ảnh và ống kính của bạn với Áo che mưa chống nước máy ảnh Think Tank Hydrophobia D 300-600 V3 . Vỏ này có lớp phủ chống nước DWR (Durable Water Repellent) bền bỉ và được làm từ ba lớp vật l...",
     "price": 4070000,
@@ -1309,11 +2159,33 @@ export const PRODUCTS = [
       "dimensions": "33 × 48 × 18 cm",
       "weight": "422.42 g",
       "warranty": "12 tháng chính hãng"
-    }
+    },
+    "variants": [
+      {
+        "id": 1162253411,
+        "sku": "740616",
+        "name": "DM 300-600 V3",
+        "price": 4070000,
+        "stock": 3,
+        "color": "Black",
+        "size": "DM 300-600 V3",
+        "image_url": "https://cdn.hstatic.net/products/200001063950/5d9511c6-22cb-4822-8b27-2cead74ca8fa_698902dac4774e52971b976cf18537b1.jpg"
+      },
+      {
+        "id": 1165611749,
+        "sku": "740615",
+        "name": "D 70-200 V3",
+        "price": 3390000,
+        "stock": 10,
+        "color": "Black",
+        "size": "D 70-200 V3",
+        "image_url": "https://cdn.hstatic.net/products/200001063950/fb5-421c-4313-bce2-83feff9e1fc5_d04242fcbd0e473e8910340a98d214a7_large_1f533e50f8714047be2c4e7b91bf2251.jpg"
+      }
+    ]
   },
   {
     "id": 1072184857,
-    "stock": 10,
+    "stock": 6,
     "title": "Túi đựng dây cáp Think Tank Cable Management 30",
     "desc": "Túi đựng dây cáp Think Tank Cable Management 30  được thiết kế để giữ dây cáp và các vật dụng nhỏ khác của bạn lại với nhau, ngăn nắp và dễ lấy. Túi này có mặt trước và mặt sau trong suốt giúp bạn dễ ...",
     "price": 680000,
@@ -1342,11 +2214,23 @@ export const PRODUCTS = [
       "dimensions": "20 × 20 × 8 cm",
       "weight": "128 g",
       "warranty": "12 tháng chính hãng"
-    }
+    },
+    "variants": [
+      {
+        "id": 1163725936,
+        "sku": "740249",
+        "name": "Default Title",
+        "price": 680000,
+        "stock": 6,
+        "color": "Black",
+        "size": "Standard",
+        "image_url": "https://cdn.hstatic.net/products/200001063950/2f647b62-be5d-4500-933b-7fddc3734a43_87703b7becae42aa8d91aecf576a6916.jpg"
+      }
+    ]
   },
   {
     "id": 1072184855,
-    "stock": 15,
+    "stock": 3,
     "title": "Túi đựng dây cáp Think Tank Cable Management V2.0 Gray",
     "desc": "Túi đựng dây cáp Think Tank Cable Management 10 V2.0  là một chiếc túi để bạn có thể quản lý tất cả cáp, dây điện, bộ kết nối và các phụ kiện khác của bạn ở một nơi. Túi có thể được sử dụng riêng hoặc...",
     "price": 450000,
@@ -1375,11 +2259,33 @@ export const PRODUCTS = [
       "dimensions": "18.5 x 10.2 x 4.6 cm",
       "weight": "57 g",
       "warranty": "12 tháng chính hãng"
-    }
+    },
+    "variants": [
+      {
+        "id": 1163725934,
+        "sku": "740241",
+        "name": "Size 10",
+        "price": 450000,
+        "stock": 0,
+        "color": "Gray",
+        "size": "10",
+        "image_url": "https://cdn.hstatic.net/products/200001063950/479b941b-5af3-453e-a8be-35ecc719fc4d_d2b2274fbcd64ae88dc444d850e0eb4d.jpg"
+      },
+      {
+        "id": 1165898682,
+        "sku": "740244",
+        "name": "Size 20",
+        "price": 550000,
+        "stock": 3,
+        "color": "Gray",
+        "size": "20",
+        "image_url": "https://cdn.hstatic.net/products/200001063950/d1b-2a8c-4f87-9114-bcb2c9756ce8_148476bd9d104b679cf8e93479fc23c7_large_687ac93f4e7c423ebcdf08056851f119.jpg"
+      }
+    ]
   },
   {
     "id": 1072436183,
-    "stock": 19,
+    "stock": 4,
     "title": "Túi đựng laptop Think Tank Retrospective Laptop Sleeve",
     "desc": "Túi đựng laptop Think Tank Retrospective Laptop Sleeve Hầu hết các hành lý và ba lô không có ngăn đựng máy tính xách tay có đệm, vì vậy bạn cần mang theo của riêng mình. Có sẵn hai kích cỡ, bao đựng m...",
     "price": 990000,
@@ -1400,11 +2306,33 @@ export const PRODUCTS = [
       "dimensions": "24 x 35.5 x 2 cm",
       "weight": "200 g",
       "warranty": "12 tháng chính hãng"
-    }
+    },
+    "variants": [
+      {
+        "id": 1164231427,
+        "sku": "740106",
+        "name": "Sleeve 14",
+        "price": 990000,
+        "stock": 0,
+        "color": "Black",
+        "size": "Sleeve 14",
+        "image_url": "https://cdn.hstatic.net/products/200001063950/t_i_d_ng_laptop_think_tank_retrospective_laptop_sleeve_14___2__dc5cec460a514ebeb50024865b16ce38.jpg"
+      },
+      {
+        "id": 1165578662,
+        "sku": "740107",
+        "name": "Sleeve 16",
+        "price": 990000,
+        "stock": 4,
+        "color": "Black",
+        "size": "Sleeve 16",
+        "image_url": "https://cdn.hstatic.net/products/200001063950/e53-1d18-4eba-b4db-6d136498a840_d8362adc16a84046960a8f20aa92a8c3_large_7975bb02b6594ca58730388a3cfb2c27.jpg"
+      }
+    ]
   },
   {
     "id": 1072184858,
-    "stock": 5,
+    "stock": 18,
     "title": "Túi Đựng Lens Think Tank Lens Changer",
     "desc": "Túi Đựng Lens Think Tank Lens Changer 150-600 V3.0 màu đen này của Think Tank Photo là một túi nylon chống nước được thiết kế để chứa các ống kính lớn chẳng hạn như 150-600 f/5-6.3 hoặc 300mm f/2.8.  ...",
     "price": 730000,
@@ -1437,11 +2365,73 @@ export const PRODUCTS = [
       "dimensions": "14 × 32 × 14.2 cm",
       "weight": "200 g",
       "warranty": "12 tháng chính hãng"
-    }
+    },
+    "variants": [
+      {
+        "id": 1163725937,
+        "sku": "700053",
+        "name": "15 V3.0",
+        "price": 730000,
+        "stock": 2,
+        "color": "Black",
+        "size": "15 V3.0",
+        "image_url": "https://cdn.hstatic.net/products/200001063950/d8d718e7-71c9-4f06-946f-ca9ef6eee0ae_762deba1cac148c6a788a1d4be0d8a82.jpg"
+      },
+      {
+        "id": 1165900052,
+        "sku": "700054",
+        "name": "25 V3.0",
+        "price": 850000,
+        "stock": 2,
+        "color": "Black",
+        "size": "25 V3.0",
+        "image_url": "https://cdn.hstatic.net/products/200001063950/50c-c412-42c4-adf7-a6c4149d31b2_681851eba06642878016ee7e72865241_large_af0a22eb7d914e70b78dbf976048c743.jpg"
+      },
+      {
+        "id": 1165900244,
+        "sku": "700055",
+        "name": "35 V3.0",
+        "price": 890000,
+        "stock": 8,
+        "color": "Black",
+        "size": "35 V3.0",
+        "image_url": "https://cdn.hstatic.net/products/200001063950/803-eec1-45ac-8354-2a74b7df41af_3d895107890b40dca26d66dbcce23700_large_e1554460048f4e22ac3c0b0e5d0106de.jpg"
+      },
+      {
+        "id": 1165900507,
+        "sku": "700056",
+        "name": "50 V3.0",
+        "price": 910000,
+        "stock": 2,
+        "color": "Black",
+        "size": "50 V3.0",
+        "image_url": "https://cdn.hstatic.net/products/200001063950/f82-9c39-4dab-b46c-6183ce6f234f_f434c6366e92451e8c197de274b0e264_large_76cad5631e624992bc35fb926120ebb0.jpg"
+      },
+      {
+        "id": 1165900601,
+        "sku": "700057",
+        "name": "75 Pop Down V3.0",
+        "price": 1140000,
+        "stock": 2,
+        "color": "Black",
+        "size": "75 Pop Down V3.0",
+        "image_url": "https://cdn.hstatic.net/products/200001063950/048-0129-4391-b64e-b97902633f78_2b0399d3b09142c388d7bce8fc5acc9d_large_f06dc30608514140844b89a617b8678f.jpg"
+      },
+      {
+        "id": 1165899781,
+        "sku": "700058",
+        "name": "150-600 V3.0",
+        "price": 1300000,
+        "stock": 2,
+        "color": "Black",
+        "size": "150-600 V3.0",
+        "image_url": "https://cdn.hstatic.net/products/200001063950/18e-a76f-4a67-a24d-6237881eca4a_eb9bb78d9eb1487db164b3584af12be7_large_cd4f77512ff84567bc4b00b84df2935e.jpeg"
+      }
+    ]
   },
   {
     "id": 1072184864,
-    "stock": 16,
+    "stock": 6,
     "title": "Túi Đựng Lens Think Tank Skin 50 V3.0",
     "desc": "Túi đựng lens Think Tank Skin 50 V3.0 – Nhỏ gọn, linh hoạt, sẵn sàng tác nghiệp   Là một phần của hệ thống Modular Belt System V3.0, Skin 50 V3.0 được thiết kế dành cho những nhiếp ảnh gia cần một giả...",
     "price": 1080000,
@@ -1467,11 +2457,23 @@ export const PRODUCTS = [
       "dimensions": "14 × 17.8 × 10.2 cm",
       "weight": "400 g",
       "warranty": "12 tháng chính hãng"
-    }
+    },
+    "variants": [
+      {
+        "id": 1163725943,
+        "sku": "700059",
+        "name": "Default Title",
+        "price": 1080000,
+        "stock": 6,
+        "color": "Black",
+        "size": "Standard",
+        "image_url": "https://cdn.hstatic.net/products/200001063950/2539d43c-ed81-43e4-9c4d-9102c9ccdade_e3ad6b1f6dd7410e98def34551bd950e.jpg"
+      }
+    ]
   },
   {
     "id": 1072184865,
-    "stock": 12,
+    "stock": 2,
     "title": "Túi Đựng Lens Think Tank Skin 75 Pop Down V3.0",
     "desc": "Túi đựng lens Think Tank Skin 75 Pop Down V3.0 – Linh hoạt cho tele zoom chuyên nghiệp   Là một phần của hệ thống Modular Belt System V3.0, Skin 75 Pop-Down V3.0 được thiết kế dành riêng cho các ống k...",
     "price": 1320000,
@@ -1494,11 +2496,23 @@ export const PRODUCTS = [
       "dimensions": "14 × 25.4–35.6 × 10.2 cm",
       "weight": "200 g",
       "warranty": "12 tháng chính hãng"
-    }
+    },
+    "variants": [
+      {
+        "id": 1163725944,
+        "sku": "700060",
+        "name": "Default Title",
+        "price": 1320000,
+        "stock": 2,
+        "color": "Black",
+        "size": "Standard",
+        "image_url": "https://cdn.hstatic.net/products/200001063950/c4f4155c-66f0-435b-8290-acf2f80e6e7b_b539ff485b3945f086de652e3bafd054.jpeg"
+      }
+    ]
   },
   {
     "id": 1074425660,
-    "stock": 4,
+    "stock": 19,
     "title": "Túi máy ảnh đeo chéo Think Tank TurnStyle 11L",
     "desc": "Túi máy ảnh đeo chéo Think Tank TurnStyle Gọn Nhẹ Cho Nhiếp Ảnh Gia Di Chuyển Liên Tục   Tính Năng Nổi Bật - Thiết kế đeo chéo xoay nhanh, truy cập máy ảnh chỉ trong vài giây - Khoang chính mở rộng gi...",
     "price": 2740000,
@@ -1528,11 +2542,53 @@ export const PRODUCTS = [
       "dimensions": "21.5 x 39 x 11 cm",
       "weight": "800 g",
       "warranty": "12 tháng chính hãng"
-    }
+    },
+    "variants": [
+      {
+        "id": 1168994301,
+        "sku": "710914",
+        "name": "Asphalt Black",
+        "price": 2740000,
+        "stock": 4,
+        "color": "Asphalt Black",
+        "size": "11L",
+        "image_url": "https://cdn.hstatic.net/products/200001063950/turnstyle_11l_v3_asphalt_-_left_b92b9818b0e44093bc7a40beb1523464.jpg"
+      },
+      {
+        "id": 1168994320,
+        "sku": "710915",
+        "name": "Greenway",
+        "price": 2740000,
+        "stock": 5,
+        "color": "Greenway",
+        "size": "11L",
+        "image_url": "https://cdn.hstatic.net/products/200001063950/turnstyle_11l_v3_greenway_-_hero_with_gear_-_right_da6c37a6679a4d9ea5a8c00a8a61f87b.jpg"
+      },
+      {
+        "id": 1168994339,
+        "sku": "710916",
+        "name": "Golden Hour",
+        "price": 2740000,
+        "stock": 5,
+        "color": "Golden Hour",
+        "size": "11L",
+        "image_url": "https://cdn.hstatic.net/products/200001063950/turnstyle_11l_v3_golden_hour_-_left_8fc4a3ea4a6943c292403f771f03d70b.jpg"
+      },
+      {
+        "id": 1168994362,
+        "sku": "710917",
+        "name": "Urban Rust",
+        "price": 2740000,
+        "stock": 5,
+        "color": "Urban Rust",
+        "size": "11L",
+        "image_url": "https://cdn.hstatic.net/products/200001063950/turnstyle_11l_v3_urban_rust_-_left_b86cb83573014b7ea5218356466fa261.jpg"
+      }
+    ]
   },
   {
     "id": 1074425166,
-    "stock": 18,
+    "stock": 22,
     "title": "Túi máy ảnh đeo chéo Think Tank TurnStyle 5L",
     "desc": "Túi máy ảnh đeo chéo Think Tank TurnStyle Gọn Nhẹ Cho Nhiếp Ảnh Gia Di Chuyển Liên Tục Tính Năng Nổi Bật - Thiết kế đeo chéo xoay nhanh, truy cập máy ảnh chỉ trong vài giây - Khoang chính mở rộng giúp...",
     "price": 2320000,
@@ -1562,7 +2618,49 @@ export const PRODUCTS = [
       "dimensions": "16 x 30 x 8 cm",
       "weight": "580 g",
       "warranty": "12 tháng chính hãng"
-    }
+    },
+    "variants": [
+      {
+        "id": 1168992968,
+        "sku": "710906",
+        "name": "Asphalt Black",
+        "price": 2320000,
+        "stock": 6,
+        "color": "Asphalt Black",
+        "size": "5L",
+        "image_url": "https://cdn.hstatic.net/products/200001063950/turnstyle_5l_v3_asphalt_-_hero_with_gear_-_right_ca7d65a5348d48d6a2491bcf6408b5b0.jpg"
+      },
+      {
+        "id": 1168993061,
+        "sku": "710907",
+        "name": "Greenway",
+        "price": 2320000,
+        "stock": 6,
+        "color": "Greenway",
+        "size": "5L",
+        "image_url": "https://cdn.hstatic.net/products/200001063950/turnstyle_5l_v3_greenway_-_hero_with_gear_-_right_a875ec379faf468d9ee6ab4fe2c89bd4.jpg"
+      },
+      {
+        "id": 1168993074,
+        "sku": "710908",
+        "name": "Golden Hour",
+        "price": 2320000,
+        "stock": 4,
+        "color": "Golden Hour",
+        "size": "5L",
+        "image_url": "https://cdn.hstatic.net/products/200001063950/turnstyle_5l_v3_golden_hour_-_hero_with_gear_-_right_d3a5acc08e794d0e92a8e020a9f60ea1.jpg"
+      },
+      {
+        "id": 1168993084,
+        "sku": "710909",
+        "name": "Urban Rust",
+        "price": 2320000,
+        "stock": 6,
+        "color": "Urban Rust",
+        "size": "5L",
+        "image_url": "https://cdn.hstatic.net/products/200001063950/turnstyle_5l_v3_urban_rust_-_hero_with_gear_-_right_72a0d0e8860a443db8a560fd5ada6e8d.jpg"
+      }
+    ]
   },
   {
     "id": 1074425532,
@@ -1597,11 +2695,53 @@ export const PRODUCTS = [
       "dimensions": "19 x 34 x 10 cm",
       "weight": "660 g",
       "warranty": "12 tháng chính hãng"
-    }
+    },
+    "variants": [
+      {
+        "id": 1168993914,
+        "sku": "710910",
+        "name": "Asphalt Black",
+        "price": 2460000,
+        "stock": 5,
+        "color": "Asphalt Black",
+        "size": "8L",
+        "image_url": "https://cdn.hstatic.net/products/200001063950/turnstyle_8l_v3_asphalt_-_hero_with_gear_-_right_baf4021877604fe8a4c7b448b8992d07.jpg"
+      },
+      {
+        "id": 1168993958,
+        "sku": "710911",
+        "name": "Greenway",
+        "price": 2460000,
+        "stock": 5,
+        "color": "Greenway",
+        "size": "8L",
+        "image_url": "https://cdn.hstatic.net/products/200001063950/turnstyle_8l_v3_greenway_-_hero_with_gear_-_right_847ec944de144e7d8bbe8e99602f4d3e.jpg"
+      },
+      {
+        "id": 1168993962,
+        "sku": "710912",
+        "name": "Golden Hour",
+        "price": 2460000,
+        "stock": 4,
+        "color": "Golden Hour",
+        "size": "8L",
+        "image_url": "https://cdn.hstatic.net/products/200001063950/turnstyle_8l_v3_golden_hour_-_hero_with_gear_-_right_07ab19f21aa243d1a79019fa7a1a485b.jpg"
+      },
+      {
+        "id": 1168993967,
+        "sku": "710913",
+        "name": "Urban Rust",
+        "price": 2460000,
+        "stock": 5,
+        "color": "Urban Rust",
+        "size": "8L",
+        "image_url": "https://cdn.hstatic.net/products/200001063950/turnstyle_8l_v3_urban_rust_-_hero_with_gear_-_right_e2ba960dbbea46d2b807d84c77ecd492.jpg"
+      }
+    ]
   },
   {
     "id": 1072133598,
-    "stock": 9,
+    "stock": 25,
     "title": "Túi Máy Ảnh Think Tank Digital Holster",
     "desc": "Think Tank Digital Holster được thiết kế dạng bao (holster) nhỏ gọn, cho phép rút máy và chụp nhanh như một “bao súng” chuyên dụng. Tất cả các phiên bản đều có tính năng “Bật xuống” giúp mở rộng chiều...",
     "price": 810000,
@@ -1634,11 +2774,63 @@ export const PRODUCTS = [
       "dimensions": "18.4 x 28.6–36.2 x 18.4 cm",
       "weight": "500 g",
       "warranty": "12 tháng chính hãng"
-    }
+    },
+    "variants": [
+      {
+        "id": 1163581870,
+        "sku": "710861",
+        "name": "10 V2.0",
+        "price": 810000,
+        "stock": 8,
+        "color": "Black",
+        "size": "10 V2.0",
+        "image_url": "https://cdn.hstatic.net/products/200001063950/fe95e539-f494-46ab-ac23-25ab337809a6_bb20ad192e664091b30559f8cc48e3ae.jpg"
+      },
+      {
+        "id": 1165578944,
+        "sku": "710866",
+        "name": "20 V2.0",
+        "price": 990000,
+        "stock": 4,
+        "color": "Black",
+        "size": "20 V2.0",
+        "image_url": "https://cdn.hstatic.net/products/200001063950/fd8-b635-4482-985f-417a0ae3db1b_0589ce6da8a140c8b9d813ae0c0e0d5c_large_8f361f49b3e84150b9c238a172bc6982.jpg"
+      },
+      {
+        "id": 1165578967,
+        "sku": "710876",
+        "name": "40 V2.0",
+        "price": 1190000,
+        "stock": 2,
+        "color": "Black",
+        "size": "40 V2.0",
+        "image_url": "https://cdn.hstatic.net/products/200001063950/6b4-6e50-4da5-ba57-11896ff56ce5_54563d272cb749d18373286c8fb4ffa2_large_56fea07de5804836abe7a5186b97d30f.jpg"
+      },
+      {
+        "id": 1165579043,
+        "sku": "710871",
+        "name": "30 V2.0",
+        "price": 1120000,
+        "stock": 6,
+        "color": "Black",
+        "size": "30 V2.0",
+        "image_url": "https://cdn.hstatic.net/products/200001063950/80b-65bb-4bfb-8d70-e1b44859ec6e_271f1708c67644b798ceb995f13e5635_large_b9c3c16525ca400f8143ed5b0e667601.jpg"
+      },
+      {
+        "id": 1165579098,
+        "sku": "710881",
+        "name": "50 V2.0",
+        "price": 1250000,
+        "stock": 5,
+        "color": "Black",
+        "size": "50 V2.0",
+        "image_url": "https://cdn.hstatic.net/products/200001063950/bd8-aea9-4a38-b42f-b134e6993493_1aa8d1db7b944b6989b39b18af0cb38c_large_3e115bdf015a446080ee0d903c027b92.jpg"
+      }
+    ]
   },
   {
     "id": 1074066389,
-    "stock": 11,
+    "stock": 3,
     "title": "Túi máy ảnh Think Tank Digital Holster 150",
     "desc": "Hãy trải nghiệm những lợi ích của việc cất giữ, vận chuyển và bảo vệ máy ảnh của bạn cũng như ống kính 150-600mm đi kèm cùng với các phụ kiện liên quan trong Túi Máy Ảnh Think Tank Digital Holster 150...",
     "price": 1530000,
@@ -1663,11 +2855,23 @@ export const PRODUCTS = [
       "dimensions": "18.4 x 39 x 18.4 cm",
       "weight": "800 g",
       "warranty": "12 tháng chính hãng"
-    }
+    },
+    "variants": [
+      {
+        "id": 1168003992,
+        "sku": "710883",
+        "name": "150",
+        "price": 1530000,
+        "stock": 3,
+        "color": "Black",
+        "size": "150",
+        "image_url": "https://cdn.hstatic.net/products/200001063950/9cb-6a5d-4f38-acac-de0d0bb76acd_2d83b24c2b08452e899b265319dd5394_large_66ab6c1e2a9b46df9661c248257f85dc.jpeg"
+      }
+    ]
   },
   {
     "id": 1074066301,
-    "stock": 3,
+    "stock": 6,
     "title": "Túi máy ảnh Think Tank Digital Holster 5",
     "desc": "Túi Máy Ảnh Think Tank Digital Holster 5 là một chiếc túi kiểu bao da với lớp đệm xốp kín được thiết kế để vừa với máy ảnh không gương lật cỡ nhỏ đến trung bình cùng với một ống kính kèm theo có chiều...",
     "price": 640000,
@@ -1691,11 +2895,23 @@ export const PRODUCTS = [
       "dimensions": "13 x 9 x 13.5 cm",
       "weight": "400 g",
       "warranty": "12 tháng chính hãng"
-    }
+    },
+    "variants": [
+      {
+        "id": 1168003850,
+        "sku": "710858",
+        "name": "5",
+        "price": 640000,
+        "stock": 6,
+        "color": "Black",
+        "size": "5",
+        "image_url": "https://cdn.hstatic.net/products/200001063950/digital_holster_5_v2-1_a2a72c671f804ec3b7c5f7a6afb91bf8.jpg"
+      }
+    ]
   },
   {
     "id": 1072133601,
-    "stock": 8,
+    "stock": 15,
     "title": "Túi máy ảnh Think Tank Digital Holster V3 Black",
     "desc": "Dòng sản phẩm Digital Holster V3 là kết quả trực tiếp của phản hồi mà chúng tôi nhận được từ khách hàng. Để đáp lại, nhóm thiết kế Think Tank đã kết hợp các tính năng mới nâng cao tính linh hoạt và ch...",
     "price": 2760000,
@@ -1745,11 +2961,83 @@ export const PRODUCTS = [
       "dimensions": "14 × 32 × 14.2 cm",
       "weight": "800 g",
       "warranty": "12 tháng chính hãng"
-    }
+    },
+    "variants": [
+      {
+        "id": 1163581873,
+        "sku": "710879",
+        "name": "Size 150",
+        "price": 2760000,
+        "stock": 2,
+        "color": "Black",
+        "size": "150",
+        "image_url": "https://cdn.hstatic.net/products/200001063950/e9bab01c-94cc-4c7c-aa33-818c4fbcb281_afec4556c97543e49255a32c546e59b6.jpg"
+      },
+      {
+        "id": 1165562711,
+        "sku": "710878",
+        "name": "Size 50",
+        "price": 2260000,
+        "stock": 2,
+        "color": "Black",
+        "size": "50",
+        "image_url": "https://cdn.hstatic.net/products/200001063950/84b-8c24-447e-9308-01acdf720ae1_3f523f1825f44a7bb6a271c54adab16f_large_0ca21551860748399d6d0f607b61df75.jpg"
+      },
+      {
+        "id": 1165562736,
+        "sku": "710877",
+        "name": "Size 40",
+        "price": 2120000,
+        "stock": 2,
+        "color": "Black",
+        "size": "40",
+        "image_url": "https://cdn.hstatic.net/products/200001063950/9bd-8b90-46de-a9c2-1469cdce1396_194082e3d89c4e5986973bb15046bf9f_large_e483c8b3767b432bb30bd75ed121817d.jpg"
+      },
+      {
+        "id": 1165562784,
+        "sku": "710864",
+        "name": "Size 30",
+        "price": 1960000,
+        "stock": 2,
+        "color": "Black",
+        "size": "30",
+        "image_url": "https://cdn.hstatic.net/products/200001063950/59e-e1bd-4e87-a40c-7fa42b262298_5d946983dbe544faba2010ba913a243d_large_759756edd8ab486cb440867780643c35.jpg"
+      },
+      {
+        "id": 1165562802,
+        "sku": "710863",
+        "name": "Size 20",
+        "price": 1850000,
+        "stock": 2,
+        "color": "Black",
+        "size": "20",
+        "image_url": "https://cdn.hstatic.net/products/200001063950/db3-3cee-4da5-b3e6-46ddb4f88130_591ae5e594da4d8d827ec063841dc64d_large_7f3824bfcb3940e38a13c52f8b4a6b7a.jpg"
+      },
+      {
+        "id": 1165562823,
+        "sku": "710862",
+        "name": "Size 10",
+        "price": 1720000,
+        "stock": 2,
+        "color": "Black",
+        "size": "10",
+        "image_url": "https://cdn.hstatic.net/products/200001063950/60f-2452-4af7-b036-8cadbd67554f_0b62e8fad6c245dd9d9eeb0dd2870581_large_4aa5de0832734e57a488b9a78feedb91.jpg"
+      },
+      {
+        "id": 1165562920,
+        "sku": "710859",
+        "name": "Size 5",
+        "price": 1450000,
+        "stock": 3,
+        "color": "Black",
+        "size": "5",
+        "image_url": "https://cdn.hstatic.net/products/200001063950/3f6-d968-480b-99a1-76dd4f8d5d65_36a8324f3a654213a98d495b5006a6aa_large_fec060f273d64f1bb586e656383931e2.jpg"
+      }
+    ]
   },
   {
     "id": 1072184889,
-    "stock": 17,
+    "stock": 2,
     "title": "Túi máy ảnh Think Tank Hubba Hubba Hiney V3.0 Charcoal",
     "desc": "Thiết kế cho máy ảnh DSLR hoặc máy ảnh không gương lật cùng với hai đến ba ống kính. Túi máy ảnh Think Tank Hubba Hubba Hiney V3.0  của Think Tank Photo là một lựa chọn linh hoạt cho những người cần t...",
     "price": 1540000,
@@ -1778,7 +3066,19 @@ export const PRODUCTS = [
       "dimensions": "26.9 × 17 × 10 cm",
       "weight": "500 g",
       "warranty": "12 tháng chính hãng"
-    }
+    },
+    "variants": [
+      {
+        "id": 1163725968,
+        "sku": "700063",
+        "name": "Default Title",
+        "price": 1540000,
+        "stock": 2,
+        "color": "Charcoal",
+        "size": "Standard",
+        "image_url": "https://cdn.hstatic.net/products/200001063950/4ddda860-7759-425a-851d-92bd3ba8a38e_ea38a0dfc7174e6ba33727c2beb30a82.jpg"
+      }
+    ]
   },
   {
     "id": 1072184890,
@@ -1809,11 +3109,23 @@ export const PRODUCTS = [
       "dimensions": "8.9 × 14 × 5.1 cm",
       "weight": "300 g",
       "warranty": "12 tháng chính hãng"
-    }
+    },
+    "variants": [
+      {
+        "id": 1163725969,
+        "sku": "700065",
+        "name": "Default Title",
+        "price": 770000,
+        "stock": 0,
+        "color": "Black",
+        "size": "Standard",
+        "image_url": "https://cdn.hstatic.net/products/200001063950/3ad2dfcc-2ea4-43ec-bba4-9bd5d83fe670_9a8a959c3f4944a6a99a44f9b82d6da3.jpg"
+      }
+    ]
   },
   {
     "id": 1072133613,
-    "stock": 12,
+    "stock": 50,
     "title": "Túi máy ảnh Think Tank Mirrorless Mover",
     "desc": "Túi máy ảnh Think Tank Mirrorless Mover 10 - Dark Blue  Một chiếc túi nhỏ gọn được thiết kế đặc biệt cho các máy ảnh không gương lật, vừa với 1 thân máy trung bình, 1-2 ống kính và phụ kiện.   CÁC TÍN...",
     "price": 500000,
@@ -1853,11 +3165,153 @@ export const PRODUCTS = [
       "dimensions": "26.5 × 19 × 11 cm",
       "weight": "480 g",
       "warranty": "12 tháng chính hãng"
-    }
+    },
+    "variants": [
+      {
+        "id": 1165574620,
+        "sku": "710649",
+        "name": "5 Dark Blue",
+        "price": 500000,
+        "stock": 11,
+        "color": "Dark Blue",
+        "size": "5",
+        "image_url": "https://cdn.hstatic.net/products/200001063950/7ce-e8ee-4bc9-967c-255f88997d61_ba03428d62dc4a2c821893e87465e10c_large_aaf147d91be54ae3bb7aaffb06e12171.jpeg"
+      },
+      {
+        "id": 1165574679,
+        "sku": "710650",
+        "name": "5 Deep Red",
+        "price": 510000,
+        "stock": 0,
+        "color": "Deep Red",
+        "size": "5",
+        "image_url": "https://cdn.hstatic.net/products/200001063950/384-7a3e-47cc-b359-8f43e992e5bf_1b3b17b6dab74983a60d7d989a7e2c73_large_ce1597f4f5e245b99d03f5408402b7a5.jpeg"
+      },
+      {
+        "id": 1165574878,
+        "sku": "710648",
+        "name": "5 Pewter",
+        "price": 490000,
+        "stock": 12,
+        "color": "Pewter",
+        "size": "5",
+        "image_url": "https://cdn.hstatic.net/products/200001063950/a43-e0aa-4cf4-9fea-d4253f28e8b5_4abf3a0d28d5409b9e64db6a152b850d_large_9653e618b1994438b0b4d6b9885b3f54.jpeg"
+      },
+      {
+        "id": 1163581885,
+        "sku": "710891",
+        "name": "10 Green",
+        "price": 1180000,
+        "stock": 2,
+        "color": "Green",
+        "size": "10",
+        "image_url": "https://cdn.hstatic.net/products/200001063950/179930ff-aac2-42c6-bead-e30ffcdd1832_962bbdc334a94068a2bb3b4aa7f56118.jpg"
+      },
+      {
+        "id": 1165573696,
+        "sku": "710651",
+        "name": "10 Pewter",
+        "price": 640000,
+        "stock": 0,
+        "color": "Pewter",
+        "size": "10",
+        "image_url": "https://cdn.hstatic.net/products/200001063950/ecc-5a01-42f8-bf51-a967190ef76e_774eaac0839048df920c0fba7e064a52_large_93265087da6b46e5b1e22644567348ab.jpg"
+      },
+      {
+        "id": 1165573759,
+        "sku": "710892",
+        "name": "10 Blue",
+        "price": 1180000,
+        "stock": 6,
+        "color": "Blue",
+        "size": "10",
+        "image_url": "https://cdn.hstatic.net/products/200001063950/6a3-6dae-434b-b868-299c3e39ad35_3195a882ad364a7e842c745b4bcf1890_large_de81f249bbb54f26aa029dc5cc8d52ef.jpg"
+      },
+      {
+        "id": 1165573799,
+        "sku": "710654",
+        "name": "10 Dark Blue",
+        "price": 640000,
+        "stock": 0,
+        "color": "Dark Blue",
+        "size": "10",
+        "image_url": "https://cdn.hstatic.net/products/200001063950/4b6-9cd7-4e06-8543-c6c59e934251_44b923f047f5410a9590c96268758ea6_large_5f6b01dd92db44d68d7ee48d1460ef3d.jpg"
+      },
+      {
+        "id": 1165573889,
+        "sku": "710660",
+        "name": "20 Deep Red",
+        "price": 790000,
+        "stock": 0,
+        "color": "Deep Red",
+        "size": "20",
+        "image_url": "https://cdn.hstatic.net/products/200001063950/93e-f985-49d2-a3a8-56a00f66baf3_b8cf517c970c49588bc994e596aef7ad_large_99e1b94b9d564d9f83015364abc49627.jpg"
+      },
+      {
+        "id": 1165574728,
+        "sku": "710895",
+        "name": "20 Green",
+        "price": 1420000,
+        "stock": 2,
+        "color": "Green",
+        "size": "20",
+        "image_url": "https://cdn.hstatic.net/products/200001063950/k_mirrorless_mover_20_green__6__583cf9df14934183ac609f3d0f5e5fee_large_9a6ea700ccee474d89f1c4ee2dcd1609.jpg"
+      },
+      {
+        "id": 1165574161,
+        "sku": "710900",
+        "name": "25 Blue",
+        "price": 1590000,
+        "stock": 1,
+        "color": "Blue",
+        "size": "25",
+        "image_url": "https://cdn.hstatic.net/products/200001063950/ffa-1b2d-4217-805e-e8e2f3643891_7b14c1b6d02a4a42982fa5205f16a093_large_63603378a583493e80ee37d0500fd2a6.jpg"
+      },
+      {
+        "id": 1165574396,
+        "sku": "710899",
+        "name": "25 Green",
+        "price": 1590000,
+        "stock": 3,
+        "color": "Green",
+        "size": "25",
+        "image_url": "https://cdn.hstatic.net/products/200001063950/899-233a-4396-8256-252bffb9a72e_67f37c9a131a426b950708f8532b856e_large_ce202fe23dd74f69a3f455643bb90af9.jpg"
+      },
+      {
+        "id": 1165574473,
+        "sku": "710904",
+        "name": "30 Blue",
+        "price": 1820000,
+        "stock": 7,
+        "color": "Blue",
+        "size": "30",
+        "image_url": "https://cdn.hstatic.net/products/200001063950/bf5-394d-49ae-a5de-7fbaeb9d732b_50155ec3d09d4a18bbdf1ec9f27ec44b_large_1521667298084a3f947840a6834d29a5.jpg"
+      },
+      {
+        "id": 1165574554,
+        "sku": "710903",
+        "name": "30 Green",
+        "price": 1820000,
+        "stock": 6,
+        "color": "Green",
+        "size": "30",
+        "image_url": "https://cdn.hstatic.net/products/200001063950/fcf-cf7d-4d58-b9d5-1466f7e1a054_a0948426e8e145e9a62ef226921fe37a_large_47707bfd365b495783179e3af51fd14a.jpg"
+      },
+      {
+        "id": 1165574802,
+        "sku": "710672",
+        "name": "30i Pewter",
+        "price": 1310000,
+        "stock": 0,
+        "color": "Pewter",
+        "size": "30i",
+        "image_url": "https://cdn.hstatic.net/products/200001063950/mirrorless_mover_30i_pewter__2__a162d8bd717048478399e9e4898d1600_large_3ad2a8dace724f28bf2bde3c1def12f4.jpg"
+      }
+    ]
   },
   {
     "id": 1072184892,
-    "stock": 8,
+    "stock": 16,
     "title": "Túi máy ảnh Think Tank Mirrorless Mover 10",
     "desc": "Túi máy ảnh Think Tank Mirrorless Mover 10 – Nhỏ gọn, tối ưu cho máy ảnh mirrorless   Giải pháp bảo vệ và di chuyển tối ưu cho hệ máy mirrorless Túi máy ảnh Think Tank Mirrorless Mover 10 là chiếc túi...",
     "price": 1180000,
@@ -1886,11 +3340,33 @@ export const PRODUCTS = [
       "dimensions": "12.5 × 14 × 8 cm",
       "weight": "260 g",
       "warranty": "12 tháng chính hãng"
-    }
+    },
+    "variants": [
+      {
+        "id": 1163725971,
+        "sku": "710679",
+        "name": "Cool Gray",
+        "price": 1180000,
+        "stock": 3,
+        "color": "Cool Gray",
+        "size": "Standard",
+        "image_url": "https://cdn.hstatic.net/products/200001063950/a177b2af-ec14-4ec1-8411-5b237f50f0e8_32bcf58548284b4ba4cee4ad55c99cdb.jpg"
+      },
+      {
+        "id": 1165894357,
+        "sku": "710893",
+        "name": "Campfire Orange",
+        "price": 1180000,
+        "stock": 13,
+        "color": "Campfire Orange",
+        "size": "Standard",
+        "image_url": "https://cdn.hstatic.net/products/200001063950/ef5-7b07-4315-b6bb-b077e02f9104_ce0e4e4998964636a02f8f8ce56d30bc_large_1f194f5937dd404482599083e7b2475e.jpg"
+      }
+    ]
   },
   {
     "id": 1072184894,
-    "stock": 16,
+    "stock": 8,
     "title": "Túi máy ảnh Think Tank Mirrorless Mover 20",
     "desc": "Túi máy ảnh Think Tank Mirrorless Mover 20 – Nhỏ gọn, tối ưu cho máy ảnh mirrorless   Giải pháp bảo vệ và di chuyển tối ưu cho hệ máy mirrorless Think Tank Photo Mirrorless Mover 20 Shoulder Bag là ch...",
     "price": 1420000,
@@ -1924,11 +3400,43 @@ export const PRODUCTS = [
       "dimensions": "21 × 14.5 × 9 cm",
       "weight": "380 g",
       "warranty": "12 tháng chính hãng"
-    }
+    },
+    "variants": [
+      {
+        "id": 1163725973,
+        "sku": "710894",
+        "name": "Cool Gray",
+        "price": 1420000,
+        "stock": 0,
+        "color": "Cool Gray",
+        "size": "Standard",
+        "image_url": "https://cdn.hstatic.net/products/200001063950/fe6bd92f-9078-4a51-ab02-627c478280fe_9f466b13f2904a81ae0cb86a1fbb32a4.jpg"
+      },
+      {
+        "id": 1167069256,
+        "sku": "710896",
+        "name": "Marine Blue",
+        "price": 1420000,
+        "stock": 6,
+        "color": "Marine Blue",
+        "size": "Standard",
+        "image_url": "https://cdn.hstatic.net/products/200001063950/mirrorless-mover-20-hero-right-marine-blue_f018e7bb97684aa7b70100e4a7a54141.jpg"
+      },
+      {
+        "id": 1167069298,
+        "sku": "710897",
+        "name": "Campfire Orange",
+        "price": 1420000,
+        "stock": 2,
+        "color": "Campfire Orange",
+        "size": "Standard",
+        "image_url": "https://cdn.hstatic.net/products/200001063950/mirrorless-mover-20-hero-right-campfire-orange_bf93ae24cd494b1988eb7949b3625639.jpg"
+      }
+    ]
   },
   {
     "id": 1072184897,
-    "stock": 5,
+    "stock": 6,
     "title": "Túi máy ảnh Think Tank Mirrorless Mover 25",
     "desc": "Túi máy ảnh Think Tank Mirrorless Mover 25 – Không gian lớn hơn, linh hoạt cho hệ mirrorless   Giải pháp mang theo hệ mirrorless đầy đủ, gọn gàng Túi máy ảnh Think Tank Mirrorless Mover 25 được thiết ...",
     "price": 1590000,
@@ -1960,11 +3468,33 @@ export const PRODUCTS = [
       "dimensions": "26.5 × 15 × 10 cm",
       "weight": "480 g",
       "warranty": "12 tháng chính hãng"
-    }
+    },
+    "variants": [
+      {
+        "id": 1163725976,
+        "sku": "710901",
+        "name": "Campfire Orange",
+        "price": 1590000,
+        "stock": 4,
+        "color": "Campfire Orange",
+        "size": "Standard",
+        "image_url": "https://cdn.hstatic.net/products/200001063950/4f3c8873-1a78-4724-ac8e-7b9777e8b2e8_880440ba392c403d977bdf0424745108.jpg"
+      },
+      {
+        "id": 1167069363,
+        "sku": "710898",
+        "name": "Cool Gray",
+        "price": 1590000,
+        "stock": 2,
+        "color": "Cool Gray",
+        "size": "Standard",
+        "image_url": "https://cdn.hstatic.net/products/200001063950/mirrorless-mover-25-hero-left-cool-grey_9ca561e35165466c8a73478e9a9d3f8e.jpg"
+      }
+    ]
   },
   {
     "id": 1072184900,
-    "stock": 16,
+    "stock": 12,
     "title": "Túi máy ảnh Think Tank Mirrorless Mover 30",
     "desc": "Túi máy ảnh Think Tank Mirrorless Mover 30 – Dung lượng lớn, tối ưu cho hệ mirrorless và drone   Giải pháp lưu trữ linh hoạt cho thiết bị mirrorless và drone Think Tank Photo Mirrorless Mover 30 Shoul...",
     "price": 1820000,
@@ -1998,11 +3528,33 @@ export const PRODUCTS = [
       "dimensions": "26.5 × 19 × 11 cm",
       "weight": "540 g",
       "warranty": "12 tháng chính hãng"
-    }
+    },
+    "variants": [
+      {
+        "id": 1163725979,
+        "sku": "710902",
+        "name": "Cool Gray",
+        "price": 1820000,
+        "stock": 6,
+        "color": "Cool Gray",
+        "size": "Standard",
+        "image_url": "https://cdn.hstatic.net/products/200001063950/e3d71ead-cc8a-4ac0-b98d-d95383903b18_1141f9a6bd6f4011810482bbf4ac2215.jpg"
+      },
+      {
+        "id": 1167069482,
+        "sku": "710905",
+        "name": "Campfire Orange",
+        "price": 1820000,
+        "stock": 6,
+        "color": "Campfire Orange",
+        "size": "Standard",
+        "image_url": "https://cdn.hstatic.net/products/200001063950/mirrorless-mover-30-hero-right-campfire-orange_f056031659a847aa87a211e420c3d59a.jpg"
+      }
+    ]
   },
   {
     "id": 1072184904,
-    "stock": 13,
+    "stock": 32,
     "title": "Túi máy ảnh Think Tank PhotoCross",
     "desc": "Túi máy ảnh Think Tank PhotoCross  của MindShift Gear là túi đựng máy ảnh có thể đựng một máy DSLR cỡ trung cùng với một hoặc hai ống kính, hoặc một máy ảnh không gương lật có năm ống kính. TÍNH NĂNG ...",
     "price": 1930000,
@@ -2035,11 +3587,93 @@ export const PRODUCTS = [
       "dimensions": "23–28 x 39 x 12 cm",
       "weight": "1.100 g",
       "warranty": "12 tháng chính hãng"
-    }
+    },
+    "variants": [
+      {
+        "id": 1163725983,
+        "sku": "510421",
+        "name": "10 Orange Ember",
+        "price": 1930000,
+        "stock": 7,
+        "color": "Orange Ember",
+        "size": "10",
+        "image_url": "https://cdn.hstatic.net/products/200001063950/imgi_4_tui-may-anh-think-tank-photocross-10_-carbon-grey-2_3fafdb948f7f4df0a4997c96a9514883.jpg"
+      },
+      {
+        "id": 1165570106,
+        "sku": "510420",
+        "name": "10 Carbon Grey",
+        "price": 2950000,
+        "stock": 2,
+        "color": "Carbon Grey",
+        "size": "10",
+        "image_url": "https://cdn.hstatic.net/products/200001063950/nk-photocross-10_-carbon-grey-1_6dcf789a5d5742f881d109a4f0f02f48_large_2885d70fbe76431894f5c2bc27a58ec0.jpg"
+      },
+      {
+        "id": 1165570235,
+        "sku": "510423",
+        "name": "13 Orange Ember",
+        "price": 2160000,
+        "stock": 7,
+        "color": "Orange Ember",
+        "size": "13",
+        "image_url": "https://cdn.hstatic.net/products/200001063950/-anh-think-tank-photocross-13-2_401f8ffd5bcf4ead96dc5d8e364a04b8_large_24e4031088594c11a8d38382eb7862b2.jpg"
+      },
+      {
+        "id": 1165570342,
+        "sku": "510422",
+        "name": "13 Carbon Grey",
+        "price": 2120000,
+        "stock": 5,
+        "color": "Carbon Grey",
+        "size": "13",
+        "image_url": "https://cdn.hstatic.net/products/200001063950/-anh-think-tank-photocross-13-1_13ba31cb30614c01b35563d786118fc1_large_9ea0f722001b4a0a9fb9eac0d34f53be.jpg"
+      },
+      {
+        "id": 1167216935,
+        "sku": "510424",
+        "name": "11L Black",
+        "price": 3920000,
+        "stock": 3,
+        "color": "Black",
+        "size": "11L",
+        "image_url": "https://cdn.hstatic.net/products/200001063950/photocross-11l-v2-black-hero-left_94be74af8c734a98aa6ce50cbc3c381f.jpg"
+      },
+      {
+        "id": 1167216967,
+        "sku": "510425",
+        "name": "11L Sage",
+        "price": 3920000,
+        "stock": 3,
+        "color": "Sage",
+        "size": "11L",
+        "image_url": "https://cdn.hstatic.net/products/200001063950/photocross-11l-v2-green-hero-left_946b40d898a84a369b365babb3149371.jpg"
+      },
+      {
+        "id": 1167216982,
+        "sku": "510426",
+        "name": "14L Black",
+        "price": 4260000,
+        "stock": 3,
+        "color": "Black",
+        "size": "14L",
+        "image_url": "https://cdn.hstatic.net/products/200001063950/photocross-14l-v2-black-hero-left_44c929659dd64089a42ff601a788d5cf.jpg"
+      },
+      {
+        "id": 1167216995,
+        "sku": "510427",
+        "name": "14L Sage",
+        "price": 4260000,
+        "stock": 2,
+        "color": "Sage",
+        "size": "14L",
+        "image_url": "https://cdn.hstatic.net/products/200001063950/photocross-14l-v2-green-hero-left_28c28dc1cb0e42b58721222b2afeb754.jpg"
+      }
+    ]
   },
   {
     "id": 1072133626,
-    "stock": 8,
+    "stock": 4,
     "title": "Túi máy ảnh Think Tank Presspass Black",
     "desc": "Túi máy ảnh Think Tank Presspass – Túi đeo vai nhỏ gọn cho nhiếp ảnh gia tác nghiệp nhanh   Điểm nổi bật của Think Tank PressPass - Thiết kế nhỏ gọn, tối ưu cho tác nghiệp nhanh - Truy cập thiết bị nh...",
     "price": 2790000,
@@ -2070,11 +3704,33 @@ export const PRODUCTS = [
       "dimensions": "31.5 x 11 x 20.5 cm",
       "weight": "680 g",
       "warranty": "12 tháng chính hãng"
-    }
+    },
+    "variants": [
+      {
+        "id": 1163581899,
+        "sku": "710470",
+        "name": "10 Black",
+        "price": 2790000,
+        "stock": 2,
+        "color": "Black",
+        "size": "10",
+        "image_url": "https://cdn.hstatic.net/products/200001063950/2261bab3-c016-45ce-8b6e-499b5bcc14b6_941208210c0f49f4947af2424d002697.jpg"
+      },
+      {
+        "id": 1165575370,
+        "sku": "710471",
+        "name": "20 Black",
+        "price": 3050000,
+        "stock": 2,
+        "color": "Black",
+        "size": "20",
+        "image_url": "https://cdn.hstatic.net/products/200001063950/e70-aeab-465a-a833-57d5077c7e42_296eea6970624797ac1ce415cd5ee193_large_f11a74827a6947649b949491828a458c.jpg"
+      }
+    ]
   },
   {
     "id": 1072133628,
-    "stock": 14,
+    "stock": 2,
     "title": "Túi máy ảnh Think Tank Presspass Sling Black",
     "desc": "Túi Think Tank PressPass Sling Bag – Linh hoạt, gọn nhẹ cho tác nghiệp di động Think Tank Photo PressPass Sling Bag là chiếc túi máy ảnh đa năng được thiết kế dành cho nhiếp ảnh gia và content creator...",
     "price": 2540000,
@@ -2101,11 +3757,23 @@ export const PRODUCTS = [
       "dimensions": "36.5 x 10.75 x 18.5 cm",
       "weight": "190 g",
       "warranty": "12 tháng chính hãng"
-    }
+    },
+    "variants": [
+      {
+        "id": 1163581901,
+        "sku": "710472",
+        "name": "Default Title",
+        "price": 2540000,
+        "stock": 2,
+        "color": "Black",
+        "size": "Standard",
+        "image_url": "https://cdn.hstatic.net/products/200001063950/9afebd09-3b0a-42be-9387-da8d454fbcb5_4b1c0a0454394731b8c23fcf87346b3d.jpg"
+      }
+    ]
   },
   {
     "id": 1072133637,
-    "stock": 3,
+    "stock": 47,
     "title": "Túi máy ảnh Think Tank Retrospective",
     "desc": "Là một phần của dòng túi đeo vai Retrospective V2.0 có kích thước phù hợp với các hệ thống máy ảnh Rangefinder và Mirrorless như Leica, Sony và Fujifilm. Với vẻ ngoài bằng vải bạt cổ điển, chiếc túi m...",
     "price": 2840000,
@@ -2135,11 +3803,133 @@ export const PRODUCTS = [
       "dimensions": "38 × 26.7 × 17 cm",
       "weight": "1700 g",
       "warranty": "12 tháng chính hãng"
-    }
+    },
+    "variants": [
+      {
+        "id": 1163581910,
+        "sku": "710704",
+        "name": "4 V2.0 Pinestone",
+        "price": 2840000,
+        "stock": 3,
+        "color": "Pinestone",
+        "size": "4 V2.0",
+        "image_url": "https://cdn.hstatic.net/products/200001063950/4ab06834-f5f1-44aa-8d43-f990f3c7779e_98d5ad5fac394d37a86f98a1fedc9244.jpg"
+      },
+      {
+        "id": 1165572183,
+        "sku": "710705",
+        "name": "4 V2.0 Black",
+        "price": 2840000,
+        "stock": 3,
+        "color": "Black",
+        "size": "4 V2.0",
+        "image_url": "https://cdn.hstatic.net/products/200001063950/_retrospective_4_v2.0_black__3__4279dcf24cac44a7b4738c74b20ecb2a_large_369408fc6bf44aa3bd64132b070ebab6.jpg"
+      },
+      {
+        "id": 1165572221,
+        "sku": "710728",
+        "name": "5 V2.0 Pinestone",
+        "price": 4290000,
+        "stock": 2,
+        "color": "Pinestone",
+        "size": "5 V2.0",
+        "image_url": "https://cdn.hstatic.net/products/200001063950/rospective_5_v2.0_pinestone__2__301cbeae14104704913816242babcd90_large_c6dcbe36f4dd43caa81c51f1591bd0b3.jpg"
+      },
+      {
+        "id": 1165571970,
+        "sku": "710729",
+        "name": "5 V2.0 Black",
+        "price": 4290000,
+        "stock": 3,
+        "color": "Black",
+        "size": "5 V2.0",
+        "image_url": "https://cdn.hstatic.net/products/200001063950/ebe-20ca-4fb5-a4cf-fcb6730e67ec_03629222b66b41bf937d18f9534b33b4_large_5ac56d82e8a640f58e9af5ab5af43196.jpg"
+      },
+      {
+        "id": 1165572342,
+        "sku": "710731",
+        "name": "7 V2.0 Pinestone",
+        "price": 4780000,
+        "stock": 2,
+        "color": "Pinestone",
+        "size": "7 V2.0",
+        "image_url": "https://cdn.hstatic.net/products/200001063950/4ab06834-f5f1-44aa-8d43-f990f3c7779e_98d5ad5fac394d37a86f98a1fedc9244.jpg"
+      },
+      {
+        "id": 1165572001,
+        "sku": "710732",
+        "name": "7 V2.0 Black",
+        "price": 4780000,
+        "stock": 5,
+        "color": "Black",
+        "size": "7 V2.0",
+        "image_url": "https://cdn.hstatic.net/products/200001063950/250-a179-41bb-9ea8-d3e099026d90_ca543ebd1829405f929f0a1e9f42cccc_large_664bc838d29b423db3acc1c00f53c60d.jpg"
+      },
+      {
+        "id": 1165572417,
+        "sku": "710751",
+        "name": "10 V2.0 Pinestone",
+        "price": 4690000,
+        "stock": 5,
+        "color": "Pinestone",
+        "size": "10 V2.0",
+        "image_url": "https://cdn.hstatic.net/products/200001063950/710751_786a6da107ce4ee2ac3af1fa6e6cd8c9.jpg"
+      },
+      {
+        "id": 1165572453,
+        "sku": "710753",
+        "name": "10 V2.0 Black",
+        "price": 4690000,
+        "stock": 7,
+        "color": "Black",
+        "size": "10 V2.0",
+        "image_url": "https://cdn.hstatic.net/products/200001063950/f63-0b25-475a-b8a6-d4b46b1809f1_7d7f57874620435e99ee21d78e44feb4_large_453686f5d3754eb8a8cf381d263c5b5d.jpg"
+      },
+      {
+        "id": 1165572361,
+        "sku": "710759",
+        "name": "20 V2.0 Pinestone",
+        "price": 5010000,
+        "stock": 6,
+        "color": "Pinestone",
+        "size": "20 V2.0",
+        "image_url": "https://cdn.hstatic.net/products/200001063950/74b-ca69-4c74-93ee-02eee9dc7f94_1bf5128b4b2445798559aca2c9c3c5d3_large_c6a757a5f7e141838d6c3ff78b73fe96.jpg"
+      },
+      {
+        "id": 1165572095,
+        "sku": "710761",
+        "name": "20 V2.0 Black",
+        "price": 5010000,
+        "stock": 2,
+        "color": "Black",
+        "size": "20 V2.0",
+        "image_url": "https://cdn.hstatic.net/products/200001063950/46c-db1d-481a-a068-fe7f69687e3d_3d2fc9b403ae45fc99827c6c123ae2e9_large_832c43b5f6be4db6b3d638a1fa00866e.jpg"
+      },
+      {
+        "id": 1165572070,
+        "sku": "710767",
+        "name": "30 V2.0 Pinestone",
+        "price": 5530000,
+        "stock": 2,
+        "color": "Pinestone",
+        "size": "30 V2.0",
+        "image_url": "https://cdn.hstatic.net/products/200001063950/d2c-b8b0-4159-a949-cc470b7961ab_3d47670dfd8445cd9e4ed0847d18f0ed_large_b813bc53f4734068ab1dea819b23e872.jpeg"
+      },
+      {
+        "id": 1165572033,
+        "sku": "710769",
+        "name": "30 V2.0 Black",
+        "price": 5530000,
+        "stock": 7,
+        "color": "Black",
+        "size": "30 V2.0",
+        "image_url": "https://cdn.hstatic.net/products/200001063950/d08-0e54-4544-88e6-f336b8bf6402_dab3e72d66b043b6aef69dd7055e84cc_large_8fd45845da9243079fb169968762c813.jpeg"
+      }
+    ]
   },
   {
     "id": 1072184908,
-    "stock": 15,
+    "stock": 3,
     "title": "Túi máy ảnh Think Tank Speed Changer V3.0 Black",
     "desc": "Túi máy ảnh Think Tank Speed Changer V3.0 – Túi đeo hông đa năng cho nhiếp ảnh gia chuyên nghiệp   Giải pháp lưu trữ linh hoạt trong hệ Modular Belt System V3.0 Think Tank Photo Speed Changer V3.0 là ...",
     "price": 1420000,
@@ -2166,11 +3956,23 @@ export const PRODUCTS = [
       "dimensions": "19 × 17 × 7.6 cm",
       "weight": "100 g",
       "warranty": "12 tháng chính hãng"
-    }
+    },
+    "variants": [
+      {
+        "id": 1163725987,
+        "sku": "700067",
+        "name": "Default Title",
+        "price": 1420000,
+        "stock": 3,
+        "color": "Black",
+        "size": "Standard",
+        "image_url": "https://cdn.hstatic.net/products/200001063950/8d9eda87-8b50-4146-9026-ad5f2cc10513_b10893c5d8f64fa585f10c6a0c2c7d6a.jpg"
+      }
+    ]
   },
   {
     "id": 1072184911,
-    "stock": 9,
+    "stock": 14,
     "title": "Túi máy ảnh Think Tank SpeedTop Crossbody Graphite",
     "desc": "Túi máy ảnh Dòng SpeedTop™ có nắp nam châm sáng tạo cho phép truy cập thiết bị nhanh chóng và không gây tiếng ồn. Mở nắp chỉ cần một tay và đóng an toàn mà không cần khóa kéo. Bất kể phong cách chụp c...",
     "price": 3530000,
@@ -2189,11 +3991,33 @@ export const PRODUCTS = [
       "dimensions": "28.5 x 20 x 10 cm",
       "weight": "800 g",
       "warranty": "12 tháng chính hãng"
-    }
+    },
+    "variants": [
+      {
+        "id": 1163725990,
+        "sku": "710633",
+        "name": "Size 15",
+        "price": 3530000,
+        "stock": 7,
+        "color": "Graphite",
+        "size": "15",
+        "image_url": "https://cdn.hstatic.net/products/200001063950/22846776-c08a-420b-b771-2769fab8de66_2dd23a23a08548fcb88f8fb5a0cc9498.png"
+      },
+      {
+        "id": 1165898169,
+        "sku": "710630",
+        "name": "Size 10",
+        "price": 1940000,
+        "stock": 7,
+        "color": "Graphite",
+        "size": "10",
+        "image_url": "https://cdn.hstatic.net/products/200001063950/b74-e0b0-4666-99e3-0f6089218f12_d8aae14b46954fc7bfe96e8310975d63_large_7549ce7e16394aa48d78489ebab641a6.png"
+      }
+    ]
   },
   {
     "id": 1072184912,
-    "stock": 12,
+    "stock": 2,
     "title": "Túi máy ảnh Think Tank Stuff It! Black",
     "desc": "Túi máy ảnh Think Tank Stuff It – Túi đeo hông đa năng, linh hoạt cho nhiếp ảnh gia   Giải pháp lưu trữ nhanh gọn trong hệ Modular Belt System V3.0 Túi máy ảnh Think Tank Stuff It là chiếc túi đeo hôn...",
     "price": 980000,
@@ -2221,11 +4045,23 @@ export const PRODUCTS = [
       "dimensions": "12 × 16 × 6.4 cm",
       "weight": "300 g",
       "warranty": "12 tháng chính hãng"
-    }
+    },
+    "variants": [
+      {
+        "id": 1163725991,
+        "sku": "700064",
+        "name": "Default Title",
+        "price": 980000,
+        "stock": 2,
+        "color": "Black",
+        "size": "Standard",
+        "image_url": "https://cdn.hstatic.net/products/200001063950/f872d671-9dbf-4b20-ad05-e54b9b8ee5ae_83e7cd9b263d403bb45f69cb30e05539.jpg"
+      }
+    ]
   },
   {
     "id": 1072184913,
-    "stock": 18,
+    "stock": 23,
     "title": "Túi máy ảnh Think Tank TurnStyle®",
     "desc": "Túi máy ảnh Think Tank TurnStyle®   - Túi đeo nhẹ cho hệ thống máy ảnh DSLR, máy tính bảng, bộ sạc, thẻ nhớ, v.v. CÁC TÍNH NĂNG CHÍNH - Xoay dễ dàng để truy cập nhanh vào thiết bị và phụ kiện - Dây đe...",
     "price": 1090000,
@@ -2258,11 +4094,73 @@ export const PRODUCTS = [
       "dimensions": "21 x 38 x 12.2 cm",
       "weight": "500 g",
       "warranty": "12 tháng chính hãng"
-    }
+    },
+    "variants": [
+      {
+        "id": 1165576056,
+        "sku": "710457",
+        "name": "5 V2.0 Sling Blue Indigo",
+        "price": 1090000,
+        "stock": 4,
+        "color": "Blue Indigo",
+        "size": "5 V2.0 Sling",
+        "image_url": "https://cdn.hstatic.net/products/200001063950/caf-833f-4d3c-9774-c5fde115dbb9_bffcc2983f9141a3af1c54597a541007_large_5ed644c37d724f36aa4a4be374e7e806.jpg"
+      },
+      {
+        "id": 1165576189,
+        "sku": "710456",
+        "name": "5 V2.0 Charcoal",
+        "price": 1110000,
+        "stock": 3,
+        "color": "Charcoal",
+        "size": "5 V2.0",
+        "image_url": "https://cdn.hstatic.net/products/200001063950/a40-c0c1-48fd-bd6b-3852b4ea8f2e_03139bd8aaa24401b1c17fe9e9ebd72f_large_176c4e9c4fb44ffeba64821eab721140.png"
+      },
+      {
+        "id": 1163725992,
+        "sku": "710462",
+        "name": "10 V2.0 Blue Indigo",
+        "price": 1230000,
+        "stock": 7,
+        "color": "Blue Indigo",
+        "size": "10 V2.0",
+        "image_url": "https://cdn.hstatic.net/products/200001063950/0f436c0f-d112-4af7-8c3d-422ff5dc2fe3_1606aab6c38849898932a528986c68f7.jpg"
+      },
+      {
+        "id": 1165575912,
+        "sku": "710461",
+        "name": "10 V2.0 Charcoal",
+        "price": 1250000,
+        "stock": 0,
+        "color": "Charcoal",
+        "size": "10 V2.0",
+        "image_url": "https://cdn.hstatic.net/products/200001063950/89f-7d27-4761-adb6-10fc872fc9ff_184f7d9a79804d4ab986994ee97f73ff_large_40308832414b425f95c76fbb82e49d6d.jpg"
+      },
+      {
+        "id": 1165576019,
+        "sku": "710466",
+        "name": "20 V2.0 Charcoal",
+        "price": 1360000,
+        "stock": 1,
+        "color": "Charcoal",
+        "size": "20 V2.0",
+        "image_url": "https://cdn.hstatic.net/products/200001063950/4d3-cbaa-447e-9826-ace5104ceb6f_302642f2ec794a21bcc2d4a4021ca5ce_large_95445c582f6044f0b9e5f0af5e57e425.jpg"
+      },
+      {
+        "id": 1165576131,
+        "sku": "710467",
+        "name": "20 V2.0 Blue Indigo",
+        "price": 1350000,
+        "stock": 8,
+        "color": "Blue Indigo",
+        "size": "20 V2.0",
+        "image_url": "https://cdn.hstatic.net/products/200001063950/de4-7fdd-4246-b757-335a9f40f680_e5eefcbb315a4d2d8caaf9692e958f5d_large_f9f4ddeb0db44a2bb1ee6259a07957bc.jpg"
+      }
+    ]
   },
   {
     "id": 1072184916,
-    "stock": 4,
+    "stock": 9,
     "title": "Túi máy ảnh Think tank Urban Access® Sling",
     "desc": "Túi máy ảnh Think tank Urban Access® Sling  giúp bạn dễ dàng gói gọn tất cả thiết bị nhiếp ảnh cần thiết chỉ trong một và thiết kế để bạn tiện lợi truy cập lấy máy ảnh hay ống kính nhanh chóng mà khôn...",
     "price": 1500000,
@@ -2286,11 +4184,33 @@ export const PRODUCTS = [
       "dimensions": "22 × 36 × 12.3 cm",
       "weight": "700 g",
       "warranty": "12 tháng chính hãng"
-    }
+    },
+    "variants": [
+      {
+        "id": 1163725995,
+        "sku": "710468",
+        "name": "Sling 8 Black",
+        "price": 1500000,
+        "stock": 7,
+        "color": "Black",
+        "size": "8",
+        "image_url": "https://cdn.hstatic.net/products/200001063950/imgi_4_tui-may-anh-think-tank-urban-access_-sling-8-mau-den-_5__4331db53108e4ac68b327c871795c08d.jpg"
+      },
+      {
+        "id": 1165576527,
+        "sku": "710469",
+        "name": "Sling 10 Black",
+        "price": 1660000,
+        "stock": 2,
+        "color": "Black",
+        "size": "10",
+        "image_url": "https://cdn.hstatic.net/products/200001063950/imgi_150_tui-may-anh-think-tank-urban-access-sling-10_3fd5660fb4c1421c8a63c9ce2ed6da9b.jpg"
+      }
+    ]
   },
   {
     "id": 1072133643,
-    "stock": 17,
+    "stock": 10,
     "title": "Túi máy ảnh Think Tank Vision",
     "desc": "Túi máy ảnh Think Tank Vision – Túi máy ảnh cao cấp, bảo vệ tối ưu cho thiết bị chuyên nghiệp   Điểm nổi bật của Think Tank Vision Series - 3 kích thước: Vision 10 / 13 / 15 linh hoạt - Thiết kế cao c...",
     "price": 1720000,
@@ -2325,11 +4245,43 @@ export const PRODUCTS = [
       "dimensions": "33 x 23 x 12.5 cm",
       "weight": "1000 g",
       "warranty": "12 tháng chính hãng"
-    }
+    },
+    "variants": [
+      {
+        "id": 1163581916,
+        "sku": "710682",
+        "name": "10 Graphite",
+        "price": 1720000,
+        "stock": 2,
+        "color": "Graphite",
+        "size": "10",
+        "image_url": "https://cdn.hstatic.net/products/200001063950/491458cf-b0f4-421a-80f1-f6d9b24f7c93_8c5d23e7f0d64d1c8edc305f9576573a.jpg"
+      },
+      {
+        "id": 1165577673,
+        "sku": "710684",
+        "name": "13 Graphite",
+        "price": 2990000,
+        "stock": 2,
+        "color": "Graphite",
+        "size": "13",
+        "image_url": "https://cdn.hstatic.net/products/200001063950/e9d-5a9d-47a6-b481-919cc9e456ff_593962c1c7f942fcaa52a91e31b32923_large_421577998ac948439c7a8ab37f3e6fec.jpg"
+      },
+      {
+        "id": 1165577735,
+        "sku": "710686",
+        "name": "15 Graphite",
+        "price": 3230000,
+        "stock": 6,
+        "color": "Graphite",
+        "size": "15",
+        "image_url": "https://cdn.hstatic.net/products/200001063950/51e-8e8c-4496-8ed1-f5dc8f1c5544_e8e36e2d2a634818848ca1ba2be6fecd_large_d0f7fdf0d7ee4f3d9aa3ed49c512e772.jpg"
+      }
+    ]
   },
   {
     "id": 1072184917,
-    "stock": 18,
+    "stock": 2,
     "title": "Túi ống kính Think Tank Skin Changer Pop Down V3.0 Màu Đen",
     "desc": "Túi ống kính Think Tank Skin Changer Pop Down V3.0 – Đa năng, mở rộng linh hoạt cho nhiếp ảnh gia   Giải pháp lưu trữ tối ưu trong hệ Modular Belt System V3.0 Think Tank Photo Skin Changer Pop-Down V3...",
     "price": 1500000,
@@ -2359,11 +4311,23 @@ export const PRODUCTS = [
       "dimensions": "19.5 × 20.8–30 × 10.2 cm",
       "weight": "200 g",
       "warranty": "12 tháng chính hãng"
-    }
+    },
+    "variants": [
+      {
+        "id": 1163725996,
+        "sku": "700061",
+        "name": "Default Title",
+        "price": 1500000,
+        "stock": 2,
+        "color": "Black",
+        "size": "Standard",
+        "image_url": "https://cdn.hstatic.net/products/200001063950/0fb3ea0c-7b6b-45a6-96eb-726d5d0b6b0b_44f056d732e84c0ab1e96614ac255aa2.jpg"
+      }
+    ]
   },
   {
     "id": 1072184918,
-    "stock": 3,
+    "stock": 9,
     "title": "Túi Think Tank Stash Master",
     "desc": "Túi máy ảnh Think Tank Stash Master – Gọn nhẹ, linh hoạt cho nhiếp ảnh gia   Giải pháp lưu trữ thông minh cho thiết bị nhỏ Think Tank Photo Stash Master là dòng túi phụ kiện nhỏ gọn được thiết kế để g...",
     "price": 2270000,
@@ -2394,11 +4358,63 @@ export const PRODUCTS = [
       "dimensions": "30 × 30 × 18 cm",
       "weight": "700 g",
       "warranty": "12 tháng chính hãng"
-    }
+    },
+    "variants": [
+      {
+        "id": 1163725997,
+        "sku": "541825",
+        "name": "L",
+        "price": 2270000,
+        "stock": 2,
+        "color": "Black",
+        "size": "L",
+        "image_url": "https://cdn.hstatic.net/products/200001063950/744fca93-ffaa-4ea3-b0a5-80f49b6ea501_5c1fca73260d4eb291df1b1bf7661986.jpg"
+      },
+      {
+        "id": 1165900815,
+        "sku": "541826",
+        "name": "L Pro",
+        "price": 2380000,
+        "stock": 2,
+        "color": "Black",
+        "size": "L Pro",
+        "image_url": "https://cdn.hstatic.net/products/200001063950/744fca93-ffaa-4ea3-b0a5-80f49b6ea501_5c1fca73260d4eb291df1b1bf7661986.jpg"
+      },
+      {
+        "id": 1165900889,
+        "sku": "541823",
+        "name": "M",
+        "price": 2000000,
+        "stock": 2,
+        "color": "Black",
+        "size": "M",
+        "image_url": "https://cdn.hstatic.net/products/200001063950/9ed-97b8-4ad3-88a0-f96f9053a27a_b35ac9fe07b84b29ac2dc70b0fa7940c_large_a94d76556e8d4de880e0739122696c97.jpg"
+      },
+      {
+        "id": 1165901039,
+        "sku": "541824",
+        "name": "M Pro",
+        "price": 2380000,
+        "stock": 2,
+        "color": "Black",
+        "size": "M Pro",
+        "image_url": "https://cdn.hstatic.net/products/200001063950/ed3-ff36-4e31-83e1-e0bb6b12f0f4_c54dc8dad61540dd86a20f87e5c6cca6_large_1f4be8df1a5b4c389e7c6b047322d647.jpg"
+      },
+      {
+        "id": 1165901164,
+        "sku": "541822",
+        "name": "S",
+        "price": 1630000,
+        "stock": 1,
+        "color": "Black",
+        "size": "S",
+        "image_url": "https://cdn.hstatic.net/products/200001063950/318-0426-4b14-bae1-5ae3639d44d5_2edad9b40d2c45828263d515b5368a0e_large_33252f54a1644a4bbb134ab5416d9dfe.jpg"
+      }
+    ]
   },
   {
     "id": 1072184923,
-    "stock": 11,
+    "stock": 1,
     "title": "Vali đựng chân đèn Think Tank Stand Manager 52 Black",
     "desc": "Các nhiếp ảnh gia studio biết rằng giá đỡ đèn rất nặng, cồng kềnh và khó vận chuyển. Vì thế, Vali đựng chân đèn Think Tank Stand Manager 52 là một giải pháp lý tưởng để lưu trữ và vận chuyển các loại ...",
     "price": 9350000,
@@ -2419,11 +4435,23 @@ export const PRODUCTS = [
       "dimensions": "30.5 x 132 x 10.1–19 cm",
       "weight": "5500 g",
       "warranty": "12 tháng chính hãng"
-    }
+    },
+    "variants": [
+      {
+        "id": 1163726002,
+        "sku": "730532",
+        "name": "Default Title",
+        "price": 9350000,
+        "stock": 1,
+        "color": "Black",
+        "size": "Standard",
+        "image_url": "https://cdn.hstatic.net/products/200001063950/a7307440-4424-403f-9810-7a35b89ca745_ddf686b48db44e83b8698ee9b4e47a8b.jpeg"
+      }
+    ]
   },
   {
     "id": 1072184924,
-    "stock": 11,
+    "stock": 2,
     "title": "Vali Đựng Chân Máy Think Tank Video Tripod Manager 44 Green",
     "desc": "Túi có tay cầm chắc chắn ở bốn bên, vì vậy giúp bạn dễ dàng để xách, mang theo trên hành trình. Ngoài ra, túi được thiết kế dạng hình chữ nhật nhằm tiết kiệm không gian và đảm bảo sự gọn nhẹ nhất có t...",
     "price": 11710000,
@@ -2447,7 +4475,19 @@ export const PRODUCTS = [
       "dimensions": "32 x 113 x 32 cm",
       "weight": "8000 g",
       "warranty": "12 tháng chính hãng"
-    }
+    },
+    "variants": [
+      {
+        "id": 1163726003,
+        "sku": "730530",
+        "name": "Default Title",
+        "price": 11710000,
+        "stock": 2,
+        "color": "Green",
+        "size": "Standard",
+        "image_url": "https://cdn.hstatic.net/products/200001063950/b510ce17-b458-413a-8928-355706aa12dc_6bcea65e35e24259b613274c34ee1dc4.jpeg"
+      }
+    ]
   },
   {
     "id": 1072184925,
@@ -2472,11 +4512,23 @@ export const PRODUCTS = [
       "dimensions": "31 x 42 x 11–15 cm",
       "weight": "3300 g",
       "warranty": "12 tháng chính hãng"
-    }
+    },
+    "variants": [
+      {
+        "id": 1163726004,
+        "sku": "730511",
+        "name": "Default Title",
+        "price": 7780000,
+        "stock": 0,
+        "color": "Black",
+        "size": "Standard",
+        "image_url": "https://cdn.hstatic.net/products/200001063950/mgi_6_vali-may-anh-essentials-convertible-rolling-backpack-mau-den-_2__94b16250b6ca480fa33a358861ce489c.jpg"
+      }
+    ]
   },
   {
     "id": 1072184928,
-    "stock": 18,
+    "stock": 5,
     "title": "Vali máy ảnh Think Tank Airport Advantage Black",
     "desc": "Vali máy ảnh Think Tank Airport Advantage™ - Được thiết kế cho các nhiếp ảnh gia đi du lịch,Airport Advantage có kích thước để đáp ứng các yêu cầu mang theo máy bay đi lại hoặc máy bay trong khu vực. ...",
     "price": 7680000,
@@ -2502,11 +4554,23 @@ export const PRODUCTS = [
       "dimensions": "30.5 × 45.7 × 12.4–16.3",
       "weight": "2800 g",
       "warranty": "12 tháng chính hãng"
-    }
+    },
+    "variants": [
+      {
+        "id": 1163726007,
+        "sku": "730553",
+        "name": "Default Title",
+        "price": 7680000,
+        "stock": 5,
+        "color": "Black",
+        "size": "Standard",
+        "image_url": "https://cdn.hstatic.net/products/200001063950/imgi_10_vali-may-anh-think-tank-airport-advantage_-black-1_fe7d8554a50d4eeaadcec12852503925.jpg"
+      }
+    ]
   },
   {
     "id": 1072184929,
-    "stock": 18,
+    "stock": 2,
     "title": "Vali máy ảnh Think Tank Airport Advantage XT Black",
     "desc": "Chỉ nặng 3,59kg, Vali máy ảnh Think Tank Airport Advantage XT đáp ứng các yêu cầu ngày càng khắt khe của hãng hàng không quốc tế, nhưng vẫn cung cấp chất lượng và khả năng bảo vệ phong phú mà bạn mong...",
     "price": 8840000,
@@ -2532,11 +4596,23 @@ export const PRODUCTS = [
       "dimensions": "33.8 × 45.7 × 16.5–19.1",
       "weight": "3590 g",
       "warranty": "12 tháng chính hãng"
-    }
+    },
+    "variants": [
+      {
+        "id": 1163726008,
+        "sku": "730556",
+        "name": "Default Title",
+        "price": 8840000,
+        "stock": 2,
+        "color": "Black",
+        "size": "Standard",
+        "image_url": "https://cdn.hstatic.net/products/200001063950/imgi_7_vali-may-anh-think-tank-airport-advantage-xt_-black-1_10a03d7ddc18470cb550ac59796d5f50.jpg"
+      }
+    ]
   },
   {
     "id": 1074426540,
-    "stock": 18,
+    "stock": 5,
     "title": "Vali máy ảnh Think Tank Airport Essentials Rolling Backpack",
     "desc": "Think Tank Airport Essentials Rolling Backpack – Balo kéo máy ảnh cao cấp tối ưu cho photographer di chuyển cường độ cao Tính năng nổi bật - Vừa với 2 thân máy ảnh cỡ tiêu chuẩn - Có thể chứa thêm 4-6...",
     "price": 9340000,
@@ -2561,11 +4637,23 @@ export const PRODUCTS = [
       "dimensions": "31 x 42 x 11–15 cm",
       "weight": "3300 g",
       "warranty": "12 tháng chính hãng"
-    }
+    },
+    "variants": [
+      {
+        "id": 1168997482,
+        "sku": "730512",
+        "name": "Rolling Backpack",
+        "price": 9340000,
+        "stock": 5,
+        "color": "Black",
+        "size": "Rolling Backpack",
+        "image_url": "https://cdn.hstatic.net/products/200001063950/airport-essentials_rolling-backpack-hero-left-gear_6170d05fd736432b96d45a08e818e8f0.jpg"
+      }
+    ]
   },
   {
     "id": 1072184931,
-    "stock": 16,
+    "stock": 1,
     "title": "Vali máy ảnh Think Tank Airport International V3.0 Black",
     "desc": "Vali máy ảnh Think Tank Airport International™ V3.0 - Thế hệ thứ ba của dòng vali từng đoạt giải thưởng của Think Tank xác định lại tiêu chuẩn vàng cho bộ sưu tập túi - balo - vali ngành ảnh. CÁC TÍNH...",
     "price": 12100000,
@@ -2587,7 +4675,19 @@ export const PRODUCTS = [
       "dimensions": "33 x 47 x 16.5–19.1 cm",
       "weight": "5200 g",
       "warranty": "12 tháng chính hãng"
-    }
+    },
+    "variants": [
+      {
+        "id": 1163726010,
+        "sku": "730563",
+        "name": "Default Title",
+        "price": 12100000,
+        "stock": 1,
+        "color": "Black",
+        "size": "Standard",
+        "image_url": "https://cdn.hstatic.net/products/200001063950/imgi_4_vali-may-anh-think-tank-airport-international_-v3-_6__2ad4c1294fc347359b87ec12e304c2ce.jpg"
+      }
+    ]
   },
   {
     "id": 1072184932,
@@ -2617,11 +4717,23 @@ export const PRODUCTS = [
       "dimensions": "38.1 × 33 × 17.3 cm",
       "weight": "4500 g",
       "warranty": "12 tháng chính hãng"
-    }
+    },
+    "variants": [
+      {
+        "id": 1163726011,
+        "sku": "730541",
+        "name": "Default Title",
+        "price": 9160000,
+        "stock": 0,
+        "color": "Black",
+        "size": "Standard",
+        "image_url": "https://cdn.hstatic.net/products/200001063950/imgi_4_airport-navigator-v2-hero-right-gear_1729c0c0740645a99de1a1b373f26b10.jpg"
+      }
+    ]
   },
   {
     "id": 1072133656,
-    "stock": 19,
+    "stock": 5,
     "title": "Vali máy ảnh Think Tank Airport Roller Derby Black",
     "desc": "Vali máy ảnh Think Tank Airport Roller Derby™ - Chiếc Vali có thể chứa tất cả trong một, dễ dàng điều động với sự phân bổ trọng lượng được cải thiện để giảm thiểu mỏi cơ có thể chứa đến ống kính tele ...",
     "price": 7470000,
@@ -2642,11 +4754,23 @@ export const PRODUCTS = [
       "dimensions": "32 × 47 × 14-19 cm",
       "weight": "5200 g",
       "warranty": "12 tháng chính hãng"
-    }
+    },
+    "variants": [
+      {
+        "id": 1163581930,
+        "sku": "730514",
+        "name": "Default Title",
+        "price": 7470000,
+        "stock": 5,
+        "color": "Black",
+        "size": "Standard",
+        "image_url": "https://cdn.hstatic.net/products/200001063950/imgi_7_vali-may-anh-think-tank-airport-roller-derby_-mau-den-_2__10ca271e73484e85a1e72e3ed7a5f0f4.jpeg"
+      }
+    ]
   },
   {
     "id": 1072133657,
-    "stock": 5,
+    "stock": 2,
     "title": "Vali máy ảnh Think Tank Airport Roller Derby V2 Black",
     "desc": "Vali máy ảnh Think Tank Airport Roller Derby V2 Black là vali đựng máy ảnh có 8 bánh xe dễ dàng di chuyển trong không gian chật hẹp và không tốn nhiều sức để đẩy hoặc kéo. Vali này phù hợp với hai thâ...",
     "price": 10950000,
@@ -2694,11 +4818,23 @@ export const PRODUCTS = [
       "dimensions": "32 × 47 × 14–19 cm",
       "weight": "4500 g",
       "warranty": "12 tháng chính hãng"
-    }
+    },
+    "variants": [
+      {
+        "id": 1163581931,
+        "sku": "730515",
+        "name": "Default Title",
+        "price": 10950000,
+        "stock": 2,
+        "color": "Black",
+        "size": "Standard",
+        "image_url": "https://cdn.hstatic.net/products/200001063950/19041fc4-4d69-4586-8b01-6b9ed6fdddd1_431bef3cb36144d983335ad60af64c28.jpg"
+      }
+    ]
   },
   {
     "id": 1072184933,
-    "stock": 19,
+    "stock": 2,
     "title": "Vali máy ảnh Think Tank Airport Security V3.0 Black",
     "desc": "Vali máy ảnh Think Tank Airport Security™ V3.0 - Thế hệ thứ ba của dòng Vali từng đoạt giải thưởng của Think Tank xác định lại tiêu chuẩn vàng của túi - vali - balo máy ảnh cho nhiếp ảnh gia chuyên ng...",
     "price": 12300000,
@@ -2717,11 +4853,23 @@ export const PRODUCTS = [
       "dimensions": "33 x 53.3 x 17.8–20.3 cm",
       "weight": "5800 g",
       "warranty": "12 tháng chính hãng"
-    }
+    },
+    "variants": [
+      {
+        "id": 1163726012,
+        "sku": "730572",
+        "name": "Default Title",
+        "price": 12300000,
+        "stock": 2,
+        "color": "Black",
+        "size": "Standard",
+        "image_url": "https://cdn.hstatic.net/products/200001063950/imgi_4_vali-may-anh-think-tank-airport-security_-v3-_2__dbb3c32547fc4517baa7bb425b8c8a06.jpg"
+      }
+    ]
   },
   {
     "id": 1072184934,
-    "stock": 16,
+    "stock": 2,
     "title": "Vali máy ảnh Think Tank Airport TakeOff V2.0 Black",
     "desc": "Vali máy ảnh Think Tank Airport TakeOff™ V2.0 là chiếc vali đa dụng 2 trong 1, bạn có thể chuyển thành balo bất cứ lúc nào khi địa hình trở nên không bằng phẳng, chỉ với Think Tank Airport TakeOff V2....",
     "price": 12090000,
@@ -2744,11 +4892,23 @@ export const PRODUCTS = [
       "dimensions": "33 × 47 × 13–17",
       "weight": "4400 g",
       "warranty": "12 tháng chính hãng"
-    }
+    },
+    "variants": [
+      {
+        "id": 1163726013,
+        "sku": "730499",
+        "name": "Default Title",
+        "price": 12090000,
+        "stock": 2,
+        "color": "Black",
+        "size": "Standard",
+        "image_url": "https://cdn.hstatic.net/products/200001063950/imgi_4_vali-may-anh-think-tank-airport-takeoff_-v2-_1__d2fd7b1d460d4ba6b97994f04d98a625.jpg"
+      }
+    ]
   },
   {
     "id": 1072184935,
-    "stock": 3,
+    "stock": 2,
     "title": "Vali máy ảnh Think Tank Logistics Manager 30 V2 Black",
     "desc": "Vali máy ảnh Think Tank Logistics Manager® 30 V2 - Bánh xe lăn công suất lớn chuyên chở thiết bị chiếu sáng, giàn video, thiết bị, v.v. Vận chuyển tất cả thiết bị phòng thu của bạn chỉ trong một vali ...",
     "price": 14310000,
@@ -2775,11 +4935,23 @@ export const PRODUCTS = [
       "dimensions": "35.5 x 68.6 x 21–25 cm",
       "weight": "7600 g",
       "warranty": "12 tháng chính hãng"
-    }
+    },
+    "variants": [
+      {
+        "id": 1163726014,
+        "sku": "730564",
+        "name": "Default Title",
+        "price": 14310000,
+        "stock": 2,
+        "color": "Black",
+        "size": "Standard",
+        "image_url": "https://cdn.hstatic.net/products/200001063950/df35c6d6-c19f-4952-af7c-83de4d6237a4_ff2deecfde1342c6b51c5105535a386c.jpg"
+      }
+    ]
   },
   {
     "id": 1072133658,
-    "stock": 12,
+    "stock": 2,
     "title": "Vali máy ảnh Think Tank StreetWalker Rolling Backpack V2.0 Black",
     "desc": "Balo máy ảnh ThinkTank StreetWalker® Rolling Backpack V2.0 - Độ bền huyền thoại và sự thoải mái từng đoạt giải thưởng danh giá đã khiến dòng StreetWalker trở thành một trong những sản phẩm được tìm ki...",
     "price": 7120000,
@@ -2801,11 +4973,23 @@ export const PRODUCTS = [
       "dimensions": "24 x 41 x 16 cm",
       "weight": "3700 g",
       "warranty": "12 tháng chính hãng"
-    }
+    },
+    "variants": [
+      {
+        "id": 1163581932,
+        "sku": "730497",
+        "name": "Black",
+        "price": 7120000,
+        "stock": 2,
+        "color": "Black",
+        "size": "Standard",
+        "image_url": "https://cdn.hstatic.net/products/200001063950/imgi_4_vali-may-anh-think-tank-streetwalker_-rolling-backpack-v2-_2__c9dec2b2e8de4f29aeda98e9f1aaf5d8.jpeg"
+      }
+    ]
   },
   {
     "id": 1072133659,
-    "stock": 10,
+    "stock": 2,
     "title": "Vali máy ảnh Think Tank Walker Pro Rolling Backpack",
     "desc": "Think Tank Walker Pro Rolling Backpack Giải pháp ba lô kéo linh hoạt cho nhiếp ảnh gia chuyên nghiệp Tối ưu cho di chuyển – Hoàn hảo cho thiết bị cao cấp Vali máy ảnh Walker Pro Rolling Backpack là ph...",
     "price": 9940000,
@@ -2859,11 +5043,23 @@ export const PRODUCTS = [
       "dimensions": "29.2 x 48.3 x 15.9 – 18.4 cm",
       "weight": "3500 g",
       "warranty": "12 tháng chính hãng"
-    }
+    },
+    "variants": [
+      {
+        "id": 1163581933,
+        "sku": "730500",
+        "name": "Default Title",
+        "price": 9940000,
+        "stock": 2,
+        "color": "Black",
+        "size": "Standard",
+        "image_url": "https://cdn.hstatic.net/products/200001063950/2b046484-091f-4151-80e5-4390bcab95c9_2766328d33234d15903b540752f131f5.jpg"
+      }
+    ]
   },
   {
     "id": 1072184936,
-    "stock": 19,
+    "stock": 4,
     "title": "Vali Think Tank Production Manager",
     "desc": "Vali máy ảnh Think Tank Production Manager V2.0   - Vận chuyển studio hoàn chỉnh của bạn chỉ trong một hộp duy nhất với mức độ bảo vệ cao nhưng trọng lượng nhẹ nhất có thể. Bề ngoài được cấu tạo bằng ...",
     "price": 16520000,
@@ -2887,6 +5083,28 @@ export const PRODUCTS = [
       "dimensions": "39.5 x 125 x 25 cm",
       "weight": "9200 g",
       "warranty": "12 tháng chính hãng"
-    }
+    },
+    "variants": [
+      {
+        "id": 1163726015,
+        "sku": "730565",
+        "name": "40 V2.0 Black",
+        "price": 16520000,
+        "stock": 2,
+        "color": "Black",
+        "size": "40 V2.0",
+        "image_url": "https://cdn.hstatic.net/products/200001063950/01fb6433-69b3-4e9c-8c10-6d7a6b43ce2e_87b4aeb8c32d4753aaea169f3cde80b5.jpeg"
+      },
+      {
+        "id": 1165576643,
+        "sku": "730566",
+        "name": "50 V2.0 Black",
+        "price": 18170000,
+        "stock": 2,
+        "color": "Black",
+        "size": "50 V2.0",
+        "image_url": "https://cdn.hstatic.net/products/200001063950/5f9-4cc0-475a-b273-e9b3f6d6755c_fc3b8974af8745f2a51f64941ab37154_large_fbf171f4856246f693e9f3f640b05ad5.jpg"
+      }
+    ]
   }
 ];

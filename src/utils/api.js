@@ -20,6 +20,11 @@ async function request(endpoint, options = {}) {
   const response = await fetch(`${BASE_URL}${endpoint}`, config);
 
   if (!response.ok) {
+    if (response.status === 401 || response.status === 403) {
+      localStorage.removeItem('token');
+      localStorage.removeItem('currentUser');
+      window.dispatchEvent(new Event('storage'));
+    }
     let errorMessage = 'Đã xảy ra lỗi hệ thống';
     try {
       const errorData = await response.json();
@@ -60,6 +65,16 @@ async function downloadFile(endpoint, filename) {
 
 function mapProduct(p) {
   if (!p) return p;
+
+  let parsedHighlights = [];
+  if (p.highlights) {
+    try {
+      parsedHighlights = typeof p.highlights === 'string' ? JSON.parse(p.highlights) : p.highlights;
+    } catch (e) {
+      console.error('Error parsing highlights:', e);
+    }
+  }
+
   return {
     ...p,
     title: p.title || p.name,
@@ -69,6 +84,14 @@ function mapProduct(p) {
     rating: p.rating !== undefined ? p.rating : (p.averageRating || 0),
     reviews: p.reviews !== undefined ? p.reviews : (p.reviewCount || 0),
     category_id: p.category_id || (p.category && typeof p.category === 'object' ? p.category.id : null),
+    specs: p.specs || {
+      volume: p.volume || '',
+      weight: p.weight || '',
+      material: p.material || '',
+      dimensions: p.dimensions || '',
+      warranty: p.warranty || '12 tháng chính hãng'
+    },
+    highlights: parsedHighlights
   };
 }
 
@@ -147,6 +170,7 @@ export const api = {
   // Reviews
   reviews: {
     getByProduct: (productId) => request(`/api/reviews/product/${productId}`),
+    checkPurchase: (productId) => request(`/api/reviews/check-purchase?productId=${productId}`),
     create: (productId, rating, comment) => 
       request('/api/reviews', {
         method: 'POST',

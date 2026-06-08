@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { api } from '../../utils/api';
-import { Trash2, Star, AlertCircle, Info } from 'lucide-react';
+import { Trash2, Star, AlertCircle, Info, RefreshCw } from 'lucide-react';
 import CustomModal from '../../components/CustomModal';
 
 const AdminReviews = () => {
@@ -55,13 +55,13 @@ const AdminReviews = () => {
 
   const renderStars = (rating) => {
     return (
-      <div className="flex gap-0.5 text-amber-400">
+      <div className="flex gap-0.5 text-amber-500">
         {[...Array(5)].map((_, i) => (
           <Star 
             key={i} 
-            size={13} 
+            size={12} 
             fill={i < rating ? "currentColor" : "none"} 
-            className={i < rating ? "drop-shadow-[0_0_4px_rgba(245,158,11,0.2)]" : "text-slate-700"}
+            className={i < rating ? "" : "text-slate-200"}
           />
         ))}
       </div>
@@ -80,51 +80,55 @@ const AdminReviews = () => {
     : '0.0';
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 font-sans">
       {/* Header */}
-      <div className="flex justify-between items-center">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h1 className="text-3xl font-black tracking-tight text-white bg-gradient-to-r from-slate-100 to-slate-300 bg-clip-text text-transparent">Quản Lý Đánh Giá</h1>
-          <p className="text-slate-400 text-sm mt-1">Kiểm duyệt các phản hồi, bình luận và đánh giá chất lượng sản phẩm.</p>
+          <h1 className="text-xl font-black tracking-tight text-slate-900 font-heading uppercase">Quản Lý Đánh Giá</h1>
+          <p className="text-slate-500 text-xs mt-1">Kiểm duyệt phản hồi từ khách hàng và quản lý điểm số đánh giá sản phẩm.</p>
         </div>
         <button 
           onClick={fetchReviews} 
-          className="bg-slate-900 hover:bg-slate-850 text-white font-semibold py-2 px-4 rounded-xl border border-slate-800 text-xs transition-colors cursor-pointer"
+          className="w-full sm:w-auto bg-white hover:bg-slate-50 text-slate-705 border border-slate-200 font-bold py-2.5 px-4 rounded-xl flex items-center justify-center gap-2 text-xs transition-colors cursor-pointer shadow-sm"
         >
-          Làm mới
+          <RefreshCw size={14} className={loading ? 'animate-spin' : ''} />
+          <span>Làm mới</span>
         </button>
       </div>
 
       {error && (
-        <div className="bg-rose-500/10 border border-rose-500/20 text-rose-400 p-4 rounded-xl flex items-center gap-3">
+        <div className="bg-rose-50 border border-rose-100 text-rose-700 p-4 rounded-xl flex items-center gap-3">
           <AlertCircle size={18} />
-          <p className="text-sm font-medium">{error}</p>
+          <p className="text-xs font-semibold">{error}</p>
         </div>
       )}
 
       {/* Review Summary Stats & Filter row */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
         {/* Stats card */}
-        <div className="admin-glass-card rounded-2xl p-4 flex items-center gap-4">
-          <div className="bg-amber-500/10 text-amber-450 p-3 rounded-xl border border-amber-500/15">
+        <div className="bg-white border border-slate-200/80 rounded-2xl p-5 flex items-center gap-4 shadow-xs">
+          <div className="bg-amber-50 text-amber-600 p-3 rounded-xl border border-amber-100 flex-shrink-0">
             <Star size={20} fill="currentColor" />
           </div>
           <div>
-            <p className="text-slate-500 text-[10px] font-bold uppercase tracking-wider">Điểm đánh giá trung bình</p>
-            <p className="text-lg font-black text-white mt-0.5">{avgRating} / 5.0 ({reviews.length} đánh giá)</p>
+            <p className="text-slate-400 text-[10px] font-bold uppercase tracking-wider">Điểm trung bình</p>
+            <p className="text-lg font-black text-slate-800 mt-0.5">{avgRating} / 5.0</p>
+            <p className="text-[10px] text-slate-450 font-bold">{reviews.length} đánh giá tích lũy</p>
           </div>
         </div>
 
         {/* Filter controls */}
-        <div className="sm:col-span-2 admin-glass-card rounded-2xl p-4 flex items-center justify-between gap-4">
-          <div className="flex items-center gap-2">
-            <Info size={16} className="text-indigo-400" />
-            <p className="text-xs text-slate-400 font-semibold">Bộ lọc theo số điểm đánh giá sản phẩm</p>
+        <div className="sm:col-span-2 bg-white border border-slate-200/80 rounded-2xl p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-xs">
+          <div className="flex items-center gap-2.5">
+            <Info size={16} className="text-blue-600 flex-shrink-0" />
+            <p className="text-xs text-slate-500 font-semibold leading-relaxed">
+              Bộ lọc theo điểm số đánh giá để kiểm duyệt các bình luận tiêu cực hoặc tích cực.
+            </p>
           </div>
           <select
             value={starFilter}
             onChange={(e) => setStarFilter(e.target.value)}
-            className="bg-slate-950 border border-slate-800 text-white rounded-xl px-4 py-2 text-xs focus:outline-none focus:ring-1 focus:ring-indigo-500 font-bold min-w-[150px]"
+            className="bg-white border border-slate-200 text-slate-850 rounded-xl px-4 py-2.5 text-xs focus:outline-none focus:ring-1 focus:ring-blue-100 font-bold min-w-[150px] shadow-sm"
           >
             <option value="">Tất cả đánh giá</option>
             <option value="5">5 Sao ⭐⭐⭐⭐⭐</option>
@@ -137,16 +141,16 @@ const AdminReviews = () => {
       </div>
 
       {/* List / Table */}
-      <div className="admin-glass-card rounded-3xl overflow-hidden animate-in fade-in duration-200">
+      <div className="bg-white border border-slate-200/80 shadow-xs rounded-2xl overflow-hidden animate-in fade-in duration-200">
         {loading ? (
-          <div className="py-20 text-center text-slate-500">Đang tải danh sách đánh giá...</div>
+          <div className="py-20 text-center text-slate-400 text-xs">Đang tải danh sách đánh giá...</div>
         ) : filteredReviews.length === 0 ? (
-          <div className="py-20 text-center text-slate-500">Không tìm thấy đánh giá nào phù hợp với bộ lọc.</div>
+          <div className="py-20 text-center text-slate-400 text-xs">Không tìm thấy đánh giá nào phù hợp với bộ lọc.</div>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse">
               <thead>
-                <tr className="border-b border-slate-800/80 text-slate-400 text-xs font-bold uppercase tracking-wider bg-slate-900/40">
+                <tr className="border-b border-slate-200/80 text-slate-500 text-[10px] font-bold uppercase tracking-wider bg-slate-50/50">
                   <th className="px-6 py-4">Sản phẩm</th>
                   <th className="px-6 py-4">Khách hàng</th>
                   <th className="px-6 py-4">Điểm</th>
@@ -155,31 +159,50 @@ const AdminReviews = () => {
                   <th className="px-6 py-4 text-right">Thao tác</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-800/50 text-slate-350 text-xs font-semibold">
+              <tbody className="divide-y divide-slate-100 text-slate-655 text-xs font-semibold">
                 {filteredReviews.map((rev) => (
-                  <tr key={rev.id} className="hover:bg-slate-800/10 transition-colors">
-                    <td className="px-6 py-4 font-bold text-white max-w-[200px] truncate">
-                      {rev.product?.name || `ID: ${rev.productId}`}
+                  <tr key={rev.id} className="hover:bg-slate-50/40 transition-colors">
+                    <td className="px-6 py-4 font-bold text-slate-900 max-w-[220px]">
+                      <div className="flex items-center gap-3">
+                        <img 
+                          src={rev.product?.image || rev.product?.imageUrl || '/images/thinktanklogo.png'} 
+                          alt={rev.product?.name}
+                          className="w-10 h-10 object-cover bg-slate-50 border border-slate-200 rounded-xl flex-shrink-0"
+                          onError={(e) => { e.target.src = '/images/thinktanklogo.png'; }}
+                        />
+                        <span className="truncate text-slate-850 font-bold block text-xs" title={rev.product?.name}>
+                          {rev.product?.name || `ID: ${rev.productId}`}
+                        </span>
+                      </div>
                     </td>
                     <td className="px-6 py-4">
                       <div>
-                        <p className="font-bold text-slate-200">{rev.customer?.user?.fullName || 'Khách vãng lai'}</p>
-                        <p className="text-[10px] text-slate-550 mt-0.5">{rev.customer?.user?.email}</p>
+                        <p className="font-bold text-slate-850 text-xs">{rev.customer?.user?.fullName || 'Khách vãng lai'}</p>
+                        <p className="text-[10px] text-slate-400 font-mono font-medium mt-0.5">{rev.customer?.user?.email || 'N/A'}</p>
+                        {rev.customer?.user && (
+                          <span className="inline-flex items-center gap-0.5 bg-emerald-50 text-emerald-750 border border-emerald-150 px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider mt-1.5">
+                            ✓ Đã mua hàng
+                          </span>
+                        )}
                       </div>
                     </td>
                     <td className="px-6 py-4">
                       {renderStars(rev.rating)}
                     </td>
-                    <td className="px-6 py-4 max-w-[280px] whitespace-normal break-all text-slate-400 font-medium">
-                      {rev.comment || <em className="text-slate-700">Không có bình luận chữ</em>}
+                    <td className="px-6 py-4 max-w-[300px] whitespace-normal break-words text-slate-600 font-semibold leading-relaxed">
+                      {rev.comment ? (
+                        <p>"{rev.comment}"</p>
+                      ) : (
+                        <em className="text-slate-400 font-medium">Không có bình luận văn bản</em>
+                      )}
                     </td>
-                    <td className="px-6 py-4 text-slate-550">
+                    <td className="px-6 py-4 text-slate-400 font-medium text-[11px]">
                       {new Date(rev.createdAt || rev.updatedAt).toLocaleString('vi-VN')}
                     </td>
                     <td className="px-6 py-4 text-right">
                       <button
                         onClick={() => handleDeleteReview(rev.id)}
-                        className="p-2 text-rose-450 hover:text-rose-400 hover:bg-rose-500/10 rounded-lg transition-all cursor-pointer"
+                        className="p-2 text-rose-600 hover:text-rose-705 hover:bg-rose-50 rounded-lg transition-colors cursor-pointer"
                         title="Xóa đánh giá"
                       >
                         <Trash2 size={14} />

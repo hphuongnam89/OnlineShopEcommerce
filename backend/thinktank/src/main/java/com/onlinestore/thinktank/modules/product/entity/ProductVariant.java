@@ -44,4 +44,7 @@ public class ProductVariant extends BaseEntity {
 
     @Column(length = 50)
     private String size;
+
+    @Column(name = "image_url", length = 500)
+    private String imageUrl;
 }

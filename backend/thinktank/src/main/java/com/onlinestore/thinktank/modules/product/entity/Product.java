@@ -64,6 +64,9 @@ public class Product extends BaseEntity {
     @Column(length = 100)
     private String sku;
 
+    @Column(name = "highlights", columnDefinition = "TEXT")
+    private String highlights;
+
     @Column(name = "average_rating", precision = 3, scale = 2)
     @Builder.Default
     private BigDecimal averageRating = BigDecimal.ZERO;

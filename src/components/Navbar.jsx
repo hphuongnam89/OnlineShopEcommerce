@@ -56,6 +56,7 @@ const Navbar = () => {
   }, []);
 
   const handleLogout = () => {
+    localStorage.removeItem('token');
     localStorage.removeItem('currentUser');
     window.dispatchEvent(new Event('storage'));
     setIsMobileMenuOpen(false);

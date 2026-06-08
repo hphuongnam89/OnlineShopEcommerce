@@ -190,7 +190,7 @@ const Home = () => {
                 <h3 className="text-xl font-extrabold uppercase font-heading tracking-wide">VALI KÉO MÁY ẢNH</h3>
                 <p className="text-xs text-slate-300 font-sans line-clamp-2">Vali kéo bánh xe chịu lực, chuyên dụng cho di chuyển đường dài và bảo vệ bộ gear lớn.</p>
                 <Link 
-                  to="/products?category=Vali%20M%C3%A1y%20%E1%BA%A3nh" 
+                  to="/products?category=Vali Máy Ảnh" 
                   className="inline-flex items-center gap-1 text-[#ab9f1d] hover:text-white text-xs font-bold uppercase tracking-wider transition-colors pt-2"
                 >
                   <span>MUA BỘ SƯU TẬP</span>
@@ -213,7 +213,7 @@ const Home = () => {
                 <h3 className="text-xl font-extrabold uppercase font-heading tracking-wide">BALO CHUYÊN NGHIỆP</h3>
                 <p className="text-xs text-slate-300 font-sans line-clamp-2">Thiết kế công thái học đệm dày, phân bổ trọng lực tối ưu, thoải mái đeo tác nghiệp cả ngày dài.</p>
                 <Link 
-                  to="/products?category=Balo%20M%C3%A1y%20%E1%BA%A3nh" 
+                  to="/products?category=Balo Máy Ảnh" 
                   className="inline-flex items-center gap-1 text-[#ab9f1d] hover:text-white text-xs font-bold uppercase tracking-wider transition-colors pt-2"
                 >
                   <span>MUA BỘ SƯU TẬP</span>
@@ -236,7 +236,7 @@ const Home = () => {
                 <h3 className="text-xl font-extrabold uppercase font-heading tracking-wide">TÚI & PHỤ KIỆN</h3>
                 <p className="text-xs text-slate-300 font-sans line-clamp-2">Bao đựng ống kính, túi quản lý cáp sạc, bao chống sốc laptop được thiết kế cực kỳ thông minh.</p>
                 <Link 
-                  to="/products?category=T%C3%BAi%20M%C3%A1y%20%E1%BA%A3nh" 
+                  to="/products?category=Túi Máy Ảnh" 
                   className="inline-flex items-center gap-1 text-[#ab9f1d] hover:text-white text-xs font-bold uppercase tracking-wider transition-colors pt-2"
                 >
                   <span>MUA BỘ SƯU TẬP</span>

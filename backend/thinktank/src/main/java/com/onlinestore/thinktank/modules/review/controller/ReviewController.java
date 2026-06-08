@@ -23,6 +23,13 @@ public class ReviewController {
         return ResponseEntity.ok(reviewService.getProductReviews(productId));
     }
 
+    @GetMapping("/check-purchase")
+    public ResponseEntity<java.util.Map<String, Boolean>> checkPurchase(@RequestParam(name = "productId") Long productId) {
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        boolean purchased = reviewService.checkUserPurchase(email, productId);
+        return ResponseEntity.ok(java.util.Map.of("purchased", purchased));
+    }
+
     @PostMapping
     public ResponseEntity<Review> addReview(@RequestBody ReviewRequest request) {
         String email = SecurityContextHolder.getContext().getAuthentication().getName();

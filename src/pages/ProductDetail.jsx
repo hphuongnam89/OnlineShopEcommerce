@@ -6,6 +6,12 @@ import CustomModal from '../components/CustomModal';
 import { api } from '../utils/api';
 import { Star, Shield, Truck, Sparkles, RefreshCw, ShoppingCart, Minus, Plus, ChevronRight } from 'lucide-react';
 
+const getShortDesc = (desc) => {
+  if (!desc) return '';
+  const cleanText = desc.replace(/<\/?[^>]+(>|$)/g, "");
+  return cleanText.length > 200 ? cleanText.substring(0, 200) + '...' : cleanText;
+};
+
 const ProductDetail = () => {
   const { id } = useParams();
   const { addToCart } = useCart();
@@ -15,7 +21,14 @@ const ProductDetail = () => {
   const [activeImage, setActiveImage] = useState('');
   const [isSpecsModalOpen, setIsSpecsModalOpen] = useState(false);
   const [selectedVariant, setSelectedVariant] = useState(null);
+  const [selectedColor, setSelectedColor] = useState('');
+  const [selectedSize, setSelectedSize] = useState('');
   const [relatedProducts, setRelatedProducts] = useState([]);
+  
+  // Custom states for detail layout and checks
+  const [activeTab, setActiveTab] = useState('description');
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [canReview, setCanReview] = useState(false);
 
   // Custom alert modal state
   const [modalConfig, setModalConfig] = useState({ isOpen: false, title: '', message: '', type: 'info' });
@@ -37,6 +50,74 @@ const ProductDetail = () => {
   const [reviewComment, setReviewComment] = useState('');
   const [productReviews, setProductReviews] = useState([]);
 
+  // Helper colors
+  const getColorHex = (colorName) => {
+    if (!colorName) return '#ffffff';
+    const name = colorName.toLowerCase();
+    if (name.includes('pewter') || name.includes('grey') || name.includes('xám')) return '#808080';
+    if (name.includes('green') || name.includes('xanh lá')) return '#2e7d32';
+    if (name.includes('blue') || name.includes('xanh dương')) return '#1565c0';
+    if (name.includes('black') || name.includes('đen')) return '#1a1a1a';
+    if (name.includes('red') || name.includes('đỏ')) return '#c62828';
+    if (name.includes('gold') || name.includes('vàng')) return '#efa929';
+    if (name.includes('yellow')) return '#fbc02d';
+    if (name.includes('white') || name.includes('trắng')) return '#ffffff';
+    if (name.includes('orange') || name.includes('cam')) return '#ef6c00';
+    if (name.includes('brown') || name.includes('nâu')) return '#5d4037';
+    if (name.includes('pink') || name.includes('hồng')) return '#ec407a';
+    return '#eceff1';
+  };
+
+  const isSizeExistForColor = (size, color) => {
+    if (!product?.variants) return false;
+    return product.variants.some(v => v.color === color && v.size === size);
+  };
+
+  const getStockForCombination = (color, size) => {
+    if (!product?.variants) return 0;
+    const v = product.variants.find(vr => vr.color === color && vr.size === size);
+    return v ? v.stock : 0;
+  };
+
+  const handleColorSelect = (color) => {
+    setSelectedColor(color);
+    if (!product?.variants) return;
+    const availableVariants = product.variants.filter(v => v.color === color);
+    const hasSameSize = availableVariants.find(v => v.size === selectedSize);
+    if (hasSameSize) {
+      setSelectedVariant(hasSameSize);
+    } else {
+      const fallbackVariant = availableVariants.find(v => v.stock > 0) || availableVariants[0];
+      if (fallbackVariant) {
+        setSelectedSize(fallbackVariant.size || '');
+        setSelectedVariant(fallbackVariant);
+      }
+    }
+  };
+
+  const handleSizeSelect = (size) => {
+    setSelectedSize(size);
+    if (!product?.variants) return;
+    const availableVariants = product.variants.filter(v => v.size === size);
+    const hasSameColor = availableVariants.find(v => v.color === selectedColor);
+    if (hasSameColor) {
+      setSelectedVariant(hasSameColor);
+    } else {
+      const fallbackVariant = availableVariants.find(v => v.stock > 0) || availableVariants[0];
+      if (fallbackVariant) {
+        setSelectedColor(fallbackVariant.color || '');
+        setSelectedVariant(fallbackVariant);
+      }
+    }
+  };
+
+  const uniqueColors = product?.variants
+    ? Array.from(new Set(product.variants.map((v) => v.color).filter(Boolean)))
+    : [];
+  const uniqueSizes = product?.variants
+    ? Array.from(new Set(product.variants.map((v) => v.size).filter(Boolean)))
+    : [];
+
   useEffect(() => {
     const fetchProductData = async () => {
       try {
@@ -49,9 +130,14 @@ const ProductDetail = () => {
           setActiveImage(foundProduct.image_url || foundProduct.image);
           
           if (foundProduct.variants && foundProduct.variants.length > 0) {
-            setSelectedVariant(foundProduct.variants[0]);
+            const defaultVar = foundProduct.variants.find(v => v.stock > 0) || foundProduct.variants[0];
+            setSelectedVariant(defaultVar);
+            setSelectedColor(defaultVar.color || '');
+            setSelectedSize(defaultVar.size || '');
           } else {
             setSelectedVariant(null);
+            setSelectedColor('');
+            setSelectedSize('');
           }
 
           // Fetch reviews from API
@@ -61,6 +147,22 @@ const ProductDetail = () => {
           } catch (error) {
             console.error('Lỗi tải reviews:', error);
             setProductReviews([]);
+          }
+
+          // Check login and purchase status for reviews
+          const token = localStorage.getItem('token');
+          if (token) {
+            setIsLoggedIn(true);
+            try {
+              const checkRes = await api.reviews.checkPurchase(id);
+              setCanReview(checkRes?.purchased || false);
+            } catch (err) {
+              console.error('Lỗi check purchase:', err);
+              setCanReview(false);
+            }
+          } else {
+            setIsLoggedIn(false);
+            setCanReview(false);
           }
 
           // Fetch related products
@@ -92,6 +194,15 @@ const ProductDetail = () => {
     fetchProductData();
   }, [id]);
 
+  useEffect(() => {
+    if (selectedVariant) {
+      const img = selectedVariant.imageUrl || selectedVariant.image_url;
+      if (img) {
+        setActiveImage(img);
+      }
+    }
+  }, [selectedVariant]);
+
   if (loading) {
     return (
       <div className="min-h-screen pt-40 pb-20 flex items-center justify-center">
@@ -121,7 +232,9 @@ const ProductDetail = () => {
       id: selectedVariant ? `${product.id}_${selectedVariant.id}` : String(product.id),
       productId: product.id,
       variantId: selectedVariant ? selectedVariant.id : null,
-      variantName: selectedVariant ? selectedVariant.name : '',
+      variantName: selectedVariant 
+        ? (selectedVariant.name || `${selectedVariant.color || ''}${selectedVariant.color && selectedVariant.size ? ' / ' : ''}${selectedVariant.size || ''}`) 
+        : '',
       title: product.title,
       price: selectedVariant ? selectedVariant.price : product.price,
       image: product.image_url || product.image,
@@ -216,30 +329,107 @@ const ProductDetail = () => {
                 </div>
 
                 {/* Product Variants Selector */}
-                {product.variants && product.variants.length > 0 && (
-                  <div className="mb-6">
-                    <label className="text-xs font-black text-slate-700 uppercase tracking-widest font-heading block mb-2">Chọn Phiên Bản</label>
-                    <div className="flex flex-wrap gap-2">
-                      {product.variants.map((v) => (
-                        <button
-                          key={v.id}
-                          type="button"
-                          onClick={() => setSelectedVariant(v)}
-                          className={`px-4 py-2.5 text-xs font-bold font-heading rounded-lg border transition-all cursor-pointer ${
-                            selectedVariant?.id === v.id
-                              ? 'bg-[#2f5f88] text-white border-[#2f5f88] shadow-sm'
-                              : 'bg-white text-slate-700 border-slate-200 hover:border-slate-300'
-                          }`}
-                        >
-                          {v.name}
-                        </button>
-                      ))}
-                    </div>
+                {product.variants && product.variants.length > 1 && (
+                  <div className="space-y-4 mb-6">
+                    {/* Color Selector */}
+                    {uniqueColors.length > 0 && (
+                      <div>
+                        <label className="text-xs font-black text-slate-700 uppercase tracking-widest font-heading block mb-2">
+                          Màu Sắc: <span className="text-slate-500 font-sans font-semibold normal-case">{selectedColor}</span>
+                        </label>
+                        <div className="flex flex-wrap gap-2">
+                          {uniqueColors.map((color) => {
+                            const isSelected = selectedColor === color;
+                            const isAvailable = product.variants.some(v => v.color === color && v.stock > 0);
+                            return (
+                              <button
+                                key={color}
+                                type="button"
+                                onClick={() => handleColorSelect(color)}
+                                className={`px-4 py-2.5 text-xs font-bold font-heading rounded-lg border transition-all cursor-pointer flex items-center gap-2 ${
+                                  isSelected
+                                    ? 'bg-[#2f5f88] text-white border-[#2f5f88] shadow-sm'
+                                    : 'bg-white text-slate-700 border-slate-200 hover:border-slate-300'
+                                } ${!isAvailable ? 'opacity-60' : ''}`}
+                              >
+                                <span 
+                                  className="w-3 h-3 rounded-full border border-slate-350/50 flex-shrink-0"
+                                  style={{ backgroundColor: getColorHex(color) }}
+                                />
+                                <span>{color}</span>
+                                {!isAvailable && <span className="text-[9px] font-sans font-normal opacity-75">(Hết hàng)</span>}
+                              </button>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Size Selector */}
+                    {uniqueSizes.length > 0 && !(uniqueSizes.length === 1 && uniqueSizes[0] === 'Standard') && (
+                      <div>
+                        <label className="text-xs font-black text-slate-700 uppercase tracking-widest font-heading block mb-2">
+                          Kích Thước: <span className="text-slate-500 font-sans font-semibold normal-case">{selectedSize}</span>
+                        </label>
+                        <div className="flex flex-wrap gap-2">
+                          {uniqueSizes.map((size) => {
+                            const isSelected = selectedSize === size;
+                            const exists = isSizeExistForColor(size, selectedColor);
+                            const stockCount = exists ? getStockForCombination(selectedColor, size) : 0;
+                            const isOutOfStock = exists && stockCount === 0;
+
+                            return (
+                              <button
+                                key={size}
+                                type="button"
+                                disabled={!exists}
+                                onClick={() => exists && handleSizeSelect(size)}
+                                className={`px-4 py-2.5 text-xs font-bold font-heading rounded-lg border transition-all ${
+                                  isSelected
+                                    ? 'bg-[#2f5f88] text-white border-[#2f5f88] shadow-sm cursor-pointer'
+                                    : !exists
+                                      ? 'bg-slate-50 text-slate-300 border-slate-100 cursor-not-allowed opacity-50'
+                                      : isOutOfStock
+                                        ? 'bg-white text-slate-400 border-dashed border-slate-200 hover:border-slate-355 cursor-pointer'
+                                        : 'bg-white text-slate-700 border-slate-200 hover:border-slate-300'
+                                }`}
+                              >
+                                <span>{size}</span>
+                                {exists && isOutOfStock && <span className="text-[9px] font-sans font-normal ml-1 opacity-75">(Hết)</span>}
+                              </button>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Fallback Selector for legacy/unstructured variants */}
+                    {uniqueColors.length === 0 && uniqueSizes.length === 0 && (
+                      <div>
+                        <label className="text-xs font-black text-slate-700 uppercase tracking-widest font-heading block mb-2">Chọn Phiên Bản</label>
+                        <div className="flex flex-wrap gap-2">
+                          {product.variants.map((v) => (
+                            <button
+                              key={v.id}
+                              type="button"
+                              onClick={() => setSelectedVariant(v)}
+                              className={`px-4 py-2.5 text-xs font-bold font-heading rounded-lg border transition-all cursor-pointer ${
+                                selectedVariant?.id === v.id
+                                  ? 'bg-[#2f5f88] text-white border-[#2f5f88] shadow-sm'
+                                  : 'bg-white text-slate-700 border-slate-200 hover:border-slate-300'
+                              }`}
+                            >
+                              {v.name}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    )}
                   </div>
                 )}
 
                 {/* Description */}
-                <p className="text-slate-600 leading-relaxed mb-6 text-sm font-sans">{product.desc}</p>
+                <p className="text-slate-600 leading-relaxed mb-6 text-sm font-sans">{getShortDesc(product.desc)}</p>
 
                 {/* Special Promotions Box */}
                 <div className="bg-[#fffcf5] border border-[#f0e6c5] rounded-xl p-5 mb-6 shadow-2xs">
@@ -386,208 +576,309 @@ const ProductDetail = () => {
           </div>
         </div>
 
-        {/* Key Product Features */}
-        <div className="bg-white rounded-xl border border-slate-100 shadow-xs p-6 md:p-10 mb-16">
-          <h2 className="text-xl font-black font-heading text-slate-800 mb-8 border-l-3 border-[#2f5f88] pl-4 uppercase tracking-tight">ĐẶC ĐIỂM NỔI BẬT CỦA SẢN PHẨM</h2>
-          
-          <div className="space-y-10 font-sans">
-            <div className="grid md:grid-cols-2 gap-8 items-center">
-              <div>
-                <h3 className="text-base font-bold text-slate-800 mb-3">Chất liệu cao cấp chống mài mòn & chống nước</h3>
-                <p className="text-slate-600 leading-relaxed text-xs">
-                  Được chế tạo từ vải nylon chống thấm nước 1680D Ballistic siêu bền, kết hợp khóa kéo YKK RC Fuse cao cấp nổi tiếng toàn cầu, giúp bảo vệ tối đa các thiết bị đắt tiền bên trong khỏi mọi tác động của thời tiết và ngoại lực. Thiết kế khóa thông minh hỗ trợ móc khóa số giúp nâng cao an ninh khi đi sân bay.
-                </p>
-              </div>
-              <div className="bg-[#f8f8f8] p-6 rounded-xl border border-slate-100 flex items-center justify-center aspect-video overflow-hidden">
-                <img src={product.images?.[1] || product.image} alt="Vật liệu cao cấp" className="w-full h-full object-contain hover:scale-103 transition-transform duration-500" />
-              </div>
-            </div>
-
-            <div className="grid md:grid-cols-2 gap-8 items-center">
-              <div className="md:order-2">
-                <h3 className="text-base font-bold text-slate-800 mb-3">Cách phân chia ngăn thông minh, tùy chỉnh linh hoạt</h3>
-                <p className="text-slate-600 leading-relaxed text-xs">
-                  Các vách ngăn đệm mút dày sử dụng công nghệ chống sốc EVA cao cấp, có thể tháo rời và sắp xếp lại linh hoạt theo ý muốn. Thiết kế tối ưu hóa sức chứa giúp bạn mang theo đầy đủ thân máy chuyên nghiệp, ống kính zoom lớn, laptop chuyên dụng cùng nhiều phụ kiện dây cáp kèm theo được cố định chắc chắn.
-                </p>
-              </div>
-              <div className="bg-[#f8f8f8] p-6 rounded-xl border border-slate-100 flex items-center justify-center aspect-video overflow-hidden md:order-1">
-                <img src={product.images?.[2] || product.image} alt="Phân chia ngăn thông minh" className="w-full h-full object-contain hover:scale-103 transition-transform duration-500" />
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Reviews and Q&A Section */}
-        <div className="bg-white rounded-xl border border-slate-100 shadow-xs p-6 md:p-10 mb-16">
-          <h2 className="text-xl font-black font-heading text-slate-800 mb-8 border-l-3 border-[#2f5f88] pl-4 uppercase tracking-tight">ĐÁNH GIÁ KHÁCH HÀNG & NHẬN XÉT</h2>
-          
-          <div className="grid md:grid-cols-3 gap-8 pb-8 border-b border-slate-100 mb-8 items-center">
-            {/* Visual stars summary */}
-            <div className="text-center md:border-r border-slate-100 py-4">
-              <div className="text-5xl font-black text-[#2f5f88] mb-2 font-heading">{product.rating}</div>
-              <div className="flex justify-center text-[#ab9f1d] mb-1">
-                {[...Array(5)].map((_, i) => (
-                  <Star key={i} size={18} fill={i < Math.floor(product.rating) ? 'currentColor' : 'none'} className={i < Math.floor(product.rating) ? 'border-none' : 'text-slate-200'} />
-                ))}
-              </div>
-              <div className="text-xs text-slate-400 font-sans">{product.reviews} đánh giá thực tế</div>
-            </div>
-            
-            {/* Stars breakdown */}
-            <div className="md:col-span-2 space-y-2 text-xs font-sans">
-              <div className="flex items-center gap-3">
-                <span className="w-10 text-slate-500 font-semibold text-right">5 sao</span>
-                <div className="flex-grow h-2 bg-slate-100 rounded-full overflow-hidden">
-                  <div className="h-full bg-[#2f5f88] rounded-full w-[85%]"></div>
-                </div>
-                <span className="w-8 text-left text-slate-500 font-semibold">85%</span>
-              </div>
-              <div className="flex items-center gap-3">
-                <span className="w-10 text-slate-500 font-semibold text-right">4 sao</span>
-                <div className="flex-grow h-2 bg-slate-100 rounded-full overflow-hidden">
-                  <div className="h-full bg-[#2f5f88] rounded-full w-[10%]"></div>
-                </div>
-                <span className="w-8 text-left text-slate-500 font-semibold">10%</span>
-              </div>
-              <div className="flex items-center gap-3">
-                <span className="w-10 text-slate-500 font-semibold text-right">3 sao</span>
-                <div className="flex-grow h-2 bg-slate-100 rounded-full overflow-hidden">
-                  <div className="h-full bg-[#2f5f88] rounded-full w-[5%]"></div>
-                </div>
-                <span className="w-8 text-left text-slate-500 font-semibold">5%</span>
-              </div>
-            </div>
-          </div>
-
-          {/* Q&A Comments */}
-          <div className="space-y-6">
-            {productReviews.map((rev) => (
-              <div key={rev.id} className="bg-[#f8f8f8] p-5 rounded-xl border border-slate-100">
-                <div className="flex items-center justify-between mb-2">
-                  <span className="font-bold text-slate-800 text-xs font-heading uppercase">{rev.name}</span>
-                  <span className="text-[10px] text-slate-400 font-sans">{rev.date}</span>
-                </div>
-                <div className="flex text-[#ab9f1d] mb-2">
-                  {[...Array(5)].map((_, i) => (
-                    <Star 
-                      key={i} 
-                      size={12} 
-                      fill={i < rev.rating ? 'currentColor' : 'none'} 
-                      className={i < rev.rating ? 'border-none' : 'text-slate-200'} 
-                    />
-                  ))}
-                </div>
-                <p className="text-xs text-slate-600 leading-relaxed font-sans">
-                  {rev.comment}
-                </p>
-                
-                {/* Admin response */}
-                {rev.adminResponse && (
-                  <div className="mt-4 bg-white border border-slate-100 p-4 rounded-lg ml-4 relative">
-                    <div className="absolute left-4 -top-2 w-3 h-3 bg-white border-t border-l border-slate-100 transform rotate-45"></div>
-                      <div className="flex items-center gap-1.5 mb-1.5">
-                      <span className="bg-[#2f5f88] text-white text-[8px] font-black uppercase px-1.5 py-0.5 rounded font-heading">QTV</span>
-                      <strong className="text-xs text-slate-800 font-heading">Quản trị viên Think Tank</strong>
-                    </div>
-                    <p className="text-xs text-slate-500 leading-relaxed font-sans">
-                      {rev.adminResponse}
-                    </p>
-                  </div>
-                )}
-              </div>
+        {/* Detail Tabs Section */}
+        <div className="bg-white rounded-xl border border-slate-100 shadow-xs mb-16 overflow-hidden">
+          {/* Tab Headers */}
+          <div className="flex border-b border-slate-100 bg-[#f8f9fa]">
+            {[
+              { id: 'description', label: 'Mô tả sản phẩm' },
+              { id: 'specs', label: 'Thông số kỹ thuật' },
+              { id: 'reviews', label: `Đánh giá (${productReviews.length})` }
+            ].map((tab) => (
+              <button
+                key={tab.id}
+                type="button"
+                onClick={() => setActiveTab(tab.id)}
+                className={`px-6 md:px-10 py-4 font-black font-heading text-xs uppercase tracking-wider transition-all border-b-2 cursor-pointer ${
+                  activeTab === tab.id
+                    ? 'border-[#2f5f88] text-[#2f5f88] bg-white'
+                    : 'border-transparent text-slate-400 hover:text-slate-700 hover:bg-slate-50'
+                }`}
+              >
+                {tab.label}
+              </button>
             ))}
           </div>
 
-          {/* Review Submission Form */}
-          <div className="mt-10 pt-8 border-t border-slate-100">
-            <h3 className="text-sm font-bold font-heading text-slate-800 mb-6 uppercase tracking-wider flex items-center gap-2">
-              <Sparkles size={16} className="text-[#2f5f88]" />
-              Viết đánh giá của bạn
-            </h3>
-            
-            <form 
-              onSubmit={async (e) => {
-                e.preventDefault();
-                if (!reviewComment.trim()) {
-                  openModal('Cảnh báo', 'Vui lòng nhập nội dung đánh giá!', 'warning');
-                  return;
-                }
-
-                try {
-                  const ratingVal = Number(reviewRating);
-                  const commentVal = reviewComment.trim();
-                  await api.reviews.create(product.id, ratingVal, commentVal);
-
-                  // Reload product detail to update rating stats
-                  const updatedProduct = await api.products.getOne(product.id);
-                  setProduct(updatedProduct);
-
-                  // Reload reviews list
-                  const reviewsData = await api.reviews.getByProduct(product.id);
-                  setProductReviews(reviewsData || []);
-
-                  setReviewComment('');
-                  setReviewRating(5);
-                  openModal('Thành công', 'Cảm ơn bạn đã gửi đánh giá! Nhận xét của bạn đã được ghi nhận thành công.', 'success');
-                } catch (error) {
-                  openModal('Lỗi', error.message || 'Không thể gửi đánh giá. Vui lòng đăng nhập tài khoản khách hàng!', 'warning');
-                }
-              }} 
-              className="space-y-4 font-sans"
-            >
-              <div className="grid sm:grid-cols-2 gap-4">
-                <div className="space-y-1.5">
-                  <label className="text-xs font-semibold text-slate-500">Họ và Tên *</label>
-                  <input
-                    type="text"
-                    required
-                    value={reviewName}
-                    onChange={(e) => setReviewName(e.target.value)}
-                    placeholder="Nhập tên của bạn"
-                    className="w-full bg-[#f8f8f8] border border-slate-200 rounded-lg px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-[#2f5f88] text-slate-750 text-xs"
+          {/* Tab Body */}
+          <div className="p-6 md:p-10 font-sans">
+            {/* Tab 1: Description & Highlights */}
+            {activeTab === 'description' && (
+              <div className="space-y-10 animate-in fade-in duration-200">
+                {/* Rich Description */}
+                {product.desc && (
+                  <div 
+                    className="prose max-w-none text-slate-600 text-xs md:text-sm leading-relaxed prose-slate"
+                    dangerouslySetInnerHTML={{ __html: product.desc }}
                   />
+                )}
+
+                {/* Highlights */}
+                {product.highlights && product.highlights.length > 0 && (
+                  <div className="pt-8 border-t border-slate-100">
+                    <h3 className="text-sm font-bold font-heading text-slate-800 mb-8 uppercase tracking-wider border-l-3 border-[#2f5f88] pl-3">Đặc điểm nổi bật</h3>
+                    <div className="space-y-10">
+                      {product.highlights.map((hl, idx) => (
+                        <div key={idx} className="grid md:grid-cols-2 gap-8 items-center">
+                          <div className={idx % 2 === 1 ? 'md:order-2' : ''}>
+                            <h4 className="text-sm font-bold text-slate-800 mb-3">{hl.title}</h4>
+                            <p className="text-slate-600 leading-relaxed text-xs">
+                              {hl.description}
+                            </p>
+                          </div>
+                          <div className={`bg-[#f8f8f8] p-6 rounded-xl border border-slate-100 flex items-center justify-center aspect-video overflow-hidden ${idx % 2 === 1 ? 'md:order-1' : ''}`}>
+                            <img src={hl.imageUrl || product.image} alt={hl.title} className="w-full h-full object-contain hover:scale-103 transition-transform duration-500" />
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Tab 2: Technical Specifications */}
+            {activeTab === 'specs' && (
+              <div className="animate-in fade-in duration-200">
+                <h3 className="text-sm font-bold font-heading text-slate-800 mb-6 uppercase tracking-wider border-l-3 border-[#2f5f88] pl-3">Thông số kỹ thuật chi tiết</h3>
+                <div className="max-w-2xl border border-slate-100 rounded-xl overflow-hidden text-xs text-slate-700">
+                  <table className="w-full border-collapse">
+                    <tbody>
+                      {product.specs?.volume && (
+                        <tr className="border-b border-slate-100 bg-white">
+                          <td className="py-3 px-4 font-semibold text-slate-500 w-1/3">Dung tích</td>
+                          <td className="py-3 px-4 text-slate-800 font-bold font-mono">{product.specs.volume}</td>
+                        </tr>
+                      )}
+                      {product.specs?.dimensions && (
+                        <tr className="border-b border-slate-100 bg-slate-50/50">
+                          <td className="py-3 px-4 font-semibold text-slate-500">Kích thước</td>
+                          <td className="py-3 px-4 text-slate-800 font-bold font-mono">{product.specs.dimensions}</td>
+                        </tr>
+                      )}
+                      {product.specs?.weight && (
+                        <tr className="border-b border-slate-100 bg-white">
+                          <td className="py-3 px-4 font-semibold text-slate-500">Trọng lượng</td>
+                          <td className="py-3 px-4 text-slate-800 font-bold font-mono">{product.specs.weight}</td>
+                        </tr>
+                      )}
+                      {product.specs?.material && (
+                        <tr className="border-b border-slate-100 bg-slate-50/50">
+                          <td className="py-3 px-4 font-semibold text-slate-500">Chất liệu chính</td>
+                          <td className="py-3 px-4 text-slate-800 font-medium leading-relaxed">{product.specs.material}</td>
+                        </tr>
+                      )}
+                      {product.specs?.warranty && (
+                        <tr className="bg-white">
+                          <td className="py-3 px-4 font-semibold text-slate-500">Thời gian bảo hành</td>
+                          <td className="py-3 px-4 text-slate-800 font-medium">{product.specs.warranty}</td>
+                        </tr>
+                      )}
+                    </tbody>
+                  </table>
                 </div>
-                
-                <div className="space-y-1.5">
-                  <label className="text-xs font-semibold text-slate-500">Đánh giá sao *</label>
-                  <div className="flex gap-1.5 py-1">
-                    {[1, 2, 3, 4, 5].map((star) => (
-                      <button
-                        key={star}
-                        type="button"
-                        onClick={() => setReviewRating(star)}
-                        className="text-[#ab9f1d] hover:scale-110 transition-transform cursor-pointer"
-                      >
-                        <Star
-                          size={20}
-                          fill={star <= reviewRating ? 'currentColor' : 'none'}
-                          className={star <= reviewRating ? 'border-none' : 'text-slate-200'}
-                        />
-                      </button>
-                    ))}
+              </div>
+            )}
+
+            {/* Tab 3: Reviews */}
+            {activeTab === 'reviews' && (
+              <div className="space-y-10 animate-in fade-in duration-200">
+                {/* Visual stars summary */}
+                <div className="grid md:grid-cols-3 gap-8 pb-8 border-b border-slate-100 items-center">
+                  <div className="text-center md:border-r border-slate-100 py-4">
+                    <div className="text-5xl font-black text-[#2f5f88] mb-2 font-heading">{product.rating}</div>
+                    <div className="flex justify-center text-[#ab9f1d] mb-1">
+                      {[...Array(5)].map((_, i) => (
+                        <Star key={i} size={18} fill={i < Math.floor(product.rating) ? 'currentColor' : 'none'} className={i < Math.floor(product.rating) ? 'border-none' : 'text-slate-200'} />
+                      ))}
+                    </div>
+                    <div className="text-xs text-slate-400 font-sans">{productReviews.length} đánh giá thực tế</div>
+                  </div>
+                  
+                  {/* Stars breakdown */}
+                  <div className="md:col-span-2 space-y-2 text-xs font-sans">
+                    <div className="flex items-center gap-3">
+                      <span className="w-10 text-slate-500 font-semibold text-right">5 sao</span>
+                      <div className="flex-grow h-2 bg-slate-100 rounded-full overflow-hidden">
+                        <div className="h-full bg-[#2f5f88] rounded-full w-[85%]"></div>
+                      </div>
+                      <span className="w-8 text-left text-slate-500 font-semibold">85%</span>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <span className="w-10 text-slate-500 font-semibold text-right">4 sao</span>
+                      <div className="flex-grow h-2 bg-slate-100 rounded-full overflow-hidden">
+                        <div className="h-full bg-[#2f5f88] rounded-full w-[10%]"></div>
+                      </div>
+                      <span className="w-8 text-left text-slate-500 font-semibold">10%</span>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <span className="w-10 text-slate-500 font-semibold text-right">3 sao</span>
+                      <div className="flex-grow h-2 bg-slate-100 rounded-full overflow-hidden">
+                        <div className="h-full bg-[#2f5f88] rounded-full w-[5%]"></div>
+                      </div>
+                      <span className="w-8 text-left text-slate-500 font-semibold">5%</span>
+                    </div>
                   </div>
                 </div>
+
+                {/* Reviews List */}
+                <div className="space-y-6">
+                  {productReviews.length === 0 ? (
+                    <div className="text-center py-6 text-slate-400 text-xs font-sans">
+                      Chưa có đánh giá nào cho sản phẩm này. Hãy mua hàng và để lại nhận xét đầu tiên!
+                    </div>
+                  ) : (
+                    productReviews.map((rev) => (
+                      <div key={rev.id} className="bg-[#f8f8f8] p-5 rounded-xl border border-slate-100">
+                        <div className="flex items-center justify-between mb-2">
+                          <div className="flex items-center gap-2">
+                            <span className="font-bold text-slate-800 text-xs font-heading uppercase">{rev.name || rev.user?.fullName}</span>
+                            <span className="bg-emerald-50 text-emerald-700 border border-emerald-200 text-[9px] font-bold px-1.5 py-0.5 rounded-full flex items-center gap-0.5 font-sans">
+                              ✓ Đã mua hàng
+                            </span>
+                          </div>
+                          <span className="text-[10px] text-slate-400 font-sans">{rev.date || (rev.createdAt ? new Date(rev.createdAt).toLocaleDateString('vi-VN') : '')}</span>
+                        </div>
+                        <div className="flex text-[#ab9f1d] mb-2">
+                          {[...Array(5)].map((_, i) => (
+                            <Star 
+                              key={i} 
+                              size={12} 
+                              fill={i < rev.rating ? 'currentColor' : 'none'} 
+                              className={i < rev.rating ? 'border-none' : 'text-slate-200'} 
+                            />
+                          ))}
+                        </div>
+                        <p className="text-xs text-slate-600 leading-relaxed font-sans">
+                          {rev.comment}
+                        </p>
+                        
+                        {/* Admin response */}
+                        {rev.adminResponse && (
+                          <div className="mt-4 bg-white border border-slate-100 p-4 rounded-lg ml-4 relative">
+                            <div className="absolute left-4 -top-2 w-3 h-3 bg-white border-t border-l border-slate-100 transform rotate-45"></div>
+                              <div className="flex items-center gap-1.5 mb-1.5">
+                              <span className="bg-[#2f5f88] text-white text-[8px] font-black uppercase px-1.5 py-0.5 rounded font-heading">QTV</span>
+                              <strong className="text-xs text-slate-800 font-heading">Quản trị viên Think Tank</strong>
+                            </div>
+                            <p className="text-xs text-slate-500 leading-relaxed font-sans">
+                              {rev.adminResponse}
+                            </p>
+                          </div>
+                        )}
+                      </div>
+                    ))
+                  )}
+                </div>
+
+                {/* Review Submission Form & verified checks */}
+                <div className="mt-10 pt-8 border-t border-slate-100">
+                  <h3 className="text-sm font-bold font-heading text-slate-800 mb-6 uppercase tracking-wider flex items-center gap-2">
+                    <Sparkles size={16} className="text-[#2f5f88]" />
+                    Viết đánh giá của bạn
+                  </h3>
+
+                  {!isLoggedIn ? (
+                    <div className="bg-[#fcfcfa] border border-[#f0e6c5] rounded-xl p-6 text-center font-sans">
+                      <p className="text-xs text-slate-600 mb-4">Vui lòng đăng nhập tài khoản của bạn để viết đánh giá sản phẩm.</p>
+                      <Link 
+                        to="/login" 
+                        className="inline-block bg-[#2f5f88] hover:bg-[#23323f] text-white font-bold font-heading text-[10px] uppercase tracking-wider px-6 py-2.5 rounded-lg transition-colors"
+                      >
+                        Đăng Nhập Ngay
+                      </Link>
+                    </div>
+                  ) : !canReview ? (
+                    <div className="bg-[#f5f8fa] border border-blue-200 rounded-xl p-5 text-slate-600 font-sans text-xs leading-relaxed">
+                      💡 <strong>Chỉ những khách hàng đã mua sản phẩm này và nhận hàng thành công (Đơn hàng ở trạng thái Giao hàng thành công) mới có thể gửi đánh giá.</strong>
+                    </div>
+                  ) : (
+                    <form 
+                      onSubmit={async (e) => {
+                        e.preventDefault();
+                        if (!reviewComment.trim()) {
+                          openModal('Cảnh báo', 'Vui lòng nhập nội dung đánh giá!', 'warning');
+                          return;
+                        }
+
+                        try {
+                          const ratingVal = Number(reviewRating);
+                          const commentVal = reviewComment.trim();
+                          await api.reviews.create(product.id, ratingVal, commentVal);
+
+                          // Reload product detail to update rating stats
+                          const updatedProduct = await api.products.getOne(product.id);
+                          setProduct(updatedProduct);
+
+                          // Reload reviews list
+                          const reviewsData = await api.reviews.getByProduct(product.id);
+                          setProductReviews(reviewsData || []);
+
+                          setReviewComment('');
+                          setReviewRating(5);
+                          openModal('Thành công', 'Cảm ơn bạn đã gửi đánh giá! Nhận xét của bạn đã được ghi nhận thành công.', 'success');
+                        } catch (error) {
+                          openModal('Lỗi', error.message || 'Không thể gửi đánh giá.', 'warning');
+                        }
+                      }} 
+                      className="space-y-4 font-sans"
+                    >
+                      <div className="grid sm:grid-cols-2 gap-4">
+                        <div className="space-y-1.5">
+                          <label className="text-xs font-semibold text-slate-500">Họ và Tên *</label>
+                          <input
+                            type="text"
+                            required
+                            disabled
+                            value={reviewName}
+                            className="w-full bg-[#f1f1f1] border border-slate-200 rounded-lg px-4 py-2.5 text-slate-500 text-xs focus:outline-none cursor-not-allowed"
+                          />
+                        </div>
+                        
+                        <div className="space-y-1.5">
+                          <label className="text-xs font-semibold text-slate-500">Đánh giá sao *</label>
+                          <div className="flex gap-1.5 py-1">
+                            {[1, 2, 3, 4, 5].map((star) => (
+                              <button
+                                key={star}
+                                type="button"
+                                onClick={() => setReviewRating(star)}
+                                className="text-[#ab9f1d] hover:scale-110 transition-transform cursor-pointer"
+                              >
+                                <Star
+                                  size={20}
+                                  fill={star <= reviewRating ? 'currentColor' : 'none'}
+                                  className={star <= reviewRating ? 'border-none' : 'text-slate-200'}
+                                />
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+                      </div>
+                      
+                      <div className="space-y-1.5">
+                        <label className="text-xs font-semibold text-slate-500">Nhận xét của bạn *</label>
+                        <textarea
+                          required
+                          rows={3}
+                          value={reviewComment}
+                          onChange={(e) => setReviewComment(e.target.value)}
+                          placeholder="Chia sẻ nhận xét thực tế về chất liệu, độ bền và tính năng của sản phẩm..."
+                          className="w-full bg-[#f8f8f8] border border-slate-200 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#2f5f88] text-slate-750 text-xs"
+                        />
+                      </div>
+                      
+                      <button
+                        type="submit"
+                        className="bg-[#2f5f88] hover:bg-[#23323f] text-white font-bold font-heading text-xs uppercase tracking-widest px-6 py-3 rounded-lg transition-colors cursor-pointer shadow-xs"
+                      >
+                        Gửi Đánh Giá
+                      </button>
+                    </form>
+                  )}
+                </div>
               </div>
-              
-              <div className="space-y-1.5">
-                <label className="text-xs font-semibold text-slate-500">Nhận xét của bạn *</label>
-                <textarea
-                  required
-                  rows={3}
-                  value={reviewComment}
-                  onChange={(e) => setReviewComment(e.target.value)}
-                  placeholder="Chia sẻ nhận xét thực tế về chất liệu, độ bền và tính năng của sản phẩm..."
-                  className="w-full bg-[#f8f8f8] border border-slate-200 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#2f5f88] text-slate-750 text-xs"
-                />
-              </div>
-              
-              <button
-                type="submit"
-                className="bg-[#2f5f88] hover:bg-[#23323f] text-white font-bold font-heading text-xs uppercase tracking-widest px-6 py-3 rounded-lg transition-colors cursor-pointer shadow-xs"
-              >
-                Gửi Đánh Giá
-              </button>
-            </form>
+            )}
           </div>
         </div>
 

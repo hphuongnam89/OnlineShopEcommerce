@@ -23,6 +23,7 @@ public class ReviewService {
     private final ReviewRepository reviewRepository;
     private final ProductRepository productRepository;
     private final UserRepository userRepository;
+    private final com.onlinestore.thinktank.modules.order.repository.OrderRepository orderRepository;
 
     public Review addReview(String email, ReviewRequest request) {
         User user = userRepository.findByEmail(email)
@@ -30,6 +31,12 @@ public class ReviewService {
 
         Product product = productRepository.findById(request.getProductId())
                 .orElseThrow(() -> new RuntimeException("Product not found with id: " + request.getProductId()));
+
+        // Verified Purchase validation
+        boolean hasPurchased = orderRepository.hasUserPurchasedProduct(email, request.getProductId());
+        if (!hasPurchased) {
+            throw new RuntimeException("Bạn chỉ có thể đánh giá sản phẩm này sau khi đã mua và nhận hàng thành công!");
+        }
 
         Review review = Review.builder()
                 .product(product)
@@ -44,6 +51,11 @@ public class ReviewService {
         recalculateProductStats(product.getId());
 
         return savedReview;
+    }
+
+    @Transactional(readOnly = true)
+    public boolean checkUserPurchase(String email, Long productId) {
+        return orderRepository.hasUserPurchasedProduct(email, productId);
     }
 
     @Transactional(readOnly = true)

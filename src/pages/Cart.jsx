@@ -18,9 +18,21 @@ const Cart = () => {
   // Dynamic location state
   const [locationData, setLocationData] = useState({});
   useEffect(() => {
-    fetch('/data/locations.json')
+    fetch('https://provinces.open-api.vn/api/?depth=3')
       .then(res => res.json())
-      .then(data => setLocationData(data))
+      .then(data => {
+        const mappedData = {};
+        data.forEach(p => {
+          mappedData[p.name] = {
+            districts: p.districts.map(d => d.name),
+            wards: {}
+          };
+          p.districts.forEach(d => {
+            mappedData[p.name].wards[d.name] = d.wards.map(w => w.name);
+          });
+        });
+        setLocationData(mappedData);
+      })
       .catch(err => console.error('Error loading location data:', err));
   }, []);
 
@@ -247,7 +259,15 @@ const Cart = () => {
                     </div>
                     <div className="flex-grow min-w-0">
                       <h5 className="font-bold text-slate-800 truncate">{item.title}</h5>
-                      <span className="text-slate-500">Số lượng: {item.quantity}</span>
+                      <div className="flex items-center gap-2 text-slate-500 mt-0.5">
+                        <span>Số lượng: {item.quantity}</span>
+                        {item.variantName && (
+                          <>
+                            <span className="text-slate-300">•</span>
+                            <span className="text-[10px] text-[#2f5f88] font-semibold">Phân loại: {item.variantName}</span>
+                          </>
+                        )}
+                      </div>
                     </div>
                     <div className="font-bold text-slate-900">{(item.price * item.quantity).toLocaleString('vi-VN')}đ</div>
                   </li>
@@ -370,7 +390,17 @@ const Cart = () => {
                       {/* Info */}
                       <div className="flex-grow min-w-0">
                         <h3 className="text-base font-bold text-slate-900 truncate">{item.title}</h3>
-                        <p className="text-xs text-slate-400 mt-0.5">{item.category}</p>
+                        <p className="text-xs text-slate-400 mt-0.5 flex items-center gap-1.5 flex-wrap">
+                          <span>{item.category}</span>
+                          {item.variantName && (
+                            <>
+                              <span className="text-slate-350">•</span>
+                              <span className="bg-[#2f5f88]/5 text-[#2f5f88] px-2 py-0.5 rounded text-[10px] font-bold">
+                                Phân loại: {item.variantName}
+                              </span>
+                            </>
+                          )}
+                        </p>
                         <div className="text-blue-600 font-bold mt-2">
                           {item.price.toLocaleString('vi-VN')}đ
                         </div>
