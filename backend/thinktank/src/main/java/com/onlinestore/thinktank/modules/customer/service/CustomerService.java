@@ -1,11 +1,13 @@
 package com.onlinestore.thinktank.modules.customer.service;
 
+import com.onlinestore.thinktank.modules.customer.dto.AdminCustomerResponse;
 import com.onlinestore.thinktank.modules.customer.dto.CustomerRequest;
 import com.onlinestore.thinktank.modules.customer.entity.Customer;
 import com.onlinestore.thinktank.modules.customer.repository.CustomerRepository;
 import com.onlinestore.thinktank.modules.customer.specification.CustomerSpecification;
 import com.onlinestore.thinktank.modules.customertier.entity.CustomerTier;
-import com.onlinestore.thinktank.modules.customertier.repository.CustomerTierRepository;
+import com.onlinestore.thinktank.modules.customertier.service.CustomerTierResolver;
+import com.onlinestore.thinktank.modules.order.repository.OrderRepository;
 import com.onlinestore.thinktank.modules.role.entity.Role;
 import com.onlinestore.thinktank.modules.role.repository.RoleRepository;
 import com.onlinestore.thinktank.modules.user.entity.User;
@@ -19,6 +21,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 import java.util.Set;
 
 @Service
@@ -29,16 +33,32 @@ public class CustomerService {
     private final CustomerRepository customerRepository;
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
-    private final CustomerTierRepository customerTierRepository;
+    private final CustomerTierResolver customerTierResolver;
+    private final OrderRepository orderRepository;
     private final PasswordEncoder passwordEncoder;
 
     public List<Customer> getCustomers(String search, Long tierId, BigDecimal minSpent, BigDecimal maxSpent) {
-        Specification<Customer> spec = CustomerSpecification.filter(search, tierId, minSpent, maxSpent);
+        return getCustomers(search, tierId, minSpent, maxSpent, null, null);
+    }
+
+    public List<Customer> getCustomers(String search, Long tierId, BigDecimal minSpent, BigDecimal maxSpent, Long minOrders, Long maxOrders) {
+        // Central customer listing used by both admin views and report exports.
+        Specification<Customer> spec = CustomerSpecification.filter(search, tierId, minSpent, maxSpent, minOrders, maxOrders);
         return customerRepository.findAll(spec, Sort.by(Sort.Direction.DESC, "totalSpent"));
+    }
+
+    public List<AdminCustomerResponse> getAdminCustomers(String search, Long tierId, BigDecimal minSpent, BigDecimal maxSpent, Long minOrders, Long maxOrders) {
+        // Build the admin response with order count and tier snapshot for dashboard display.
+        List<Customer> customers = getCustomers(search, tierId, minSpent, maxSpent, minOrders, maxOrders);
+        Map<Long, Long> orderCountMap = loadOrderCountMap(customers);
+        return customers.stream()
+                .map(customer -> toAdminResponse(customer, orderCountMap.getOrDefault(customer.getId(), 0L)))
+                .collect(Collectors.toList());
     }
 
     @Transactional
     public Customer createCustomer(CustomerRequest request) {
+        // Create the linked user account first so the customer record can reference it safely.
         if (request.getEmail() == null || request.getEmail().trim().isEmpty()) {
             throw new RuntimeException("Email is required");
         }
@@ -63,7 +83,7 @@ public class CustomerService {
         userRepository.save(user);
 
         BigDecimal totalSpent = request.getTotalSpent() != null ? request.getTotalSpent() : BigDecimal.ZERO;
-        CustomerTier tier = resolveTier(totalSpent);
+        CustomerTier tier = customerTierResolver.resolveBySpent(totalSpent);
 
         Customer customer = Customer.builder()
                 .user(user)
@@ -76,6 +96,7 @@ public class CustomerService {
 
     @Transactional
     public Customer updateCustomer(Long id, CustomerRequest request) {
+        // Update the user profile and customer spending/tier together to keep the pair in sync.
         Customer customer = customerRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Customer not found with id: " + id));
 
@@ -108,7 +129,7 @@ public class CustomerService {
 
         if (request.getTotalSpent() != null) {
             customer.setTotalSpent(request.getTotalSpent());
-            CustomerTier tier = resolveTier(request.getTotalSpent());
+            CustomerTier tier = customerTierResolver.resolveBySpent(request.getTotalSpent());
             customer.setTier(tier);
         }
 
@@ -117,30 +138,66 @@ public class CustomerService {
 
     @Transactional
     public void deleteCustomer(Long id) {
+        // Soft delete the customer and its linked user account so the identity cannot be reused accidentally.
         Customer customer = customerRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Customer not found with id: " + id));
 
         User user = customer.getUser();
-        
-        // Delete Customer first to avoid constraint violation
-        customerRepository.delete(customer);
-        
+
+        // Mark the customer as deleted instead of removing the row.
+        customer.setDeleted(true);
+        customerRepository.save(customer);
+
         if (user != null) {
-            userRepository.delete(user);
+            // Disable the user account and soft delete it as well.
+            user.setEnabled(false);
+            user.setDeleted(true);
+            userRepository.save(user);
         }
     }
 
-    private CustomerTier resolveTier(BigDecimal totalSpent) {
-        List<CustomerTier> tiers = customerTierRepository.findAllByOrderByMinSpendingAsc();
-        CustomerTier matchedTier = null;
-        for (CustomerTier tier : tiers) {
-            if (totalSpent.compareTo(tier.getMinSpending()) >= 0) {
-                matchedTier = tier;
-            }
+    private Map<Long, Long> loadOrderCountMap(List<Customer> customers) {
+        List<Long> customerIds = customers.stream()
+                .map(Customer::getId)
+                .toList();
+        if (customerIds.isEmpty()) {
+            return Map.of();
         }
-        if (matchedTier == null && !tiers.isEmpty()) {
-            matchedTier = tiers.get(0);
-        }
-        return matchedTier;
+
+        return orderRepository.countOrdersByCustomerIds(customerIds).stream()
+                .collect(Collectors.toMap(
+                        OrderRepository.CustomerOrderCountView::getCustomerId,
+                        view -> view.getOrderCount() == null ? 0L : view.getOrderCount()
+                ));
+    }
+
+    private AdminCustomerResponse toAdminResponse(Customer customer, Long orderCount) {
+        User user = customer.getUser();
+        CustomerTier tier = customer.getTier();
+        return AdminCustomerResponse.builder()
+                .id(customer.getId())
+                .user(AdminCustomerResponse.UserSummary.builder()
+                        .id(user != null ? user.getId() : null)
+                        .fullName(user != null ? user.getFullName() : null)
+                        .email(user != null ? user.getEmail() : null)
+                        .phone(user != null ? user.getPhone() : null)
+                        .build())
+                .tier(tier == null ? null : AdminCustomerResponse.TierSummary.builder()
+                        .id(tier.getId())
+                        .name(tier.getName())
+                        .minSpending(tier.getMinSpending())
+                        .discountPercent(tier.getDiscountPercent())
+                        .build())
+                .totalSpent(customer.getTotalSpent())
+                .orderCount(orderCount == null ? 0L : orderCount)
+                .createdAt(customer.getCreatedAt())
+                .build();
+    }
+
+    public AdminCustomerResponse getAdminCustomerById(Long id) {
+        Customer customer = customerRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Customer not found with id: " + id));
+        Map<Long, Long> orderCountMap = loadOrderCountMap(List.of(customer));
+        return toAdminResponse(customer, orderCountMap.getOrDefault(customer.getId(), 0L));
     }
 }

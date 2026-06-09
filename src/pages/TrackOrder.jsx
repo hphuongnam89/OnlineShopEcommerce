@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Search, MapPin, CheckCircle2, AlertCircle } from 'lucide-react';
 import { api } from '../utils/api';
 
+// Guest order tracking page using order code and phone number.
 const TrackOrder = () => {
   const [orderId, setOrderId] = useState('');
   const [phone, setPhone] = useState('');

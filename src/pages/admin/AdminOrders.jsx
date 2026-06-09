@@ -1,8 +1,9 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { api } from '../../utils/api';
-import { Plus, Trash2, Search, Eye, AlertCircle, ShoppingBag, Truck, CheckCircle, XCircle } from 'lucide-react';
+import { Plus, Search, Eye, AlertCircle, ShoppingBag, Truck, CheckCircle, XCircle } from 'lucide-react';
 import CustomModal from '../../components/CustomModal';
 
+// Admin order management page for filtering, editing, status workflow, and soft delete.
 const AdminOrders = () => {
   const [orders, setOrders] = useState([]);
   const [products, setProducts] = useState([]);
@@ -40,12 +41,7 @@ const AdminOrders = () => {
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [isDetailsOpen, setIsDetailsOpen] = useState(false);
 
-  useEffect(() => {
-    fetchOrders();
-    fetchProductsAndCustomers();
-  }, [startDate, endDate, status]);
-
-  const fetchOrders = async () => {
+  const fetchOrders = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
@@ -62,18 +58,27 @@ const AdminOrders = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [search, startDate, endDate, status]);
 
-  const fetchProductsAndCustomers = async () => {
+  const fetchProductsAndCustomers = useCallback(async () => {
     try {
       const prodData = await api.products.getAll();
       setProducts(prodData || []);
       const custData = await api.admin.customers.getAll();
       setCustomers(custData || []);
-    } catch (err) {
-      console.error('Error fetching dependency lists:', err);
+    } catch {
+      setProducts([]);
+      setCustomers([]);
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      void fetchOrders();
+      void fetchProductsAndCustomers();
+    }, 0);
+    return () => clearTimeout(timer);
+  }, [fetchOrders, fetchProductsAndCustomers]);
 
   const handleSearchSubmit = (e) => {
     e.preventDefault();
@@ -96,6 +101,7 @@ const AdminOrders = () => {
 
   // Populate fields if a customer is selected
   useEffect(() => {
+    const timer = setTimeout(() => {
     if (selectedCustomerId) {
       const customer = customers.find(c => String(c.id) === String(selectedCustomerId));
       if (customer && customer.user) {
@@ -104,16 +110,21 @@ const AdminOrders = () => {
         setEmail(customer.user.email || '');
       }
     }
+    }, 0);
+    return () => clearTimeout(timer);
   }, [selectedCustomerId, customers]);
 
   // Handle auto-selected variant when product changes
   useEffect(() => {
-    const p = products.find(prod => String(prod.id) === String(selectedProductId));
-    if (p && p.variants && p.variants.length > 0) {
-      setSelectedVariantId(p.variants[0].id || '');
-    } else {
-      setSelectedVariantId('');
-    }
+    const timer = setTimeout(() => {
+      const p = products.find(prod => String(prod.id) === String(selectedProductId));
+      if (p && p.variants && p.variants.length > 0) {
+        setSelectedVariantId(p.variants[0].id || '');
+      } else {
+        setSelectedVariantId('');
+      }
+    }, 0);
+    return () => clearTimeout(timer);
   }, [selectedProductId, products]);
 
   const handleAddItem = () => {

@@ -1,8 +1,9 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { api } from '../../utils/api';
-import { Plus, Edit3, Trash2, Search, Download, UserCheck, AlertCircle, ArrowLeft } from 'lucide-react';
+import { Plus, Edit3, Trash2, Search, Download, AlertCircle } from 'lucide-react';
 import CustomModal from '../../components/CustomModal';
 
+// Admin customer management page for CRUD, spending filters, tier display, and export.
 const AdminCustomers = () => {
   const [customers, setCustomers] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -14,6 +15,8 @@ const AdminCustomers = () => {
   const [selectedTier, setSelectedTier] = useState('');
   const [minSpent, setMinSpent] = useState('');
   const [maxSpent, setMaxSpent] = useState('');
+  const [minOrders, setMinOrders] = useState('');
+  const [maxOrders, setMaxOrders] = useState('');
 
   // Form states (In-place Editor)
   const [isFormOpen, setIsFormOpen] = useState(false);
@@ -26,11 +29,7 @@ const AdminCustomers = () => {
   const [password, setPassword] = useState('');
   const [totalSpent, setTotalSpent] = useState('');
 
-  useEffect(() => {
-    fetchCustomers();
-  }, [selectedTier, minSpent, maxSpent]);
-
-  const fetchCustomers = async () => {
+  const fetchCustomers = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
@@ -39,6 +38,8 @@ const AdminCustomers = () => {
       if (selectedTier) params.tierId = selectedTier;
       if (minSpent) params.minSpent = minSpent;
       if (maxSpent) params.maxSpent = maxSpent;
+      if (minOrders) params.minOrders = minOrders;
+      if (maxOrders) params.maxOrders = maxOrders;
 
       const data = await api.admin.customers.getAll(params);
       setCustomers(data || []);
@@ -47,7 +48,14 @@ const AdminCustomers = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [search, selectedTier, minSpent, maxSpent, minOrders, maxOrders]);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      void fetchCustomers();
+    }, 0);
+    return () => clearTimeout(timer);
+  }, [fetchCustomers]);
 
   const handleSearchSubmit = (e) => {
     e.preventDefault();
@@ -167,6 +175,8 @@ const AdminCustomers = () => {
       if (selectedTier) params.tierId = selectedTier;
       if (minSpent) params.minSpent = minSpent;
       if (maxSpent) params.maxSpent = maxSpent;
+      if (minOrders) params.minOrders = minOrders;
+      if (maxOrders) params.maxOrders = maxOrders;
 
       await api.admin.reports.downloadCustomers(params);
       setModalConfig({
@@ -194,6 +204,11 @@ const AdminCustomers = () => {
       default: return 'bg-slate-100 text-slate-655 border border-slate-200';
     }
   };
+
+  const topCustomersBySpent = [...customers]
+    .sort((a, b) => (Number(b.totalSpent) || 0) - (Number(a.totalSpent) || 0))
+    .slice(0, 8);
+  const maxSpentValue = Math.max(...topCustomersBySpent.map(c => Number(c.totalSpent) || 0), 1);
 
   if (isFormOpen) {
     return (
@@ -457,7 +472,63 @@ const AdminCustomers = () => {
               className="w-full bg-white border border-slate-200 text-slate-800 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-100 placeholder-slate-400 font-semibold"
             />
           </div>
+          <div>
+            <label className="block text-slate-500 text-[10px] font-bold mb-1.5 uppercase tracking-wider">Số đơn tối thiểu</label>
+            <input
+              type="number"
+              min="0"
+              placeholder="Ví dụ: 2"
+              value={minOrders}
+              onChange={(e) => setMinOrders(e.target.value)}
+              className="w-full bg-white border border-slate-200 text-slate-800 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-100 placeholder-slate-400 font-semibold"
+            />
+          </div>
+          <div>
+            <label className="block text-slate-500 text-[10px] font-bold mb-1.5 uppercase tracking-wider">Số đơn tối đa</label>
+            <input
+              type="number"
+              min="0"
+              placeholder="Ví dụ: 10"
+              value={maxOrders}
+              onChange={(e) => setMaxOrders(e.target.value)}
+              className="w-full bg-white border border-slate-200 text-slate-800 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-100 placeholder-slate-400 font-semibold"
+            />
+          </div>
         </div>
+      </div>
+
+      <div className="bg-white border border-slate-200/80 p-5 rounded-2xl shadow-xs animate-in fade-in duration-200">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 mb-4">
+          <div>
+            <h2 className="text-xs font-bold text-slate-800 uppercase tracking-wider font-heading">Biểu đồ khách hàng theo tổng chi tiêu</h2>
+            <p className="text-[10px] text-slate-400 mt-1">Top khách hàng đang dẫn đầu về doanh số tích lũy</p>
+          </div>
+          <span className="text-[10px] bg-blue-50 text-blue-700 px-2 py-0.5 rounded-full font-black uppercase">Top 8</span>
+        </div>
+        {topCustomersBySpent.length === 0 ? (
+          <div className="h-40 flex items-center justify-center text-slate-400 text-xs">Chưa có dữ liệu khách hàng.</div>
+        ) : (
+          <div className="space-y-3">
+            {topCustomersBySpent.map((customer) => {
+              const spent = Number(customer.totalSpent) || 0;
+              const width = Math.max((spent / maxSpentValue) * 100, spent > 0 ? 6 : 0);
+              return (
+                <div key={customer.id} className="space-y-1">
+                  <div className="flex justify-between items-center text-[11px] gap-2">
+                    <span className="font-bold text-slate-700 truncate pr-2">{customer.user?.fullName || customer.user?.email || `Khách hàng #${customer.id}`}</span>
+                    <span className="font-mono font-bold text-slate-500 shrink-0">{spent.toLocaleString('vi-VN')} đ | {customer.orderCount || 0} đơn</span>
+                  </div>
+                  <div className="h-3 rounded-full bg-slate-100 overflow-hidden">
+                    <div
+                      className="h-full rounded-full bg-gradient-to-r from-blue-500 to-cyan-400"
+                      style={{ width: `${width}%` }}
+                    />
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
       </div>
 
       {/* Customers List Table */}
@@ -475,6 +546,7 @@ const AdminCustomers = () => {
                   <th className="px-6 py-4">Số điện thoại</th>
                   <th className="px-6 py-4">Email</th>
                   <th className="px-6 py-4">Hạng thành viên</th>
+                  <th className="px-6 py-4 text-center">Số đơn</th>
                   <th className="px-6 py-4 font-bold text-right">Tổng chi tiêu</th>
                   <th className="px-6 py-4 text-right">Thao tác</th>
                 </tr>
@@ -495,6 +567,9 @@ const AdminCustomers = () => {
                       <span className={`px-2.5 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider ${getTierClass(c.tier?.name)}`}>
                         {c.tier?.name || 'BRONZE'}
                       </span>
+                    </td>
+                    <td className="px-6 py-4 text-center font-mono text-slate-700">
+                      {c.orderCount || 0}
                     </td>
                     <td className="px-6 py-4 font-mono font-black text-slate-900 text-right text-sm">
                       {c.totalSpent?.toLocaleString('vi-VN')} đ

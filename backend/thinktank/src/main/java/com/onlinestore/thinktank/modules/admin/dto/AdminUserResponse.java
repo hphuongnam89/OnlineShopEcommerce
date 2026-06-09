@@ -6,6 +6,7 @@ import lombok.Data;
 @Data
 @Builder
 public class AdminUserResponse {
+    // Public-safe admin user summary returned after creating an admin.
     private Long id;
     private String email;
     private String fullName;

@@ -14,6 +14,7 @@ import java.math.BigDecimal;
 @RequiredArgsConstructor
 public class ProductController {
 
+    // Public product API for catalog pagination, filters, sorting, and details.
     private final ProductService productService;
 
     @GetMapping

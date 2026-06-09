@@ -22,10 +22,12 @@ import org.springframework.http.HttpMethod;
 @RequiredArgsConstructor
 public class SecurityConfig {
 
+    // Central Spring Security setup for public routes, admin routes, JWT, CORS, and password hashing.
     private final JwtAuthFilter jwtAuthFilter;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        // Stateless JWT authentication: public store APIs stay open, admin APIs require ROLE_ADMIN.
 
         return http
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
@@ -43,6 +45,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/api/orders").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/orders/track").permitAll()
                         // Admin-only REST APIs
+                        .requestMatchers("/api/admin/uploads/**").hasRole("ADMIN")
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
                         // Secure other REST APIs
                         .anyRequest().authenticated()
@@ -54,8 +57,12 @@ public class SecurityConfig {
 
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
+        // Allow the local Vite dev servers to call the Spring Boot API during development.
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("http://localhost:5173", "http://localhost:5174", "http://localhost:5175", "http://localhost:3000"));
+        configuration.setAllowedOriginPatterns(List.of(
+                "http://localhost:*",
+                "http://127.0.0.1:*"
+        ));
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("Authorization", "Content-Type", "Cache-Control"));
         configuration.setAllowCredentials(true);

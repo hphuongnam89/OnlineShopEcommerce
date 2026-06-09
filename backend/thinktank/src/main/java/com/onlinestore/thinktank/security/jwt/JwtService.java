@@ -11,6 +11,7 @@ import java.util.Date;
 @Service
 public class JwtService {
 
+    // JWT helper for creating tokens and reading the email subject from incoming requests.
     private final String secret;
     private final long expirationMs;
 
@@ -27,6 +28,7 @@ public class JwtService {
     }
 
     public String generateToken(String email) {
+        // Store the user's email as the token subject for later authentication lookup.
         return Jwts.builder()
                 .setSubject(email)
                 .setIssuedAt(new Date())

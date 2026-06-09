@@ -1,6 +1,7 @@
 import { AlertTriangle, CheckCircle, Info, X } from 'lucide-react';
 
-const CustomModal = ({ isOpen, onClose, title, message, type = 'info' }) => {
+// Reusable modal for success, warning, and information messages.
+const CustomModal = ({ isOpen, onClose, title, message, type = 'info', showConfirm = true }) => {
   if (!isOpen) return null;
 
   const getIcon = () => {
@@ -15,15 +16,15 @@ const CustomModal = ({ isOpen, onClose, title, message, type = 'info' }) => {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 animate-in fade-in duration-200">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-xs p-4 animate-in fade-in duration-200">
       {/* Modal Container */}
-      <div className="bg-white rounded-3xl border border-slate-100 shadow-2xl max-w-md w-full overflow-hidden animate-in zoom-in-95 duration-200">
+      <div className="bg-white rounded-2xl border border-slate-200 shadow-xl max-w-md w-full overflow-hidden animate-in zoom-in-95 duration-200">
         
         {/* Header */}
         <div className="px-6 pt-6 pb-2 flex justify-between items-start">
           <div className="flex items-center gap-3">
             {getIcon()}
-            <h3 className="font-extrabold text-slate-900 text-lg leading-tight">{title}</h3>
+            <h3 className="font-semibold text-slate-900 text-lg leading-tight">{title}</h3>
           </div>
           <button 
             onClick={onClose}
@@ -38,15 +39,16 @@ const CustomModal = ({ isOpen, onClose, title, message, type = 'info' }) => {
           <p className="text-slate-600 text-sm leading-relaxed">{message}</p>
         </div>
 
-        {/* Footer */}
-        <div className="px-6 pb-6 pt-2 text-right">
-          <button
-            onClick={onClose}
-            className="bg-blue-600 hover:bg-blue-700 text-white font-bold px-6 py-2.5 rounded-xl text-sm cursor-pointer transition-colors shadow-lg shadow-blue-600/20"
-          >
-            Xác nhận
-          </button>
-        </div>
+        {showConfirm && (
+          <div className="px-6 pb-6 pt-2 text-right">
+            <button
+              onClick={onClose}
+            className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-5 py-2.5 rounded-lg text-sm cursor-pointer transition-colors shadow-sm"
+            >
+              Xác nhận
+            </button>
+          </div>
+        )}
 
       </div>
     </div>

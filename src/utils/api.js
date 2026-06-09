@@ -1,10 +1,57 @@
 const BASE_URL = import.meta.env.DEV ? 'http://localhost:8080' : '';
 
-async function request(endpoint, options = {}) {
+function decodeJwtPayload(token) {
+  try {
+    const parts = token.split('.');
+    if (parts.length < 2) {
+      return null;
+    }
+
+    const base64 = parts[1].replace(/-/g, '+').replace(/_/g, '/');
+    const paddedBase64 = base64.padEnd(base64.length + ((4 - (base64.length % 4)) % 4), '=');
+    const payloadJson = atob(paddedBase64);
+    return JSON.parse(payloadJson);
+  } catch {
+    return null;
+  }
+}
+
+function isJwtExpired(token) {
+  const payload = decodeJwtPayload(token);
+  if (!payload || typeof payload.exp !== 'number') {
+    return true;
+  }
+
+  return payload.exp * 1000 <= Date.now();
+}
+
+export function clearAuthSession() {
+  localStorage.removeItem('token');
+  localStorage.removeItem('currentUser');
+  window.dispatchEvent(new Event('storage'));
+}
+
+export function getValidToken() {
   const token = localStorage.getItem('token');
+  if (!token) {
+    return null;
+  }
+
+  if (isJwtExpired(token)) {
+    clearAuthSession();
+    return null;
+  }
+
+  return token;
+}
+
+// Shared fetch wrapper that attaches JWT, serializes JSON, and normalizes backend errors.
+async function request(endpoint, options = {}) {
+  const token = getValidToken();
+  const isFormData = typeof FormData !== 'undefined' && options.body instanceof FormData;
   const headers = {
-    'Content-Type': 'application/json',
     ...(token && { Authorization: `Bearer ${token}` }),
+    ...(!isFormData ? { 'Content-Type': 'application/json' } : {}),
     ...options.headers,
   };
 
@@ -13,7 +60,7 @@ async function request(endpoint, options = {}) {
     headers,
   };
 
-  if (config.body && typeof config.body === 'object') {
+  if (config.body && typeof config.body === 'object' && !(typeof FormData !== 'undefined' && config.body instanceof FormData)) {
     config.body = JSON.stringify(config.body);
   }
 
@@ -43,8 +90,9 @@ async function request(endpoint, options = {}) {
   return null;
 }
 
+// Download helper used by admin Excel report exports.
 async function downloadFile(endpoint, filename) {
-  const token = localStorage.getItem('token');
+  const token = getValidToken();
   const headers = {
     ...(token && { Authorization: `Bearer ${token}` }),
   };
@@ -63,6 +111,7 @@ async function downloadFile(endpoint, filename) {
   window.URL.revokeObjectURL(url);
 }
 
+// Normalize backend product shape into the frontend product model used by pages/components.
 function mapProduct(p) {
   if (!p) return p;
 
@@ -70,8 +119,8 @@ function mapProduct(p) {
   if (p.highlights) {
     try {
       parsedHighlights = typeof p.highlights === 'string' ? JSON.parse(p.highlights) : p.highlights;
-    } catch (e) {
-      console.error('Error parsing highlights:', e);
+    } catch {
+      parsedHighlights = [];
     }
   }
 
@@ -95,6 +144,7 @@ function mapProduct(p) {
   };
 }
 
+// Normalize Spring Page responses while preserving pagination metadata.
 function mapProductPageResponse(res) {
   return {
     items: Array.isArray(res?.content) ? res.content.map(mapProduct) : [],
@@ -104,6 +154,7 @@ function mapProductPageResponse(res) {
   };
 }
 
+// Translate UI sort labels into backend sort query values.
 function mapSortToBackend(sortBy) {
   switch (sortBy) {
     case 'Giá: Thấp đến Cao':
@@ -117,6 +168,7 @@ function mapSortToBackend(sortBy) {
   }
 }
 
+// Central API client grouped by customer-facing and admin-facing modules.
 export const api = {
   // Auth API
   auth: {
@@ -130,6 +182,12 @@ export const api = {
         method: 'POST',
         body: { email, password, fullName, phone },
       }),
+  },
+
+  // Customer Profile
+  profile: {
+    get: () => request('/api/profile'),
+    update: (data) => request('/api/profile', { method: 'PUT', body: data }),
   },
 
   // Products & Categories
@@ -231,8 +289,31 @@ export const api = {
       getAll: () => request('/api/admin/reviews'),
       delete: (id) => request(`/api/admin/reviews/${id}`, { method: 'DELETE' }),
     },
+    media: {
+      uploadImage: (file, oldUrl = '') => {
+        const formData = new FormData();
+        formData.append('file', file);
+        if (oldUrl) {
+          formData.append('oldUrl', oldUrl);
+        }
+        return request('/api/admin/uploads', {
+          method: 'POST',
+          body: formData,
+        });
+      },
+    },
     reports: {
-      getRevenue: () => request('/api/admin/reports/revenue'),
+      getRevenue: (params = {}) => {
+        const query = new URLSearchParams();
+        Object.entries(params).forEach(([key, val]) => {
+          if (val !== undefined && val !== null && val !== '') {
+            query.append(key, val);
+          }
+        });
+        const q = query.toString();
+        return request(`/api/admin/reports/revenue${q ? `?${q}` : ''}`);
+      },
+      getCustomerReport: () => request('/api/admin/reports/customers'),
       downloadOrders: (params = {}) => {
         const query = new URLSearchParams();
         Object.entries(params).forEach(([key, val]) => {

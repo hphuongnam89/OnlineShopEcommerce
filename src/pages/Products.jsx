@@ -18,6 +18,7 @@ const PRICE_FILTERS = {
   'Trên 10 Triệu': { minPrice: 10000000 },
 };
 
+// Product listing page that loads catalog data from backend with search, filters, sort, and pagination.
 const Products = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const searchFromUrl = searchParams.get('search') || '';
@@ -41,8 +42,8 @@ const Products = () => {
       try {
         const categoryResult = await api.products.getCategories();
         setCategories(categoryResult || []);
-      } catch (error) {
-        console.error('Lỗi tải danh mục:', error);
+      } catch {
+        setCategories([]);
       } finally {
         setCategoryReady(true);
       }
@@ -71,8 +72,9 @@ const Products = () => {
 
         setProductsList(productResult.items);
         setTotalItems(productResult.totalItems);
-      } catch (error) {
-        console.error('Lỗi tải sản phẩm:', error);
+      } catch {
+        setProductsList([]);
+        setTotalItems(0);
       } finally {
         setLoading(false);
       }
@@ -124,18 +126,17 @@ const Products = () => {
 
   return (
     <div className="bg-[#fcfcfc] min-h-screen pt-[108px] pb-20">
-      <div className="bg-[#23323f] text-white py-16 text-center px-4 relative">
+      <div className="bg-[#23323f] text-white py-12 px-4 relative">
         <div className="absolute inset-0 bg-black/10 pointer-events-none" />
-        <div className="relative z-10 max-w-4xl mx-auto space-y-3">
-          <span className="text-[#ab9f1d] text-xs font-black tracking-widest font-heading uppercase">
-            PROFESSIONAL GEAR CATALOG
+        <div className="relative z-10 max-w-7xl mx-auto space-y-3">
+          <span className="text-[#d6c95a] text-sm font-semibold">
+            Catalog Think Tank
           </span>
-          <h1 className="text-3xl sm:text-5xl font-black font-heading uppercase tracking-tight">
-            DANH MỤC SẢN PHẨM
+          <h1 className="text-3xl sm:text-4xl font-semibold">
+            Sản phẩm máy ảnh chuyên dụng
           </h1>
-          <div className="w-16 h-0.5 bg-[#2f5f88] mx-auto mt-2 mb-4" />
-          <p className="text-sm text-slate-300 max-w-2xl mx-auto font-sans leading-relaxed">
-            Khám phá trọn bộ vali kéo, balo và túi máy ảnh chuyên dụng được kiểm nghiệm bởi hàng ngàn nhiếp ảnh gia báo chí chuyên nghiệp thế giới.
+          <p className="text-sm text-slate-300 max-w-2xl leading-relaxed">
+            Lọc nhanh theo dòng sản phẩm, mức giá và nhu cầu di chuyển để tìm đúng balo, vali hoặc phụ kiện cho bộ gear của bạn.
           </p>
         </div>
       </div>
@@ -143,23 +144,23 @@ const Products = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-12 flex flex-col lg:flex-row gap-8">
         <button
           onClick={() => setIsFilterOpen((open) => !open)}
-          className="lg:hidden flex items-center justify-center gap-2 bg-white border border-slate-200 py-3 rounded-lg font-bold font-heading text-xs uppercase tracking-widest text-slate-700 transition-colors"
+          className="lg:hidden flex items-center justify-center gap-2 bg-white border border-slate-200 py-3 rounded-lg font-semibold text-sm text-slate-700 transition-colors"
         >
           <SlidersHorizontal size={18} />
           {isFilterOpen ? 'Ẩn bộ lọc' : 'Hiển thị bộ lọc'}
         </button>
 
         <aside className={`${isFilterOpen ? 'block' : 'hidden'} lg:block w-full lg:w-64 shrink-0`}>
-          <div className="bg-white p-6 rounded-xl border border-slate-100 sticky top-28 space-y-6 shadow-xs">
+          <div className="bg-white p-5 rounded-xl border border-slate-200/80 sticky top-28 space-y-6 shadow-xs">
             <div className="flex justify-between items-center pb-3 border-b border-slate-100">
-              <h3 className="text-sm font-black font-heading text-slate-900 uppercase tracking-wider flex items-center gap-2">
+              <h3 className="text-sm font-semibold text-slate-900 flex items-center gap-2">
                 <SlidersHorizontal size={16} className="text-[#2f5f88]" />
-                Bộ Lọc
+                Bộ lọc
               </h3>
               {(selectedCategories.length > 0 || selectedPrices.length > 0 || searchQuery !== '') && (
                 <button
                   onClick={resetFilters}
-                  className="text-[10px] text-rose-500 font-bold uppercase tracking-wider flex items-center gap-1 hover:text-rose-600 transition-colors cursor-pointer"
+                  className="text-xs text-rose-500 font-semibold flex items-center gap-1 hover:text-rose-600 transition-colors cursor-pointer"
                 >
                   <RotateCcw size={10} />
                   Đặt lại
@@ -169,36 +170,48 @@ const Products = () => {
 
             <div className="space-y-6">
               <div>
-                <h4 className="text-xs font-bold font-heading uppercase tracking-wider text-slate-800 mb-3">Danh Mục</h4>
+                <h4 className="text-xs font-semibold text-slate-800 mb-3">Danh mục</h4>
                 <div className="space-y-2">
-                  {['Balo Máy Ảnh', 'Túi Máy Ảnh', 'Vali Máy Ảnh'].map((item) => (
-                    <label key={item} className="flex items-center gap-3 cursor-pointer group">
+                  {['Balo Máy Ảnh', 'Túi Máy Ảnh', 'Vali Máy Ảnh'].map((item) => {
+                    const inputId = `category-${item.toLowerCase().replaceAll(' ', '-')}`;
+                    return (
+                    <label key={item} htmlFor={inputId} className="flex items-center gap-3 cursor-pointer group">
                       <input
+                        id={inputId}
+                        name="category"
                         type="checkbox"
+                        value={item}
                         checked={selectedCategories.includes(item)}
                         onChange={() => toggleCategory(item)}
                         className="w-4.5 h-4.5 rounded border-slate-300 text-[#2f5f88] focus:ring-[#2f5f88] cursor-pointer"
                       />
                       <span className={`text-xs transition-colors ${selectedCategories.includes(item) ? 'text-[#2f5f88] font-bold' : 'text-slate-600 group-hover:text-[#2f5f88]'}`}>{item}</span>
                     </label>
-                  ))}
+                    );
+                  })}
                 </div>
               </div>
 
               <div>
-                <h4 className="text-xs font-bold font-heading uppercase tracking-wider text-slate-800 mb-3">Mức Giá</h4>
+                <h4 className="text-xs font-semibold text-slate-800 mb-3">Mức giá</h4>
                 <div className="space-y-2">
-                  {PRICE_BRACKETS.map((item) => (
-                    <label key={item} className="flex items-center gap-3 cursor-pointer group">
+                  {PRICE_BRACKETS.map((item) => {
+                    const inputId = `price-${item.toLowerCase().replaceAll(' ', '-').replaceAll('ư', 'u').replaceAll('ệ', 'e')}`;
+                    return (
+                    <label key={item} htmlFor={inputId} className="flex items-center gap-3 cursor-pointer group">
                       <input
+                        id={inputId}
+                        name="price"
                         type="checkbox"
+                        value={item}
                         checked={selectedPrices.includes(item)}
                         onChange={() => togglePrice(item)}
                         className="w-4.5 h-4.5 rounded border-slate-300 text-[#2f5f88] focus:ring-[#2f5f88] cursor-pointer"
                       />
                       <span className={`text-xs transition-colors ${selectedPrices.includes(item) ? 'text-[#2f5f88] font-bold' : 'text-slate-600 group-hover:text-[#2f5f88]'}`}>{item}</span>
                     </label>
-                  ))}
+                    );
+                  })}
                 </div>
               </div>
             </div>
@@ -208,6 +221,8 @@ const Products = () => {
         <main className="flex-1">
           <div className="relative mb-6">
             <input
+              id="catalog-search"
+              name="catalogSearch"
               type="text"
               placeholder="Tìm kiếm sản phẩm theo tên hoặc tính năng..."
               value={searchQuery}
@@ -215,7 +230,7 @@ const Products = () => {
                 setSearchQuery(e.target.value);
                 setCurrentPage(1);
               }}
-              className="w-full bg-white border border-slate-200 rounded-xl pl-11 pr-10 py-3.5 focus:outline-none focus:ring-2 focus:ring-[#2f5f88] text-slate-700 shadow-xs text-xs font-sans"
+              className="w-full bg-white border border-slate-200 rounded-xl pl-11 pr-10 py-3 focus:outline-none focus:ring-2 focus:ring-[#2f5f88] text-slate-700 shadow-xs text-sm"
             />
             <Search size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" />
             {searchQuery && (
@@ -251,7 +266,7 @@ const Products = () => {
                         setItemsPerPage(n);
                         setCurrentPage(1);
                       }}
-                      className={`px-2.5 py-1.5 rounded-lg text-xs font-bold font-heading border transition-colors cursor-pointer ${
+                      className={`px-2.5 py-1.5 rounded-lg text-xs font-semibold border transition-colors cursor-pointer ${
                         itemsPerPage === n
                           ? 'bg-[#2f5f88] text-white border-[#2f5f88]'
                           : 'bg-white text-slate-600 border-slate-200 hover:border-[#2f5f88] hover:text-[#2f5f88]'
@@ -268,7 +283,7 @@ const Products = () => {
                   setSortBy(e.target.value);
                   setCurrentPage(1);
                 }}
-                className="bg-white border border-slate-200 text-slate-700 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#2f5f88] text-xs font-bold font-heading uppercase tracking-wider cursor-pointer"
+                className="bg-white border border-slate-200 text-slate-700 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#2f5f88] text-xs font-semibold cursor-pointer"
               >
                 <option>Mới nhất</option>
                 <option>Giá: Thấp đến Cao</option>

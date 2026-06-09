@@ -1,6 +1,7 @@
 package com.onlinestore.thinktank.modules.order.controller;
 
 import com.onlinestore.thinktank.modules.order.dto.CheckoutRequest;
+import com.onlinestore.thinktank.modules.order.dto.OrderResponse;
 import com.onlinestore.thinktank.modules.order.dto.UpdateOrderRequest;
 import com.onlinestore.thinktank.modules.order.entity.Order;
 import com.onlinestore.thinktank.modules.order.service.OrderService;
@@ -18,27 +19,28 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class AdminOrderController {
 
+    // Admin order API for search, status updates, contact edits, and soft delete.
     private final OrderService orderService;
 
     @GetMapping
-    public ResponseEntity<List<Order>> getAdminOrders(
+    public ResponseEntity<List<OrderResponse>> getAdminOrders(
             @RequestParam(name = "search", required = false) String search,
             @RequestParam(name = "startDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startDate,
             @RequestParam(name = "endDate", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endDate,
             @RequestParam(name = "status", required = false) String status
     ) {
         List<Order> orders = orderService.getAdminOrders(search, startDate, endDate, status);
-        return ResponseEntity.ok(orders);
+        return ResponseEntity.ok(orders.stream().map(OrderResponse::from).toList());
     }
 
     @PostMapping
-    public ResponseEntity<Order> createOrder(@RequestBody CheckoutRequest request) {
+    public ResponseEntity<OrderResponse> createOrder(@RequestBody CheckoutRequest request) {
         Order order = orderService.createOrder(request);
-        return ResponseEntity.ok(order);
+        return ResponseEntity.ok(OrderResponse.from(order));
     }
 
     @PutMapping("/{id}/status")
-    public ResponseEntity<Order> updateOrderStatus(
+    public ResponseEntity<OrderResponse> updateOrderStatus(
             @PathVariable(name = "id") Long id,
             @RequestBody Map<String, String> body
     ) {
@@ -47,16 +49,16 @@ public class AdminOrderController {
             throw new RuntimeException("Status is required");
         }
         Order order = orderService.updateOrderStatus(id, status);
-        return ResponseEntity.ok(order);
+        return ResponseEntity.ok(OrderResponse.from(order));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Order> updateOrder(
+    public ResponseEntity<OrderResponse> updateOrder(
             @PathVariable(name = "id") Long id,
             @RequestBody UpdateOrderRequest request
     ) {
         Order order = orderService.updateOrder(id, request);
-        return ResponseEntity.ok(order);
+        return ResponseEntity.ok(OrderResponse.from(order));
     }
 
     @DeleteMapping("/{id}")

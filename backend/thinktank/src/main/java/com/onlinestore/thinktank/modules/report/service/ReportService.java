@@ -5,6 +5,7 @@ import com.onlinestore.thinktank.modules.customer.service.CustomerService;
 import com.onlinestore.thinktank.modules.order.entity.Order;
 import com.onlinestore.thinktank.modules.order.repository.OrderRepository;
 import com.onlinestore.thinktank.modules.order.service.OrderService;
+import com.onlinestore.thinktank.modules.report.dto.CustomerReportDto;
 import com.onlinestore.thinktank.modules.report.dto.RevenueReportDto;
 import lombok.RequiredArgsConstructor;
 import org.apache.poi.ss.usermodel.*;
@@ -18,6 +19,9 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.WeekFields;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -32,36 +36,54 @@ public class ReportService {
     private final OrderService orderService;
     private final CustomerService customerService;
 
-    public List<RevenueReportDto> getDailyRevenueReport() {
+    public List<RevenueReportDto> getRevenueReport(String period) {
         List<Order> orders = orderRepository.findAll();
+        String normalizedPeriod = period == null ? "DAILY" : period.trim().toUpperCase();
 
-        // Group by LocalDate and sum finalAmount
-        Map<LocalDate, List<Order>> grouped = orders.stream()
+        Map<String, List<Order>> grouped = orders.stream()
                 .filter(o -> o.getCreatedAt() != null)
-                .filter(o -> !o.getStatus().equalsIgnoreCase("CANCELLED"))
+                .filter(o -> o.getStatus() == null || !o.getStatus().equalsIgnoreCase("CANCELLED"))
                 .collect(Collectors.groupingBy(
-                        o -> o.getCreatedAt().toLocalDate(),
-                        TreeMap::new, // Keep sorted by date
+                        o -> buildPeriodKey(o.getCreatedAt().toLocalDate(), normalizedPeriod),
+                        TreeMap::new,
                         Collectors.toList()
                 ));
 
         return grouped.entrySet().stream()
                 .map(entry -> {
-                    LocalDate date = entry.getKey();
-                    List<Order> dayOrders = entry.getValue();
+                    String label = entry.getKey();
+                    List<Order> periodOrders = entry.getValue();
 
-                    BigDecimal dailyRevenue = dayOrders.stream()
+                    BigDecimal dailyRevenue = periodOrders.stream()
                             .map(Order::getFinalAmount)
                             .reduce(BigDecimal.ZERO, BigDecimal::add);
 
-                    long count = dayOrders.size();
+                    long count = periodOrders.size();
 
                     return RevenueReportDto.builder()
-                            .date(date.toString())
+                            .date(label)
                             .revenue(dailyRevenue)
                             .orderCount(count)
                             .build();
                 })
+                .collect(Collectors.toList());
+    }
+
+    public List<CustomerReportDto> getTopCustomerReport() {
+        List<Customer> customers = customerService.getCustomers(null, null, null, null);
+        List<Customer> topCustomers = customers.stream()
+                .limit(10)
+                .toList();
+
+        Map<Long, Long> orderCountMap = loadOrderCountMap(topCustomers);
+        return topCustomers.stream()
+                .map(customer -> CustomerReportDto.builder()
+                        .customerId(customer.getId())
+                        .fullName(customer.getUser() != null ? customer.getUser().getFullName() : "")
+                        .tierName(customer.getTier() != null ? customer.getTier().getName() : "BRONZE")
+                        .totalSpent(customer.getTotalSpent())
+                        .orderCount(orderCountMap.getOrDefault(customer.getId(), 0L))
+                        .build())
                 .collect(Collectors.toList());
     }
 
@@ -132,8 +154,8 @@ public class ReportService {
         }
     }
 
-    public byte[] exportCustomers(String search, Long tierId, BigDecimal minSpent, BigDecimal maxSpent) throws IOException {
-        List<Customer> customers = customerService.getCustomers(search, tierId, minSpent, maxSpent);
+    public byte[] exportCustomers(String search, Long tierId, BigDecimal minSpent, BigDecimal maxSpent, Long minOrders, Long maxOrders) throws IOException {
+        List<Customer> customers = customerService.getCustomers(search, tierId, minSpent, maxSpent, minOrders, maxOrders);
 
         try (Workbook workbook = new XSSFWorkbook(); ByteArrayOutputStream out = new ByteArrayOutputStream()) {
             Sheet sheet = workbook.createSheet("Customers");
@@ -189,5 +211,33 @@ public class ReportService {
             workbook.write(out);
             return out.toByteArray();
         }
+    }
+
+    private String buildPeriodKey(LocalDate date, String period) {
+        return switch (period) {
+            case "WEEKLY" -> {
+                WeekFields weekFields = WeekFields.ISO;
+                int week = date.get(weekFields.weekOfWeekBasedYear());
+                int year = date.get(weekFields.weekBasedYear());
+                yield String.format("%d-W%02d", year, week);
+            }
+            case "MONTHLY" -> String.format("%d-%02d", date.getYear(), date.getMonthValue());
+            default -> date.toString();
+        };
+    }
+
+    private Map<Long, Long> loadOrderCountMap(List<Customer> customers) {
+        List<Long> customerIds = customers.stream()
+                .map(Customer::getId)
+                .toList();
+        if (customerIds.isEmpty()) {
+            return Map.of();
+        }
+
+        return orderRepository.countOrdersByCustomerIds(customerIds).stream()
+                .collect(Collectors.toMap(
+                        OrderRepository.CustomerOrderCountView::getCustomerId,
+                        view -> view.getOrderCount() == null ? 0L : view.getOrderCount()
+                ));
     }
 }

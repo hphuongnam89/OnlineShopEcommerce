@@ -1,5 +1,6 @@
 package com.onlinestore.thinktank.modules.customer.controller;
 
+import com.onlinestore.thinktank.modules.customer.dto.AdminCustomerResponse;
 import com.onlinestore.thinktank.modules.customer.dto.CustomerRequest;
 import com.onlinestore.thinktank.modules.customer.entity.Customer;
 import com.onlinestore.thinktank.modules.customer.service.CustomerService;
@@ -16,32 +17,35 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class AdminCustomerController {
 
+    // Admin customer API for CRUD, spending filters, and tier management.
     private final CustomerService customerService;
 
     @GetMapping
-    public ResponseEntity<List<Customer>> getCustomers(
+    public ResponseEntity<List<AdminCustomerResponse>> getCustomers(
             @RequestParam(name = "search", required = false) String search,
             @RequestParam(name = "tierId", required = false) Long tierId,
             @RequestParam(name = "minSpent", required = false) BigDecimal minSpent,
-            @RequestParam(name = "maxSpent", required = false) BigDecimal maxSpent
+            @RequestParam(name = "maxSpent", required = false) BigDecimal maxSpent,
+            @RequestParam(name = "minOrders", required = false) Long minOrders,
+            @RequestParam(name = "maxOrders", required = false) Long maxOrders
     ) {
-        List<Customer> customers = customerService.getCustomers(search, tierId, minSpent, maxSpent);
+        List<AdminCustomerResponse> customers = customerService.getAdminCustomers(search, tierId, minSpent, maxSpent, minOrders, maxOrders);
         return ResponseEntity.ok(customers);
     }
 
     @PostMapping
-    public ResponseEntity<Customer> createCustomer(@RequestBody CustomerRequest request) {
+    public ResponseEntity<AdminCustomerResponse> createCustomer(@RequestBody CustomerRequest request) {
         Customer customer = customerService.createCustomer(request);
-        return ResponseEntity.ok(customer);
+        return ResponseEntity.ok(customerService.getAdminCustomerById(customer.getId()));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Customer> updateCustomer(
+    public ResponseEntity<AdminCustomerResponse> updateCustomer(
             @PathVariable(name = "id") Long id,
             @RequestBody CustomerRequest request
     ) {
         Customer customer = customerService.updateCustomer(id, request);
-        return ResponseEntity.ok(customer);
+        return ResponseEntity.ok(customerService.getAdminCustomerById(customer.getId()));
     }
 
     @DeleteMapping("/{id}")

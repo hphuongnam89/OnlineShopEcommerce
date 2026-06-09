@@ -4,6 +4,8 @@ import com.onlinestore.thinktank.common.entity.BaseEntity;
 import com.onlinestore.thinktank.modules.role.entity.Role;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.Where;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -21,8 +23,11 @@ import java.util.Set;
 @AllArgsConstructor
 @Builder
 @com.fasterxml.jackson.annotation.JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+@SQLDelete(sql = "UPDATE users SET deleted = true WHERE id = ?")
+@Where(clause = "deleted = false")
 public class User extends BaseEntity {
 
+    // Login identity shared by customers and admins.
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -38,6 +43,9 @@ public class User extends BaseEntity {
 
     @Column(name = "phone", length = 20)
     private String phone;
+
+    @Column(name = "address", length = 500)
+    private String address;
 
     @Column(nullable = false)
     @Builder.Default

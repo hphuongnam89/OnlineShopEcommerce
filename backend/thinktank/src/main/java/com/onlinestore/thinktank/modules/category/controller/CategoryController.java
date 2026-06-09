@@ -15,6 +15,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class CategoryController {
 
+    // Public category API used by catalog filters and navigation menus.
     private final CategoryService categoryService;
 
     @GetMapping

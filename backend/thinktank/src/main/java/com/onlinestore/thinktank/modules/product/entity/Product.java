@@ -4,6 +4,8 @@ import com.onlinestore.thinktank.common.entity.BaseEntity;
 import com.onlinestore.thinktank.modules.category.entity.Category;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.Where;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -17,8 +19,11 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 @com.fasterxml.jackson.annotation.JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+@SQLDelete(sql = "UPDATE products SET deleted = true WHERE id = ? AND version = ?")
+@Where(clause = "deleted = false")
 public class Product extends BaseEntity {
 
+    // Main catalog item shown on storefront and managed from admin products.
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -42,6 +47,10 @@ public class Product extends BaseEntity {
     @Column(nullable = false)
     @Builder.Default
     private Integer stock = 0;
+
+    @Version
+    @Builder.Default
+    private Long version = 0L;
 
     @Column(name = "image_url", length = 500)
     private String imageUrl;
@@ -78,4 +87,16 @@ public class Product extends BaseEntity {
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
     private List<ProductVariant> variants = new ArrayList<>();
+
+    @PrePersist
+    @PreUpdate
+    private void normalizeInventoryFields() {
+        // Existing imported rows may have null version/stock values; Hibernate needs a non-null version when stock changes.
+        if (version == null) {
+            version = 0L;
+        }
+        if (stock == null) {
+            stock = 0;
+        }
+    }
 }

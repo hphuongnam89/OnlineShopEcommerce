@@ -16,6 +16,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Category extends BaseEntity {
 
+    // Product grouping used by catalog filters and admin classification.
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

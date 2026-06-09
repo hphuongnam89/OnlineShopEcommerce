@@ -19,6 +19,7 @@ import java.util.Set;
 @com.fasterxml.jackson.annotation.JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class CustomerTier extends BaseEntity {
 
+    // Loyalty tier definition used to calculate discounts from total spending.
     @Id
     @GeneratedValue(strategy =
             GenerationType.IDENTITY)

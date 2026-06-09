@@ -5,6 +5,13 @@ import ProductCard from '../components/ProductCard';
 import CustomModal from '../components/CustomModal';
 import { api } from '../utils/api';
 import { Star, Shield, Truck, Sparkles, RefreshCw, ShoppingCart, Minus, Plus, ChevronRight } from 'lucide-react';
+import { PRODUCTS } from '../data/products';
+
+const getVariantImage = (variant, product) => {
+  const variantImage = variant?.imageUrl || variant?.image_url;
+  if (variantImage) return variantImage;
+  return product?.image_url || product?.image || '';
+};
 
 const getShortDesc = (desc) => {
   if (!desc) return '';
@@ -12,6 +19,51 @@ const getShortDesc = (desc) => {
   return cleanText.length > 200 ? cleanText.substring(0, 200) + '...' : cleanText;
 };
 
+const getPlainText = (html) => {
+  if (!html) return '';
+  return html.replace(/<\/?[^>]+(>|$)/g, '').trim();
+};
+
+const getFallbackHighlights = (product) => {
+  const specs = product?.specs || {};
+  const highlights = [
+    {
+      title: 'Truy cập thiết bị nhanh',
+      description: `${product.title} được thiết kế để thao tác lấy máy ảnh, ống kính và phụ kiện nhanh hơn trong lúc di chuyển hoặc tác nghiệp.`
+    },
+    specs.dimensions && {
+      title: 'Kích thước thực dụng',
+      description: `Kích thước ${specs.dimensions} giúp balo giữ form gọn, dễ mang theo khi đi làm, đi chụp ngoại cảnh hoặc di chuyển hằng ngày.`
+    },
+    specs.material && {
+      title: 'Vật liệu bền cho sử dụng thường xuyên',
+      description: `Chất liệu ${specs.material} phù hợp với nhu cầu bảo vệ thiết bị và chịu mài mòn khi sử dụng liên tục.`
+    },
+    specs.weight && {
+      title: 'Tối ưu trọng lượng mang vác',
+      description: `Trọng lượng khoảng ${specs.weight}, cân bằng giữa độ bảo vệ và sự thoải mái khi đeo lâu.`
+    }
+  ];
+
+  return highlights.filter(Boolean).slice(0, 4);
+};
+
+const getExpandedDescription = (product) => {
+  const specs = product?.specs || {};
+  const category = product?.category || 'thiết bị máy ảnh';
+  return [
+    `${product.title} thuộc nhóm ${category.toLowerCase()}, phù hợp cho người dùng cần mang máy ảnh, ống kính và phụ kiện theo cách gọn gàng nhưng vẫn bảo vệ tốt khi di chuyển.`,
+    specs.volume
+      ? `Dung tích ${specs.volume} cho phép sắp xếp linh hoạt bộ gear chụp ảnh hằng ngày, đồng thời vẫn giữ được form túi cân đối khi mang trên vai.`
+      : 'Không gian bên trong được chia ngăn rõ ràng, giúp hạn chế va đập giữa thân máy, ống kính và phụ kiện nhỏ.',
+    specs.material
+      ? `Vật liệu ${specs.material} giúp tăng độ bền khi sử dụng thường xuyên, đặc biệt trong các chuyến chụp ngoại cảnh hoặc lịch tác nghiệp dài ngày.`
+      : 'Thiết kế ưu tiên độ bền, khả năng thao tác nhanh và cảm giác mang thoải mái trong thời gian dài.',
+    'Các ngăn phụ hỗ trợ cất pin, thẻ nhớ, cáp, sạc và vật dụng cá nhân, giúp người dùng không phải mở toàn bộ balo mỗi khi cần lấy phụ kiện nhỏ.'
+  ];
+};
+
+// Product detail page for gallery, variant selection, cart action, specs, and verified reviews.
 const ProductDetail = () => {
   const { id } = useParams();
   const { addToCart } = useCart();
@@ -38,7 +90,7 @@ const ProductDetail = () => {
   const closeModal = () => setModalConfig({ ...modalConfig, isOpen: false });
 
   // Reviews states
-  const [reviewName, setReviewName] = useState(() => {
+  const [reviewName] = useState(() => {
     try {
       const currentUser = JSON.parse(localStorage.getItem('currentUser'));
       return currentUser ? currentUser.fullName : '';
@@ -86,11 +138,13 @@ const ProductDetail = () => {
     const hasSameSize = availableVariants.find(v => v.size === selectedSize);
     if (hasSameSize) {
       setSelectedVariant(hasSameSize);
+      setActiveImage(getVariantImage(hasSameSize, product));
     } else {
       const fallbackVariant = availableVariants.find(v => v.stock > 0) || availableVariants[0];
       if (fallbackVariant) {
         setSelectedSize(fallbackVariant.size || '');
         setSelectedVariant(fallbackVariant);
+        setActiveImage(getVariantImage(fallbackVariant, product));
       }
     }
   };
@@ -102,11 +156,13 @@ const ProductDetail = () => {
     const hasSameColor = availableVariants.find(v => v.color === selectedColor);
     if (hasSameColor) {
       setSelectedVariant(hasSameColor);
+      setActiveImage(getVariantImage(hasSameColor, product));
     } else {
       const fallbackVariant = availableVariants.find(v => v.stock > 0) || availableVariants[0];
       if (fallbackVariant) {
         setSelectedColor(fallbackVariant.color || '');
         setSelectedVariant(fallbackVariant);
+        setActiveImage(getVariantImage(fallbackVariant, product));
       }
     }
   };
@@ -123,29 +179,47 @@ const ProductDetail = () => {
       try {
         setLoading(true);
         const foundProduct = await api.products.getOne(id);
-        setProduct(foundProduct);
+        const localProduct = PRODUCTS.find((item) => String(item.id) === String(id));
+        const mergedProduct = localProduct
+          ? {
+              ...localProduct,
+              ...foundProduct,
+              desc: foundProduct.desc || localProduct.desc,
+              image: foundProduct.image || foundProduct.image_url || localProduct.image,
+              images: foundProduct.images?.length ? foundProduct.images : localProduct.images,
+              highlights: foundProduct.highlights?.length ? foundProduct.highlights : localProduct.highlights,
+              specs: {
+                ...(localProduct.specs || {}),
+                ...(foundProduct.specs || {})
+              },
+              variants: foundProduct.variants?.length ? foundProduct.variants : localProduct.variants
+            }
+          : foundProduct;
+
+        setProduct(mergedProduct);
         setQuantity(1); // reset quantity
         
-        if (foundProduct) {
-          setActiveImage(foundProduct.image_url || foundProduct.image);
+        if (mergedProduct) {
+          setActiveImage(mergedProduct.image_url || mergedProduct.image);
           
-          if (foundProduct.variants && foundProduct.variants.length > 0) {
-            const defaultVar = foundProduct.variants.find(v => v.stock > 0) || foundProduct.variants[0];
+          if (mergedProduct.variants && mergedProduct.variants.length > 0) {
+            const defaultVar = mergedProduct.variants.find(v => v.stock > 0) || mergedProduct.variants[0];
             setSelectedVariant(defaultVar);
             setSelectedColor(defaultVar.color || '');
             setSelectedSize(defaultVar.size || '');
+            setActiveImage(getVariantImage(defaultVar, mergedProduct));
           } else {
             setSelectedVariant(null);
             setSelectedColor('');
             setSelectedSize('');
+            setActiveImage(getVariantImage(null, mergedProduct));
           }
 
           // Fetch reviews from API
           try {
             const reviewsData = await api.reviews.getByProduct(id);
             setProductReviews(reviewsData || []);
-          } catch (error) {
-            console.error('Lỗi tải reviews:', error);
+          } catch {
             setProductReviews([]);
           }
 
@@ -156,8 +230,7 @@ const ProductDetail = () => {
             try {
               const checkRes = await api.reviews.checkPurchase(id);
               setCanReview(checkRes?.purchased || false);
-            } catch (err) {
-              console.error('Lỗi check purchase:', err);
+            } catch {
               setCanReview(false);
             }
           } else {
@@ -166,26 +239,25 @@ const ProductDetail = () => {
           }
 
           // Fetch related products
-          if (foundProduct.category_id || foundProduct.category) {
+          if (mergedProduct.category_id || mergedProduct.category) {
             try {
               const relatedPage = await api.products.getPage({
                 page: 0,
                 limit: 4,
-                categoryId: foundProduct.category_id || undefined,
+                categoryId: mergedProduct.category_id || undefined,
                 sort: 'rating_desc',
               });
               const related = relatedPage.items
-                .filter((p) => p.id !== foundProduct.id)
+                .filter((p) => p.id !== mergedProduct.id)
                 .slice(0, 3);
               setRelatedProducts(related);
-            } catch (error) {
-              console.error('Lỗi tải sản phẩm liên quan:', error);
+            } catch {
               setRelatedProducts([]);
             }
           }
         }
-      } catch (error) {
-        console.error('Lỗi tải chi tiết sản phẩm:', error);
+      } catch {
+        setProduct(null);
       } finally {
         setLoading(false);
       }
@@ -193,15 +265,6 @@ const ProductDetail = () => {
 
     fetchProductData();
   }, [id]);
-
-  useEffect(() => {
-    if (selectedVariant) {
-      const img = selectedVariant.imageUrl || selectedVariant.image_url;
-      if (img) {
-        setActiveImage(img);
-      }
-    }
-  }, [selectedVariant]);
 
   if (loading) {
     return (
@@ -223,6 +286,12 @@ const ProductDetail = () => {
   }
 
   const currentStock = selectedVariant ? selectedVariant.stock : product.stock;
+  const descriptionImages = (product.images || []).filter(Boolean).slice(1, 7);
+  const displayHighlights = product.highlights && product.highlights.length > 0
+    ? product.highlights
+    : getFallbackHighlights(product);
+  const hasRichDescription = product.desc && getPlainText(product.desc).length > 0;
+  const shouldExpandDescription = getPlainText(product.desc).endsWith('...');
 
   const incrementQty = () => setQuantity((q) => (q < currentStock ? q + 1 : q));
   const decrementQty = () => setQuantity((q) => (q > 1 ? q - 1 : 1));
@@ -606,29 +675,71 @@ const ProductDetail = () => {
             {activeTab === 'description' && (
               <div className="space-y-10 animate-in fade-in duration-200">
                 {/* Rich Description */}
-                {product.desc && (
-                  <div 
-                    className="prose max-w-none text-slate-600 text-xs md:text-sm leading-relaxed prose-slate"
-                    dangerouslySetInnerHTML={{ __html: product.desc }}
-                  />
+                {hasRichDescription && (
+                  <div className="max-w-4xl">
+                    <h3 className="text-lg font-semibold text-slate-900 mb-3">Tổng quan sản phẩm</h3>
+                    <div
+                      className="prose max-w-none text-slate-600 text-sm leading-7 prose-slate"
+                      dangerouslySetInnerHTML={{ __html: product.desc }}
+                    />
+                    {shouldExpandDescription && (
+                      <div className="mt-5 grid gap-3 text-sm leading-7 text-slate-600">
+                        {getExpandedDescription(product).map((paragraph) => (
+                          <p key={paragraph}>{paragraph}</p>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {descriptionImages.length > 0 && (
+                  <div className="pt-8 border-t border-slate-100">
+                    <div className="flex items-end justify-between gap-4 mb-5">
+                      <div>
+                        <h3 className="text-lg font-semibold text-slate-900">Hình ảnh chi tiết</h3>
+                        <p className="text-sm text-slate-500 mt-1">Một vài góc nhìn thực tế về bố cục ngăn chứa, mặt lưng và phụ kiện đi kèm.</p>
+                      </div>
+                    </div>
+                    <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                      {descriptionImages.map((imgUrl, index) => (
+                        <button
+                          key={imgUrl}
+                          type="button"
+                          onClick={() => {
+                            setActiveImage(imgUrl);
+                            window.scrollTo({ top: 0, behavior: 'smooth' });
+                          }}
+                          className="group bg-slate-50 rounded-xl border border-slate-200 p-4 aspect-[4/3] overflow-hidden cursor-pointer hover:border-[#2f5f88] transition-colors"
+                        >
+                          <img
+                            src={imgUrl}
+                            alt={`${product.title} - hình chi tiết ${index + 1}`}
+                            className="w-full h-full object-contain group-hover:scale-[1.03] transition-transform duration-300"
+                          />
+                        </button>
+                      ))}
+                    </div>
+                  </div>
                 )}
 
                 {/* Highlights */}
-                {product.highlights && product.highlights.length > 0 && (
+                {displayHighlights.length > 0 && (
                   <div className="pt-8 border-t border-slate-100">
-                    <h3 className="text-sm font-bold font-heading text-slate-800 mb-8 uppercase tracking-wider border-l-3 border-[#2f5f88] pl-3">Đặc điểm nổi bật</h3>
-                    <div className="space-y-10">
-                      {product.highlights.map((hl, idx) => (
-                        <div key={idx} className="grid md:grid-cols-2 gap-8 items-center">
-                          <div className={idx % 2 === 1 ? 'md:order-2' : ''}>
-                            <h4 className="text-sm font-bold text-slate-800 mb-3">{hl.title}</h4>
-                            <p className="text-slate-600 leading-relaxed text-xs">
+                    <h3 className="text-lg font-semibold text-slate-900 mb-5">Điểm nổi bật</h3>
+                    <div className="grid md:grid-cols-2 gap-5">
+                      {displayHighlights.map((hl, idx) => (
+                        <div key={`${hl.title}-${idx}`} className="rounded-xl border border-slate-200 bg-white p-5">
+                          <div>
+                            <h4 className="text-sm font-semibold text-slate-900 mb-2">{hl.title}</h4>
+                            <p className="text-slate-600 leading-relaxed text-sm">
                               {hl.description}
                             </p>
                           </div>
-                          <div className={`bg-[#f8f8f8] p-6 rounded-xl border border-slate-100 flex items-center justify-center aspect-video overflow-hidden ${idx % 2 === 1 ? 'md:order-1' : ''}`}>
-                            <img src={hl.imageUrl || product.image} alt={hl.title} className="w-full h-full object-contain hover:scale-103 transition-transform duration-500" />
-                          </div>
+                          {hl.imageUrl && (
+                            <div className="mt-4 bg-slate-50 p-4 rounded-lg border border-slate-100 flex items-center justify-center aspect-video overflow-hidden">
+                              <img src={hl.imageUrl} alt={hl.title} className="w-full h-full object-contain hover:scale-[1.03] transition-transform duration-300" />
+                            </div>
+                          )}
                         </div>
                       ))}
                     </div>

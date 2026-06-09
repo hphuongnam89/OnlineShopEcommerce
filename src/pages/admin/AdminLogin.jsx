@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { api } from '../../utils/api';
 import CustomModal from '../../components/CustomModal';
 
+// Admin login page that routes authenticated admins into the dashboard.
 const AdminLogin = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');

@@ -1,8 +1,9 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { api } from '../../utils/api';
 import { Trash2, Star, AlertCircle, Info, RefreshCw } from 'lucide-react';
 import CustomModal from '../../components/CustomModal';
 
+// Admin review moderation page with rating filters and review soft-delete action.
 const AdminReviews = () => {
   const [reviews, setReviews] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -12,11 +13,7 @@ const AdminReviews = () => {
   // Star Rating Filter
   const [starFilter, setStarFilter] = useState(''); // '', '5', '4', '3', '2', '1'
 
-  useEffect(() => {
-    fetchReviews();
-  }, []);
-
-  const fetchReviews = async () => {
+  const fetchReviews = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
@@ -27,7 +24,14 @@ const AdminReviews = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      void fetchReviews();
+    }, 0);
+    return () => clearTimeout(timer);
+  }, [fetchReviews]);
 
   const handleDeleteReview = async (id) => {
     if (!window.confirm('Bạn có chắc chắn muốn xóa đánh giá này không? Hành động này sẽ cập nhật lại điểm đánh giá trung bình của sản phẩm.')) {

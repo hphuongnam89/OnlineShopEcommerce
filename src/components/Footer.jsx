@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { Globe, Camera, MessageCircle, Mail, Phone, MapPin, Send } from 'lucide-react';
 import CustomModal from './CustomModal';
 
+// Shared storefront footer with brand, quick links, categories, and contact details.
 const Footer = () => {
   const [email, setEmail] = useState('');
   const [modalConfig, setModalConfig] = useState({ isOpen: false, title: '', message: '', type: 'info' });
@@ -81,9 +82,13 @@ const Footer = () => {
             </p>
             <form onSubmit={handleSubscribe} className="space-y-2.5">
               <div className="relative">
+                <label htmlFor="newsletter-email" className="sr-only">Email nhận bản tin</label>
                 <input
+                  id="newsletter-email"
+                  name="newsletterEmail"
                   type="email"
                   required
+                  autoComplete="email"
                   placeholder="Địa chỉ email của bạn"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}

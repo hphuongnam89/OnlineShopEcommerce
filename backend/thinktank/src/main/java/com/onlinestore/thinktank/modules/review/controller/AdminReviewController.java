@@ -13,6 +13,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class AdminReviewController {
 
+    // Admin review API for moderation list and soft-delete actions.
     private final ReviewService reviewService;
 
     @GetMapping

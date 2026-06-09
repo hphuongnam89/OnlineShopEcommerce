@@ -24,6 +24,7 @@ import java.util.Set;
 @com.fasterxml.jackson.annotation.JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Role extends BaseEntity {
 
+    // Security role assigned to users for authorization checks.
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

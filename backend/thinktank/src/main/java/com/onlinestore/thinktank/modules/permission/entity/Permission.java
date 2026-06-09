@@ -23,6 +23,7 @@ import java.util.Set;
 @com.fasterxml.jackson.annotation.JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Permission extends BaseEntity {
 
+    // Optional permission model kept for role-based authorization expansion.
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

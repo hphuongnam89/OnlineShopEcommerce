@@ -4,6 +4,7 @@ import { ShoppingCart, Menu, X, Search } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import CustomModal from './CustomModal';
 
+// Storefront navigation with search, account session, mobile menu, and cart badge.
 const Navbar = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
@@ -72,7 +73,7 @@ const Navbar = () => {
   ];
 
   return (
-    <nav className="fixed top-0 left-0 w-full z-50 bg-white shadow-sm transition-all duration-300">
+    <nav className="fixed top-0 left-0 w-full z-50 bg-white/95 backdrop-blur-sm shadow-sm transition-all duration-300">
       {/* Top Bar */}
       <div className="bg-slate-900 text-slate-300 text-[11px] sm:text-xs py-2 border-b border-slate-800">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center">
@@ -93,7 +94,7 @@ const Navbar = () => {
       </div>
       
       {/* Main Nav Wrapper */}
-      <div className="py-3.5 border-b border-gray-100">
+      <div className="py-3 border-b border-slate-200/70">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center">
           {/* Logo */}
@@ -101,7 +102,7 @@ const Navbar = () => {
             <img
               src="/images/thinktanklogo.png"
               alt="Think Tank Logo"
-              className="h-14 w-auto object-contain"
+              className="h-11 w-auto object-contain"
             />
           </Link>
 
@@ -109,12 +110,12 @@ const Navbar = () => {
           <div className="hidden md:flex items-center space-x-8 flex-grow justify-end">
             {!isSearchOpen ? (
               <>
-                <ul className="flex space-x-8">
+                <ul className="flex space-x-7">
                   {navLinks.map((link) => (
                     <li key={link.name}>
                       <Link
                         to={link.path}
-                        className={`text-base font-semibold transition-colors duration-200 ${
+                        className={`text-sm font-medium transition-colors duration-200 ${
                           location.pathname === link.path
                             ? 'text-blue-600'
                             : 'text-gray-700 hover:text-blue-600'
@@ -126,7 +127,7 @@ const Navbar = () => {
                   ))}
                 </ul>
 
-                <div className="flex items-center space-x-6">
+                <div className="flex items-center space-x-5">
                   <button 
                     onClick={() => setIsSearchOpen(true)}
                     className="text-gray-700 hover:text-blue-600 transition-colors cursor-pointer"
@@ -140,16 +141,23 @@ const Navbar = () => {
                       <button 
                         data-account-menu-button
                         onClick={() => setIsAccountDropdownOpen((open) => !open)}
-                        className="text-base font-semibold text-slate-800 hover:text-blue-600 flex items-center gap-1 cursor-pointer py-1.5 focus:outline-none"
+                        className="text-sm font-medium text-slate-800 hover:text-blue-600 flex items-center gap-1 cursor-pointer py-1.5 focus:outline-none"
                       >
                         Chào, {(currentUser.fullName || currentUser.email || 'Khách').split(' ').pop()} ▾
                       </button>
                       <div
                         data-account-menu
-                        className={`absolute right-0 mt-1 w-48 bg-white border border-slate-100 rounded-2xl shadow-xl py-2 z-50 animate-in fade-in duration-200 ${
+                        className={`absolute right-0 mt-2 w-48 bg-white border border-slate-200 rounded-xl shadow-md py-2 z-50 animate-in fade-in duration-200 ${
                           isAccountDropdownOpen ? 'block' : 'hidden'
                         }`}
                       >
+                        <Link
+                          to="/profile"
+                          onClick={() => setIsAccountDropdownOpen(false)}
+                          className="block px-4 py-2 text-sm text-slate-700 hover:bg-slate-50 hover:text-blue-600 font-medium transition-colors"
+                        >
+                          Thông tin của tôi
+                        </Link>
                         <Link 
                           to="/my-orders" 
                           onClick={() => setIsAccountDropdownOpen(false)}
@@ -171,7 +179,7 @@ const Navbar = () => {
                   ) : (
                     <Link
                       to="/auth"
-                      className="text-base font-semibold text-gray-700 hover:text-blue-600 transition-colors"
+                      className="text-sm font-medium text-gray-700 hover:text-blue-600 transition-colors"
                     >
                       Đăng Nhập
                     </Link>
@@ -179,7 +187,7 @@ const Navbar = () => {
 
                   <Link
                     to="/cart"
-                    className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2.5 rounded-full text-base font-semibold transition-all duration-200 flex items-center gap-2 shadow-sm hover:shadow-md hover:-translate-y-0.5 active:translate-y-0 relative"
+                    className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2.5 rounded-lg text-sm font-semibold transition-all duration-200 flex items-center gap-2 shadow-sm active:translate-y-0 relative"
                   >
                     <ShoppingCart size={18} />
                     <span>Giỏ hàng</span>
@@ -210,7 +218,7 @@ const Navbar = () => {
                     value={navSearchQuery}
                     onChange={(e) => setNavSearchQuery(e.target.value)}
                     autoFocus
-                    className="w-full bg-slate-50 border border-slate-200 rounded-full pl-5 pr-10 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white text-slate-800"
+                    className="w-full bg-slate-50 border border-slate-200 rounded-lg pl-4 pr-10 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white text-slate-800"
                   />
                   <button type="submit" className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-blue-600 cursor-pointer">
                     <Search size={18} />
@@ -277,6 +285,16 @@ const Navbar = () => {
             {currentUser ? (
               <>
                 <Link
+                  to="/profile"
+                  className={`block px-3 py-3 rounded-md text-base font-medium ${
+                    location.pathname === '/profile'
+                      ? 'bg-blue-50 text-blue-600'
+                      : 'text-gray-700 hover:bg-gray-50 hover:text-blue-600'
+                  }`}
+                >
+                  Thông tin của tôi
+                </Link>
+                <Link
                   to="/my-orders"
                   className={`block px-3 py-3 rounded-md text-base font-medium ${
                     location.pathname === '/my-orders'
@@ -290,7 +308,7 @@ const Navbar = () => {
                   onClick={handleLogout}
                   className="w-full text-left block px-3 py-3 rounded-md text-base font-medium text-rose-500 hover:bg-rose-50 cursor-pointer"
                 >
-                  Đăng xuất ({currentUser.fullName.split(' ').pop()})
+                  Đăng xuất ({(currentUser.fullName || currentUser.email || 'Khách').split(' ').pop()})
                 </button>
               </>
             ) : (

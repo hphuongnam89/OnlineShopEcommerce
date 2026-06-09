@@ -26,13 +26,14 @@ public class ReviewService {
     private final com.onlinestore.thinktank.modules.order.repository.OrderRepository orderRepository;
 
     public Review addReview(String email, ReviewRequest request) {
+        // Reviews are only allowed after a verified purchase for the requested product.
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("User not found with email: " + email));
 
         Product product = productRepository.findById(request.getProductId())
                 .orElseThrow(() -> new RuntimeException("Product not found with id: " + request.getProductId()));
 
-        // Verified Purchase validation
+        // Verified purchase guard keeps ratings tied to real order history.
         boolean hasPurchased = orderRepository.hasUserPurchasedProduct(email, request.getProductId());
         if (!hasPurchased) {
             throw new RuntimeException("Bạn chỉ có thể đánh giá sản phẩm này sau khi đã mua và nhận hàng thành công!");
@@ -47,7 +48,7 @@ public class ReviewService {
 
         Review savedReview = reviewRepository.save(review);
 
-        // Recalculate rating stats
+        // Rebuild product score after inserting the new review row.
         recalculateProductStats(product.getId());
 
         return savedReview;
@@ -60,25 +61,29 @@ public class ReviewService {
 
     @Transactional(readOnly = true)
     public List<Review> getProductReviews(Long productId) {
+        // Public review list stays filtered by the entity-level soft delete rule.
         return reviewRepository.findByProductIdOrderByCreatedAtDesc(productId);
     }
 
     @Transactional(readOnly = true)
     public List<Review> getAdminReviews() {
+        // Admin view is the raw moderation queue for all active reviews.
         return reviewRepository.findAll();
     }
 
     public void deleteReview(Long id) {
+        // Soft delete the review and then refresh the product's aggregate rating.
         Review review = reviewRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Review not found with id: " + id));
         Long productId = review.getProduct().getId();
         reviewRepository.delete(review);
 
-        // Recalculate stats after deletion
+        // Recalculate stats after deletion so the displayed averages stay accurate.
         recalculateProductStats(productId);
     }
 
     private void recalculateProductStats(Long productId) {
+        // Aggregate data is always derived from the currently active review rows.
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new RuntimeException("Product not found with id: " + productId));
 

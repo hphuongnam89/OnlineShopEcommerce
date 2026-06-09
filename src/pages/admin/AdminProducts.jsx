@@ -1,8 +1,9 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { api } from '../../utils/api';
-import { Plus, Edit3, Trash2, Search, Package, AlertCircle, Eye, Info } from 'lucide-react';
+import { Plus, Edit3, Trash2, Search, AlertCircle, Info } from 'lucide-react';
 import CustomModal from '../../components/CustomModal';
 
+// Admin product management page for CRUD, variants, specs, highlights, and image uploads.
 const AdminProducts = () => {
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
@@ -37,6 +38,7 @@ const AdminProducts = () => {
   const [highlights, setHighlights] = useState([]);
   const [genColors, setGenColors] = useState('');
   const [genSizes, setGenSizes] = useState('');
+  const [isUploadingImage, setIsUploadingImage] = useState(false);
 
   const handleAddVariantRow = () => {
     setFormVariants(prev => [
@@ -48,7 +50,8 @@ const AdminProducts = () => {
         price: price || '',
         stock: 0,
         color: '',
-        size: ''
+        size: '',
+        imageUrl: ''
       }
     ]);
   };
@@ -112,42 +115,45 @@ const AdminProducts = () => {
       colorsArr.forEach(c => {
         sizesArr.forEach(s => {
           const varSku = `${baseSku}-${slugifyForSku(c)}-${slugifyForSku(s)}`;
-          generated.push({
-            id: null,
-            sku: varSku,
-            name: `${c} / ${s}`,
-            price: price ? parseFloat(price) : 0,
-            stock: 0,
-            color: c,
-            size: s
-          });
+            generated.push({
+              id: null,
+              sku: varSku,
+              name: `${c} / ${s}`,
+              price: price ? parseFloat(price) : 0,
+              stock: 0,
+              color: c,
+              size: s,
+              imageUrl: ''
+            });
         });
       });
     } else if (colorsArr.length > 0) {
       colorsArr.forEach(c => {
         const varSku = `${baseSku}-${slugifyForSku(c)}`;
-        generated.push({
-          id: null,
-          sku: varSku,
-          name: c,
-          price: price ? parseFloat(price) : 0,
-          stock: 0,
-          color: c,
-          size: 'Standard'
-        });
+            generated.push({
+              id: null,
+              sku: varSku,
+              name: c,
+              price: price ? parseFloat(price) : 0,
+              stock: 0,
+              color: c,
+              size: 'Standard',
+              imageUrl: ''
+            });
       });
     } else if (sizesArr.length > 0) {
       sizesArr.forEach(s => {
         const varSku = `${baseSku}-${slugifyForSku(s)}`;
-        generated.push({
-          id: null,
-          sku: varSku,
-          name: s,
-          price: price ? parseFloat(price) : 0,
-          stock: 0,
-          color: 'Standard',
-          size: s
-        });
+            generated.push({
+              id: null,
+              sku: varSku,
+              name: s,
+              price: price ? parseFloat(price) : 0,
+              stock: 0,
+              color: 'Standard',
+              size: s,
+              imageUrl: ''
+            });
       });
     }
 
@@ -170,12 +176,82 @@ const AdminProducts = () => {
     });
   };
 
-  useEffect(() => {
-    fetchProducts();
-    fetchCategories();
-  }, []);
+  const handleImageUpload = async (event) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
 
-  const fetchProducts = async () => {
+    try {
+      setIsUploadingImage(true);
+      const result = await api.admin.media.uploadImage(file, imageUrl);
+      if (result?.url) {
+        setImageUrl(result.url);
+        setModalConfig({
+          isOpen: true,
+          title: 'Tải ảnh thành công',
+          message: 'Ảnh đã được tải lên và gắn vào sản phẩm.',
+          type: 'success'
+        });
+      } else {
+        throw new Error('Không nhận được đường dẫn ảnh từ server.');
+      }
+    } catch (err) {
+      setModalConfig({
+        isOpen: true,
+        title: 'Tải ảnh thất bại',
+        message: err.message || 'Không thể tải ảnh lên.',
+        type: 'warning'
+      });
+    } finally {
+      setIsUploadingImage(false);
+      event.target.value = '';
+    }
+  };
+
+  const handleVariantImageUpload = async (index, event) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+    try {
+      setIsUploadingImage(true);
+      const currentUrl = formVariants[index]?.imageUrl || '';
+      const result = await api.admin.media.uploadImage(file, currentUrl);
+      if (!result?.url) throw new Error('Không nhận được đường dẫn ảnh từ server.');
+      setFormVariants((prev) => prev.map((v, i) => (i === index ? { ...v, imageUrl: result.url } : v)));
+    } catch (err) {
+      setModalConfig({
+        isOpen: true,
+        title: 'Tải ảnh thất bại',
+        message: err.message || 'Không thể tải ảnh lên.',
+        type: 'warning'
+      });
+    } finally {
+      setIsUploadingImage(false);
+      event.target.value = '';
+    }
+  };
+
+  const handleHighlightImageUpload = async (index, event) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+    try {
+      setIsUploadingImage(true);
+      const currentUrl = highlights[index]?.imageUrl || '';
+      const result = await api.admin.media.uploadImage(file, currentUrl);
+      if (!result?.url) throw new Error('Không nhận được đường dẫn ảnh từ server.');
+      setHighlights((prev) => prev.map((h, i) => (i === index ? { ...h, imageUrl: result.url } : h)));
+    } catch (err) {
+      setModalConfig({
+        isOpen: true,
+        title: 'Tải ảnh thất bại',
+        message: err.message || 'Không thể tải ảnh lên.',
+        type: 'warning'
+      });
+    } finally {
+      setIsUploadingImage(false);
+      event.target.value = '';
+    }
+  };
+
+  const fetchProducts = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
@@ -186,16 +262,24 @@ const AdminProducts = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
-  const fetchCategories = async () => {
+  const fetchCategories = useCallback(async () => {
     try {
       const data = await api.products.getCategories();
       setCategories(data || []);
-    } catch (err) {
-      console.error('Lỗi khi tải danh mục:', err);
+    } catch {
+      setCategories([]);
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      void fetchProducts();
+      void fetchCategories();
+    }, 0);
+    return () => clearTimeout(timer);
+  }, [fetchProducts, fetchCategories]);
 
   const handleOpenCreate = () => {
     setFormMode('create');
@@ -273,7 +357,8 @@ const AdminProducts = () => {
         price: parseFloat(v.price || price || 0),
         stock: parseInt(v.stock === '' ? 0 : v.stock),
         color: v.color || null,
-        size: v.size || null
+        size: v.size || null,
+        imageUrl: v.imageUrl || ''
       }))
     };
 
@@ -487,6 +572,22 @@ const AdminProducts = () => {
                   />
                 </div>
 
+                <div className="flex items-center gap-3">
+                  <label className="inline-flex items-center justify-center px-3.5 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-[10px] font-bold uppercase tracking-wider cursor-pointer transition-colors shadow-sm">
+                    {isUploadingImage ? 'Đang tải...' : 'Chọn tệp để tải lên'}
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={handleImageUpload}
+                      className="hidden"
+                      disabled={isUploadingImage}
+                    />
+                  </label>
+                  <p className="text-[10px] text-slate-400 font-medium">
+                    Tệp ảnh sẽ được lưu vào backend và tự điền vào ô URL.
+                  </p>
+                </div>
+
                 {/* Dropzone mockup */}
                 <div className="border-2 border-dashed border-slate-200 rounded-2xl p-6 text-center bg-slate-50/50 hover:bg-slate-50 transition-colors">
                   {imageUrl ? (
@@ -684,6 +785,18 @@ const AdminProducts = () => {
                                   placeholder="https://..."
                                   className="w-full bg-white border border-slate-200 text-slate-800 rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-100 font-mono"
                                 />
+                                <div className="mt-2">
+                                  <label className="inline-flex items-center justify-center px-3 py-1.5 rounded-lg bg-slate-900 text-white text-[9px] font-bold uppercase tracking-wider cursor-pointer">
+                                    {isUploadingImage ? 'Đang tải...' : 'Tải ảnh'}
+                                    <input
+                                      type="file"
+                                      accept="image/*"
+                                      onChange={(e) => handleHighlightImageUpload(index, e)}
+                                      className="hidden"
+                                      disabled={isUploadingImage}
+                                    />
+                                  </label>
+                                </div>
                               </div>
                             </div>
 
@@ -837,6 +950,27 @@ const AdminProducts = () => {
                             placeholder="SKU"
                             className="w-full bg-white border border-slate-200 text-slate-800 rounded-lg px-2 py-1 text-[11px] focus:outline-none font-mono"
                           />
+                        </div>
+
+                        <div className="space-y-1">
+                          <label className="block text-slate-400 text-[8px] font-bold uppercase">Ảnh biến thể</label>
+                          <input
+                            type="text"
+                            value={v.imageUrl || ''}
+                            onChange={(e) => handleUpdateVariantField(idx, 'imageUrl', e.target.value)}
+                            placeholder="URL ảnh"
+                            className="w-full bg-white border border-slate-200 text-slate-800 rounded-lg px-2 py-1 text-[11px] focus:outline-none font-mono"
+                          />
+                          <label className="inline-flex items-center justify-center px-2.5 py-1 rounded-lg bg-slate-900 text-white text-[8px] font-bold uppercase tracking-wider cursor-pointer mt-1">
+                            {isUploadingImage ? 'Đang tải...' : 'Tải ảnh'}
+                            <input
+                              type="file"
+                              accept="image/*"
+                              onChange={(e) => handleVariantImageUpload(idx, e)}
+                              className="hidden"
+                              disabled={isUploadingImage}
+                            />
+                          </label>
                         </div>
 
                         <div className="grid grid-cols-2 gap-2">

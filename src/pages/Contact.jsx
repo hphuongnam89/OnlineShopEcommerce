@@ -1,5 +1,6 @@
 import { MapPin, Phone, Mail, Clock, Send } from 'lucide-react';
 
+// Static contact page with store contact details and message form layout.
 const Contact = () => {
   return (
     <div className="bg-slate-50 min-h-screen pt-[120px] pb-20">

@@ -3,6 +3,7 @@ import { createContext, useContext, useState, useEffect } from 'react';
 
 const CartContext = createContext();
 
+// Hook used by product, cart, and navbar components to access shared cart state.
 export const useCart = () => {
   const context = useContext(CartContext);
   if (!context) {
@@ -11,13 +12,13 @@ export const useCart = () => {
   return context;
 };
 
+// Cart provider persists cart items in localStorage so reloads do not lose the cart.
 export const CartProvider = ({ children }) => {
   const [cartItems, setCartItems] = useState(() => {
     try {
       const saved = localStorage.getItem('cartItems');
       return saved ? JSON.parse(saved) : [];
-    } catch (e) {
-      console.error('Error loading cart from localStorage:', e);
+    } catch {
       return [];
     }
   });

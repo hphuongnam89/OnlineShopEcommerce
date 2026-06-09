@@ -4,6 +4,8 @@ import com.onlinestore.thinktank.security.service.CustomUserDetailsService;
 import jakarta.servlet.*;
 import jakarta.servlet.http.*;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -16,6 +18,7 @@ import java.io.IOException;
 @RequiredArgsConstructor
 public class JwtAuthFilter extends OncePerRequestFilter {
 
+    // Reads Bearer tokens and places the authenticated user into Spring Security context.
     private final JwtService jwtService;
     private final CustomUserDetailsService userDetailsService;
 
@@ -41,7 +44,12 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             // Token is invalid or expired, proceed as anonymous user
         }
 
-        if (email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+        Authentication currentAuthentication = SecurityContextHolder.getContext().getAuthentication();
+        boolean hasRealAuthentication = currentAuthentication != null
+                && currentAuthentication.isAuthenticated()
+                && !(currentAuthentication instanceof AnonymousAuthenticationToken);
+
+        if (email != null && !hasRealAuthentication) {
 
             UserDetails userDetails = userDetailsService.loadUserByUsername(email);
 

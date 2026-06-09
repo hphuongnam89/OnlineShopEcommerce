@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&family=Nunito:wght@400;600;700;800;900&family=Roboto+Mono:ital,wght@0,400;0,500;0,700;1,400;1,700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
 @import "tailwindcss";
 
 @theme {
@@ -7,9 +7,9 @@
   --color-accent-hover: #23323f; /* Think Tank Dark Slate */
   --color-brand-gold: #ab9f1d; /* Think Tank Mustard Gold */
 
-  --font-sans: "Nunito", "Inter", system-ui, sans-serif;
-  --font-heading: "Montserrat", sans-serif;
-  --font-mono: "Roboto Mono", monospace;
+  --font-sans: "Be Vietnam Pro", system-ui, sans-serif;
+  --font-heading: "Be Vietnam Pro", system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", monospace;
 
   /* Overrides for blue to match Think Tank slate blue color scheme globally */
   --color-blue-50: #f4f7fa;
@@ -27,15 +27,51 @@
 
 @layer base {
   body {
-    background-color: #fcfcfc; /* Think Tank Studio White */
+    background-color: #f7f8fa; /* Quiet storefront surface */
     color: #171717;
     font-family: var(--font-sans);
     -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
   }
 
   h1, h2, h3, h4, h5, h6 {
     font-family: var(--font-heading);
-    letter-spacing: -0.02em;
+    letter-spacing: 0;
+    font-weight: 700;
+  }
+}
+
+@layer utilities {
+  /* Tone down the generated-looking extremes without rewriting every component. */
+  .font-black {
+    font-weight: 750 !important;
+  }
+
+  .tracking-tight,
+  .tracking-wide,
+  .tracking-wider,
+  .tracking-widest {
+    letter-spacing: 0 !important;
+  }
+
+  .rounded-3xl {
+    border-radius: 1rem !important;
+  }
+
+  .rounded-2xl {
+    border-radius: 0.875rem !important;
+  }
+
+  .shadow-2xl,
+  .shadow-xl,
+  .shadow-lg {
+    box-shadow: 0 14px 40px rgb(15 23 42 / 0.08) !important;
+  }
+
+  .shadow-md,
+  .shadow-sm,
+  .shadow-xs {
+    box-shadow: 0 8px 24px rgb(15 23 42 / 0.05) !important;
   }
 }
 

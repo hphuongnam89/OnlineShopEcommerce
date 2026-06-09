@@ -1,5 +1,6 @@
 package com.onlinestore.thinktank.modules.report.controller;
 
+import com.onlinestore.thinktank.modules.report.dto.CustomerReportDto;
 import com.onlinestore.thinktank.modules.report.dto.RevenueReportDto;
 import com.onlinestore.thinktank.modules.report.service.ReportService;
 import lombok.RequiredArgsConstructor;
@@ -22,11 +23,19 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ReportController {
 
+    // Admin reporting API for dashboard charts and Excel exports.
     private final ReportService reportService;
 
     @GetMapping("/revenue")
-    public ResponseEntity<List<RevenueReportDto>> getRevenueReport() {
-        return ResponseEntity.ok(reportService.getDailyRevenueReport());
+    public ResponseEntity<List<RevenueReportDto>> getRevenueReport(
+            @RequestParam(name = "period", required = false, defaultValue = "DAILY") String period
+    ) {
+        return ResponseEntity.ok(reportService.getRevenueReport(period));
+    }
+
+    @GetMapping("/customers")
+    public ResponseEntity<List<CustomerReportDto>> getCustomerReport() {
+        return ResponseEntity.ok(reportService.getTopCustomerReport());
     }
 
     @GetMapping("/export/orders")
@@ -49,9 +58,11 @@ public class ReportController {
             @RequestParam(name = "search", required = false) String search,
             @RequestParam(name = "tierId", required = false) Long tierId,
             @RequestParam(name = "minSpent", required = false) BigDecimal minSpent,
-            @RequestParam(name = "maxSpent", required = false) BigDecimal maxSpent
+            @RequestParam(name = "maxSpent", required = false) BigDecimal maxSpent,
+            @RequestParam(name = "minOrders", required = false) Long minOrders,
+            @RequestParam(name = "maxOrders", required = false) Long maxOrders
     ) throws IOException {
-        byte[] excelData = reportService.exportCustomers(search, tierId, minSpent, maxSpent);
+        byte[] excelData = reportService.exportCustomers(search, tierId, minSpent, maxSpent, minOrders, maxOrders);
 
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=customers.xlsx")

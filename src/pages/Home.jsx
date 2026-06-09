@@ -8,17 +8,17 @@ const HERO_SLIDES = [
   {
     id: 1,
     image: 'https://cdn.hstatic.net/products/200001063950/airport-commuter-hero-right-gear_efc274eecf1244988944ec59e8f5eda5.jpg',
-    tagline: 'TRAVEL GEAR FOR THE WORLD\'S VENTURING OBSERVER',
-    title: 'THINK TANK PHOTO VIETNAM',
-    desc: 'Hành lý máy ảnh chuyên nghiệp được thiết kế bởi các nhiếp ảnh gia báo chí và thiết kế sản phẩm hàng đầu thế giới.',
+    tagline: 'Thiết bị bảo vệ máy ảnh cho người làm nghề',
+    title: 'Think Tank Photo Vietnam',
+    desc: 'Balo, vali và túi máy ảnh dành cho nhiếp ảnh gia cần di chuyển nhiều, bảo vệ thiết bị tốt và thao tác nhanh tại hiện trường.',
     cta: 'Khám phá sản phẩm'
   },
   {
     id: 2,
     image: 'https://cdn.hstatic.net/products/200001063950/airport-accelerator-hero-right-gear_b0c0130d5eb3477298dd80e48e6c2d07.jpg',
-    tagline: 'CARRY-ON COMPLIANT CAMERA ROLLERS',
-    title: 'DÒNG SẢN PHẨM AIRPORT CHUYÊN NGHIỆP',
-    desc: 'Bảo vệ tuyệt đối thiết bị của bạn trên mọi chuyến bay quốc tế với kích thước xách tay chuẩn hàng không.',
+    tagline: 'Dòng Airport cho chuyến bay và lịch tác nghiệp dài',
+    title: 'Vali và balo camera chuyên nghiệp',
+    desc: 'Tối ưu khoang chứa, kích thước xách tay và độ bền khi di chuyển liên tục giữa studio, sân bay và địa điểm chụp.',
     cta: 'Xem dòng Vali kéo'
   }
 ];
@@ -50,6 +50,7 @@ const TESTIMONIALS = [
   }
 ];
 
+// Storefront landing page with hero carousel, category blocks, best sellers, and testimonials.
 const Home = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [featuredProducts] = useState(() => {
@@ -110,10 +111,10 @@ const Home = () => {
               <div className="absolute inset-0 z-20 flex items-center">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
                   <div className="max-w-xl md:max-w-2xl text-white space-y-4 sm:space-y-6">
-                    <span className="inline-block text-[#ab9f1d] text-[10px] sm:text-xs font-black tracking-widest font-heading uppercase">
+                    <span className="inline-block text-[#d6c95a] text-xs sm:text-sm font-semibold">
                       {slide.tagline}
                     </span>
-                    <h2 className="text-3xl sm:text-5xl lg:text-6xl font-black font-heading leading-tight tracking-tight uppercase">
+                    <h2 className="text-3xl sm:text-5xl lg:text-6xl font-semibold leading-tight">
                       {slide.title}
                     </h2>
                     <p className="text-slate-300 text-sm sm:text-lg max-w-lg font-sans leading-relaxed">
@@ -122,7 +123,7 @@ const Home = () => {
                     <div className="pt-2 sm:pt-4">
                       <Link 
                         to="/products"
-                        className="inline-flex items-center gap-2 bg-[#2f5f88] hover:bg-[#23323f] text-white text-xs sm:text-sm font-black font-heading uppercase tracking-widest px-6 sm:px-8 py-3.5 sm:py-4 rounded-lg shadow-lg hover:shadow-xl transition-all hover:-translate-y-0.5 duration-200"
+                        className="inline-flex items-center gap-2 bg-[#2f5f88] hover:bg-[#23323f] text-white text-sm font-semibold px-5 sm:px-6 py-3 rounded-lg shadow-sm transition-colors duration-200"
                       >
                         <span>{slide.cta}</span>
                         <ArrowRight size={16} />
@@ -170,9 +171,9 @@ const Home = () => {
       <section className="py-20 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center max-w-3xl mx-auto mb-16">
-            <span className="text-[#2f5f88] text-xs font-bold uppercase tracking-widest font-heading">SHOP BY COLLECTION</span>
-            <h2 className="text-3xl font-black text-[#171717] font-heading mt-2 uppercase tracking-tight">DÒNG SẢN PHẨM CHÍNH</h2>
-            <div className="w-16 h-1 bg-[#2f5f88] mx-auto mt-4" />
+            <span className="text-[#2f5f88] text-sm font-semibold">Mua theo nhu cầu sử dụng</span>
+            <h2 className="text-3xl font-semibold text-[#171717] mt-2">Dòng sản phẩm chính</h2>
+            <div className="w-12 h-0.5 bg-[#2f5f88] mx-auto mt-4" />
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -187,13 +188,13 @@ const Home = () => {
               </div>
               <div className="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-900/35 to-transparent z-10" />
               <div className="relative z-20 text-white space-y-2">
-                <h3 className="text-xl font-extrabold uppercase font-heading tracking-wide">VALI KÉO MÁY ẢNH</h3>
+                <h3 className="text-xl font-semibold">Vali kéo máy ảnh</h3>
                 <p className="text-xs text-slate-300 font-sans line-clamp-2">Vali kéo bánh xe chịu lực, chuyên dụng cho di chuyển đường dài và bảo vệ bộ gear lớn.</p>
                 <Link 
                   to="/products?category=Vali Máy Ảnh" 
-                  className="inline-flex items-center gap-1 text-[#ab9f1d] hover:text-white text-xs font-bold uppercase tracking-wider transition-colors pt-2"
+                  className="inline-flex items-center gap-1 text-[#d6c95a] hover:text-white text-xs font-semibold transition-colors pt-2"
                 >
-                  <span>MUA BỘ SƯU TẬP</span>
+                  <span>Xem sản phẩm</span>
                   <ArrowRight size={14} />
                 </Link>
               </div>
@@ -210,13 +211,13 @@ const Home = () => {
               </div>
               <div className="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-900/35 to-transparent z-10" />
               <div className="relative z-20 text-white space-y-2">
-                <h3 className="text-xl font-extrabold uppercase font-heading tracking-wide">BALO CHUYÊN NGHIỆP</h3>
+                <h3 className="text-xl font-semibold">Balo chuyên nghiệp</h3>
                 <p className="text-xs text-slate-300 font-sans line-clamp-2">Thiết kế công thái học đệm dày, phân bổ trọng lực tối ưu, thoải mái đeo tác nghiệp cả ngày dài.</p>
                 <Link 
                   to="/products?category=Balo Máy Ảnh" 
-                  className="inline-flex items-center gap-1 text-[#ab9f1d] hover:text-white text-xs font-bold uppercase tracking-wider transition-colors pt-2"
+                  className="inline-flex items-center gap-1 text-[#d6c95a] hover:text-white text-xs font-semibold transition-colors pt-2"
                 >
-                  <span>MUA BỘ SƯU TẬP</span>
+                  <span>Xem sản phẩm</span>
                   <ArrowRight size={14} />
                 </Link>
               </div>
@@ -233,13 +234,13 @@ const Home = () => {
               </div>
               <div className="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-900/35 to-transparent z-10" />
               <div className="relative z-20 text-white space-y-2">
-                <h3 className="text-xl font-extrabold uppercase font-heading tracking-wide">TÚI & PHỤ KIỆN</h3>
+                <h3 className="text-xl font-semibold">Túi và phụ kiện</h3>
                 <p className="text-xs text-slate-300 font-sans line-clamp-2">Bao đựng ống kính, túi quản lý cáp sạc, bao chống sốc laptop được thiết kế cực kỳ thông minh.</p>
                 <Link 
                   to="/products?category=Túi Máy Ảnh" 
-                  className="inline-flex items-center gap-1 text-[#ab9f1d] hover:text-white text-xs font-bold uppercase tracking-wider transition-colors pt-2"
+                  className="inline-flex items-center gap-1 text-[#d6c95a] hover:text-white text-xs font-semibold transition-colors pt-2"
                 >
-                  <span>MUA BỘ SƯU TẬP</span>
+                  <span>Xem sản phẩm</span>
                   <ArrowRight size={14} />
                 </Link>
               </div>
@@ -254,9 +255,9 @@ const Home = () => {
           <div className="grid lg:grid-cols-12 gap-12 items-center">
             {/* Story text */}
             <div className="lg:col-span-5 space-y-6">
-              <span className="text-[#ab9f1d] text-xs font-bold uppercase tracking-widest font-heading block">DESIGNED FOR THE PROFESSIONALS</span>
-              <h2 className="text-3xl sm:text-4xl font-black font-heading text-[#171717] uppercase tracking-tight leading-tight">
-                THIẾT KẾ CHO NGƯỜI QUAN SÁT DẤN THÂN
+              <span className="text-[#2f5f88] text-sm font-semibold block">Thiết kế từ nhu cầu tác nghiệp thật</span>
+              <h2 className="text-3xl sm:text-4xl font-semibold text-[#171717] leading-tight">
+                Chi tiết nhỏ tạo nên khác biệt khi đi chụp
               </h2>
               <p className="text-slate-600 text-sm leading-relaxed font-sans">
                 Các sản phẩm Think Tank được tạo ra bởi sự hợp tác chặt chẽ của các nhà thiết kế công nghiệp chuyên nghiệp và các nhiếp ảnh gia báo chí thực thụ. Mọi chi tiết nhỏ, từ cách sắp xếp ngăn đựng thẻ nhớ cho tới độ trơn trượt của khóa kéo, đều xuất phát từ trải nghiệm thực tế tại hiện trường tác nghiệp khắc nghiệt.
@@ -264,7 +265,7 @@ const Home = () => {
               <div className="pt-2">
                 <Link 
                   to="/about"
-                  className="inline-flex items-center gap-2 text-[#2f5f88] hover:text-[#23323f] text-sm font-bold uppercase tracking-wider transition-colors font-heading"
+                  className="inline-flex items-center gap-2 text-[#2f5f88] hover:text-[#23323f] text-sm font-semibold transition-colors"
                 >
                   <span>Xem thêm về chúng tôi</span>
                   <ArrowRight size={16} />
@@ -326,9 +327,9 @@ const Home = () => {
       <section className="py-20 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center max-w-3xl mx-auto mb-16">
-            <span className="text-[#2f5f88] text-xs font-bold uppercase tracking-widest font-heading">MOST POPULAR EQUIPMENT</span>
-            <h2 className="text-3xl font-black text-[#171717] font-heading mt-2 uppercase tracking-tight">SẢN PHẨM BÁN CHẠY NHẤT</h2>
-            <div className="w-16 h-1 bg-[#2f5f88] mx-auto mt-4" />
+            <span className="text-[#2f5f88] text-sm font-semibold">Được chọn nhiều</span>
+            <h2 className="text-3xl font-semibold text-[#171717] mt-2">Sản phẩm bán chạy</h2>
+            <div className="w-12 h-0.5 bg-[#2f5f88] mx-auto mt-4" />
           </div>
           
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -340,7 +341,7 @@ const Home = () => {
           <div className="mt-16 text-center">
             <Link 
               to="/products"
-              className="inline-flex items-center gap-2 border-2 border-slate-200 text-slate-700 hover:border-[#2f5f88] hover:text-[#2f5f88] px-8 py-3.5 rounded-lg font-bold font-heading text-xs uppercase tracking-widest transition-colors cursor-pointer bg-white"
+              className="inline-flex items-center gap-2 border border-slate-300 text-slate-700 hover:border-[#2f5f88] hover:text-[#2f5f88] px-6 py-3 rounded-lg font-semibold text-sm transition-colors cursor-pointer bg-white"
             >
               <span>Xem toàn bộ danh mục</span>
               <ArrowRight size={14} />
@@ -354,8 +355,8 @@ const Home = () => {
         <div className="absolute inset-0 bg-slate-950/20 pointer-events-none" />
         <div className="max-w-4xl mx-auto px-4 sm:px-6 relative z-10">
           <div className="text-center mb-10">
-            <span className="text-[#ab9f1d] text-xs font-bold uppercase tracking-widest font-heading">PHOTOGRAPHER REVIEWS</span>
-            <h2 className="text-2xl sm:text-3xl font-black font-heading uppercase tracking-tight mt-2">Ý KIẾN KHÁCH HÀNG</h2>
+            <span className="text-[#d6c95a] text-sm font-semibold">Khách hàng sử dụng thực tế</span>
+            <h2 className="text-2xl sm:text-3xl font-semibold mt-2">Ý kiến khách hàng</h2>
             <div className="w-12 h-0.5 bg-[#2f5f88] mx-auto mt-3" />
           </div>
 
@@ -415,9 +416,9 @@ const Home = () => {
       <section className="py-20 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center max-w-3xl mx-auto mb-16">
-            <span className="text-[#2f5f88] text-xs font-bold uppercase tracking-widest font-heading">#THINKTANKPHOTO ON INSTAGRAM</span>
-            <h2 className="text-3xl font-black text-[#171717] font-heading mt-2 uppercase tracking-tight">CỘNG ĐỒNG NHIẾP ẢNH</h2>
-            <div className="w-16 h-1 bg-[#2f5f88] mx-auto mt-4" />
+            <span className="text-[#2f5f88] text-sm font-semibold">Cộng đồng Think Tank</span>
+            <h2 className="text-3xl font-semibold text-[#171717] mt-2">Khoảnh khắc tác nghiệp</h2>
+            <div className="w-12 h-0.5 bg-[#2f5f88] mx-auto mt-4" />
           </div>
 
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">

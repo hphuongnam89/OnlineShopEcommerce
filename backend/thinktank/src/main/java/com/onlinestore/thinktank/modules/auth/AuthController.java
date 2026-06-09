@@ -3,6 +3,7 @@ package com.onlinestore.thinktank.modules.auth;
 import com.onlinestore.thinktank.modules.auth.dto.*;
 import com.onlinestore.thinktank.modules.auth.AuthService;
 import lombok.RequiredArgsConstructor;
+import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -10,15 +11,16 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class AuthController {
 
+    // Authentication API for customer registration and login.
     private final AuthService authService;
 
     @PostMapping("/register")
-    public void register(@RequestBody RegisterRequest req) {
+    public void register(@Valid @RequestBody RegisterRequest req) {
         authService.register(req);
     }
 
     @PostMapping("/login")
-    public AuthResponse login(@RequestBody LoginRequest req) {
+    public AuthResponse login(@Valid @RequestBody LoginRequest req) {
         return authService.login(req);
     }
 }

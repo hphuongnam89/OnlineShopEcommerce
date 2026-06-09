@@ -1,5 +1,6 @@
 import { Target, Lightbulb, Heart, Globe } from 'lucide-react';
 
+// Static brand/about page for store introduction and credibility content.
 const About = () => {
   return (
     <div className="bg-white min-h-screen pt-28">

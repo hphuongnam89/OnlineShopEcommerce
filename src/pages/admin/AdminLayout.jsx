@@ -8,21 +8,32 @@ import {
   MessageSquare, 
   LogOut, 
   ArrowLeft,
-  ChevronLeft,
-  ChevronRight,
   Bell,
   Menu,
   Settings,
   User as UserIcon,
-  CircleDot
 } from 'lucide-react';
 import { api } from '../../utils/api';
 import './admin-theme.css';
 
+// Shared admin shell with sidebar navigation, topbar, notifications, and nested pages.
 const AdminLayout = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const [adminUser, setAdminUser] = useState(null);
+  const [adminUser] = useState(() => {
+    try {
+      const userStr = localStorage.getItem('currentUser');
+      const token = localStorage.getItem('token');
+      if (!userStr || !token) return null;
+      const user = JSON.parse(userStr);
+      if (user.role !== 'ROLE_ADMIN' && user.role !== 'ADMIN') {
+        return null;
+      }
+      return user;
+    } catch {
+      return null;
+    }
+  });
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   
   // Topbar dropdown states
@@ -32,23 +43,13 @@ const AdminLayout = () => {
   
   const notifRef = useRef(null);
   const profileRef = useRef(null);
-
   useEffect(() => {
-    const userStr = localStorage.getItem('currentUser');
     const token = localStorage.getItem('token');
     
-    if (!userStr || !token) {
+    if (!adminUser || !token) {
       navigate('/admin/login');
       return;
     }
-
-    const user = JSON.parse(userStr);
-    if (user.role !== 'ROLE_ADMIN' && user.role !== 'ADMIN') {
-      navigate('/');
-      return;
-    }
-
-    setAdminUser(user);
     
     // Fetch notifications (recent orders)
     api.admin.orders.getAll().then(data => {
@@ -56,8 +57,8 @@ const AdminLayout = () => {
         const sorted = data.sort((a, b) => b.id - a.id).slice(0, 4);
         setRecentOrders(sorted);
       }
-    }).catch(err => console.error("Could not fetch orders for notifications", err));
-  }, [navigate]);
+    }).catch(() => setRecentOrders([]));
+  }, [navigate, adminUser]);
 
   // Handle clicking outside of dropdowns
   useEffect(() => {

@@ -2,8 +2,7 @@ package com.onlinestore.thinktank.modules.order.service;
 
 import com.onlinestore.thinktank.modules.customer.entity.Customer;
 import com.onlinestore.thinktank.modules.customer.repository.CustomerRepository;
-import com.onlinestore.thinktank.modules.customertier.entity.CustomerTier;
-import com.onlinestore.thinktank.modules.customertier.repository.CustomerTierRepository;
+import com.onlinestore.thinktank.modules.customertier.service.CustomerTierResolver;
 import com.onlinestore.thinktank.modules.order.dto.CheckoutItemRequest;
 import com.onlinestore.thinktank.modules.order.dto.CheckoutRequest;
 import com.onlinestore.thinktank.modules.order.dto.UpdateOrderRequest;
@@ -45,7 +44,7 @@ public class OrderService {
     private final CustomerRepository customerRepository;
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
-    private final CustomerTierRepository customerTierRepository;
+    private final CustomerTierResolver customerTierResolver;
     private final ProductRepository productRepository;
     private final ProductVariantRepository productVariantRepository;
     private final PasswordEncoder passwordEncoder;
@@ -55,10 +54,13 @@ public class OrderService {
             throw new RuntimeException("Order must contain at least one item.");
         }
 
-        // 1. Look up or create Customer by phone
+        // Checkout flow:
+        // 1) resolve the customer account
+        // 2) lock inventory rows
+        // 3) compute discount and final amount
+        // 4) persist the order and order items together
         Customer customer = lookupOrCreateCustomer(request);
 
-        // 2. Map items and calculate total amount
         BigDecimal totalAmount = BigDecimal.ZERO;
         List<OrderItem> orderItems = new ArrayList<>();
 
@@ -73,15 +75,19 @@ public class OrderService {
                 .build();
 
         for (CheckoutItemRequest itemReq : request.getItems()) {
+            productRepository.initializeVersionIfNull(itemReq.getProductId());
             Product product = productRepository.findWithLockById(itemReq.getProductId())
                     .orElseThrow(() -> new RuntimeException("Product not found: " + itemReq.getProductId()));
+            normalizeProductInventory(product);
 
             ProductVariant variant = null;
             BigDecimal price = product.getPrice();
 
             if (itemReq.getVariantId() != null) {
+                productVariantRepository.initializeVersionIfNull(itemReq.getVariantId());
                 variant = productVariantRepository.findWithLockById(itemReq.getVariantId())
                         .orElseThrow(() -> new RuntimeException("Product variant not found: " + itemReq.getVariantId()));
+                normalizeVariantInventory(variant);
                 price = variant.getPrice();
             }
 
@@ -90,20 +96,14 @@ public class OrderService {
                 throw new RuntimeException("Quantity must be greater than zero.");
             }
 
-            // Stock Deduction
+            // Deduct stock immediately while the product/variant rows are locked.
             if (variant != null) {
                 if (variant.getStock() < qty) {
                     throw new RuntimeException("Insufficient stock for variant " + variant.getName() + " (SKU: " + variant.getSku() + ")");
                 }
                 variant.setStock(variant.getStock() - qty);
                 productVariantRepository.save(variant);
-
-                // Deduct main product stock too to keep sync
-                if (product.getStock() >= qty) {
-                    product.setStock(product.getStock() - qty);
-                } else {
-                    product.setStock(0);
-                }
+                syncProductStock(product);
                 productRepository.save(product);
             } else {
                 if (product.getStock() < qty) {
@@ -131,7 +131,7 @@ public class OrderService {
         order.setItems(orderItems);
         order.setTotalAmount(totalAmount);
 
-        // 3. Compute discount based on current customer's tier
+        // Apply loyalty discount from the customer's current tier.
         int discountPercent = 0;
         if (customer.getTier() != null) {
             discountPercent = customer.getTier().getDiscountPercent();
@@ -144,22 +144,25 @@ public class OrderService {
         order.setDiscountAmount(discountAmount);
         order.setFinalAmount(finalAmount);
 
-        // 4. Save order
+        // Save the order last so the calculated totals and child rows are consistent.
         return orderRepository.save(order);
     }
 
     @Transactional(readOnly = true)
     public List<Order> getMyOrders(Long userId) {
+        // Customer-facing order history uses the soft-delete filtered Order entity.
         return orderRepository.findByCustomerUserIdOrderByCreatedAtDesc(userId);
     }
 
     @Transactional(readOnly = true)
     public List<Order> getAdminOrders(String search, LocalDateTime startDate, LocalDateTime endDate, String status) {
+        // Admin search combines free-text, date range, and status filters.
         Specification<Order> spec = OrderSpecification.filter(search, startDate, endDate, status);
         return orderRepository.findAll(spec, Sort.by(Sort.Direction.DESC, "createdAt"));
     }
 
     public Order updateOrderStatus(Long id, String status) {
+        // Status changes can affect stock and customer lifetime spending, so we handle them here.
         Order order = orderRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Order not found with id: " + id));
         
@@ -176,20 +179,13 @@ public class OrderService {
                 BigDecimal newTotalSpent = customer.getTotalSpent().add(order.getFinalAmount());
                 customer.setTotalSpent(newTotalSpent);
 
-                List<CustomerTier> tiers = customerTierRepository.findAllByOrderByMinSpendingAsc();
-                CustomerTier matchedTier = customer.getTier();
-                for (CustomerTier tier : tiers) {
-                    if (newTotalSpent.compareTo(tier.getMinSpending()) >= 0) {
-                        matchedTier = tier;
-                    }
-                }
-                customer.setTier(matchedTier);
+                customer.setTier(customerTierResolver.resolveBySpent(newTotalSpent));
                 customerRepository.save(customer);
             }
         }
 
         if ("CANCELLED".equals(status) && !"CANCELLED".equals(oldStatus)) {
-            // Refund stock
+            // Refund stock when an order transitions into the cancelled state.
             for (OrderItem item : order.getItems()) {
                 int qty = item.getQuantity();
                 ProductVariant variant = item.getVariant() != null
@@ -202,8 +198,7 @@ public class OrderService {
                 if (variant != null) {
                     variant.setStock(variant.getStock() + qty);
                     productVariantRepository.save(variant);
-                    
-                    product.setStock(product.getStock() + qty);
+                    syncProductStock(product);
                     productRepository.save(product);
                 } else if (product != null) {
                     product.setStock(product.getStock() + qty);
@@ -216,6 +211,7 @@ public class OrderService {
     }
 
     public Order updateOrder(Long id, UpdateOrderRequest request) {
+        // Admin edit flow keeps only the editable contact fields in sync.
         Order order = orderRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Order not found with id: " + id));
 
@@ -239,12 +235,13 @@ public class OrderService {
     }
 
     public void deleteOrder(Long id) {
+        // Soft delete the order after stock and loyalty adjustments are settled.
         Order order = orderRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Order not found with id: " + id));
 
         String oldStatus = order.getStatus();
 
-        // 1. If the order was not CANCELLED, restore stock
+        // Restore stock if the order was not already cancelled.
         if (!"CANCELLED".equals(oldStatus)) {
             for (OrderItem item : order.getItems()) {
                 int qty = item.getQuantity();
@@ -256,11 +253,8 @@ public class OrderService {
                 if (variant != null) {
                     variant.setStock(variant.getStock() + qty);
                     productVariantRepository.save(variant);
-
-                    if (product != null) {
-                        product.setStock(product.getStock() + qty);
-                        productRepository.save(product);
-                    }
+                    syncProductStock(product);
+                    productRepository.save(product);
                 } else if (product != null) {
                     product.setStock(product.getStock() + qty);
                     productRepository.save(product);
@@ -268,7 +262,7 @@ public class OrderService {
             }
         }
 
-        // 2. If the order was DELIVERED, we need to subtract finalAmount from customer's totalSpent and update tier
+        // Roll back customer lifetime spending if this order had already contributed to it.
         if ("DELIVERED".equals(oldStatus)) {
             Customer customer = order.getCustomer();
             if (customer != null) {
@@ -278,19 +272,14 @@ public class OrderService {
                 }
                 customer.setTotalSpent(newTotalSpent);
 
-                List<CustomerTier> tiers = customerTierRepository.findAllByOrderByMinSpendingAsc();
-                CustomerTier matchedTier = customer.getTier();
-                for (CustomerTier tier : tiers) {
-                    if (newTotalSpent.compareTo(tier.getMinSpending()) >= 0) {
-                        matchedTier = tier;
-                    }
-                }
-                customer.setTier(matchedTier);
+                customer.setTier(customerTierResolver.resolveBySpent(newTotalSpent));
                 customerRepository.save(customer);
             }
         }
 
-        // 3. Delete order
+        // The entity annotation converts this into a soft delete update.
+        // Touch the item collection first so cascade soft-delete is applied to the line items too.
+        order.getItems().size();
         orderRepository.delete(order);
     }
 
@@ -323,7 +312,7 @@ public class OrderService {
     }
 
     private Customer lookupOrCreateCustomer(CheckoutRequest request) {
-        // Check if there is an authenticated user
+        // Authenticated checkout uses the logged-in account when available.
         String authenticatedEmail = null;
         org.springframework.security.core.Authentication auth = org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication();
         if (auth != null && auth.isAuthenticated() && !"anonymousUser".equals(auth.getName())) {
@@ -334,23 +323,18 @@ public class OrderService {
             User loggedInUser = userRepository.findByEmail(authenticatedEmail)
                     .orElseThrow(() -> new RuntimeException("Current user not found with email: " + auth.getName()));
 
-            // Find or create customer for this user
+            // Find or create the customer profile attached to the logged-in user.
             Customer customer = customerRepository.findByUserId(loggedInUser.getId())
                     .orElseGet(() -> {
-                        List<CustomerTier> tiers = customerTierRepository.findAllByOrderByMinSpendingAsc();
-                        CustomerTier bronzeTier = tiers.stream()
-                                .filter(t -> "BRONZE".equals(t.getName()))
-                                .findFirst()
-                                .orElse(null);
                         Customer newCustomer = Customer.builder()
                                 .user(loggedInUser)
-                                .tier(bronzeTier)
+                                .tier(customerTierResolver.resolveDefaultCustomerTier())
                                 .totalSpent(BigDecimal.ZERO)
                                 .build();
                         return customerRepository.save(newCustomer);
                     });
 
-            // Update user details if provided in checkout request and currently empty
+            // Fill empty profile fields from the checkout form without overwriting existing data.
             boolean changed = false;
             if (request.getPhone() != null && !request.getPhone().trim().isEmpty() && 
                     (loggedInUser.getPhone() == null || loggedInUser.getPhone().trim().isEmpty())) {
@@ -362,6 +346,10 @@ public class OrderService {
                 loggedInUser.setFullName(request.getFullName().trim());
                 changed = true;
             }
+            if (request.getAddress() != null && !request.getAddress().trim().isEmpty()) {
+                loggedInUser.setAddress(request.getAddress().trim());
+                changed = true;
+            }
             if (changed) {
                 userRepository.save(loggedInUser);
             }
@@ -369,22 +357,26 @@ public class OrderService {
             return customer;
         }
 
-        // Guest checkout path: find by phone number
+        // Guest checkout path: match by phone number first so repeat buyers stay on the same profile.
         Optional<Customer> existingCustomer = customerRepository.findByUserPhone(request.getPhone());
         if (existingCustomer.isPresent()) {
             Customer customer = existingCustomer.get();
             User user = customer.getUser();
             if (user != null) {
-                // update user's full name if it was empty/null
+                // Backfill missing full name only; keep any existing profile data intact.
                 if (user.getFullName() == null || user.getFullName().trim().isEmpty()) {
                     user.setFullName(request.getFullName());
+                    userRepository.save(user);
+                }
+                if (request.getAddress() != null && !request.getAddress().trim().isEmpty()) {
+                    user.setAddress(request.getAddress().trim());
                     userRepository.save(user);
                 }
             }
             return customer;
         }
 
-        // Customer does not exist, create new guest user
+        // Create a new guest customer account when no phone match exists.
         Role customerRole = roleRepository.findByName("ROLE_CUSTOMER")
                 .orElseThrow(() -> new RuntimeException("ROLE_CUSTOMER role not found"));
 
@@ -393,7 +385,7 @@ public class OrderService {
             email = request.getPhone() + "@thinktank.com";
         }
 
-        // If email is already taken, generate a unique one
+        // If email is already taken, generate a unique guest email as a fallback.
         if (userRepository.existsByEmail(email)) {
             email = request.getPhone() + "_" + System.currentTimeMillis() + "@thinktank.com";
         }
@@ -403,24 +395,44 @@ public class OrderService {
                 .passwordHash(passwordEncoder.encode(request.getPhone()))
                 .fullName(request.getFullName())
                 .phone(request.getPhone())
+                .address(request.getAddress())
                 .enabled(true)
                 .roles(Set.of(customerRole))
                 .build();
         userRepository.save(user);
 
-        // Get BRONZE tier (default)
-        List<CustomerTier> tiers = customerTierRepository.findAllByOrderByMinSpendingAsc();
-        CustomerTier bronzeTier = tiers.stream()
-                .filter(t -> "BRONZE".equals(t.getName()))
-                .findFirst()
-                .orElseGet(() -> tiers.isEmpty() ? null : tiers.get(0));
-
+        // New guest customers start at the configured default customer tier.
         Customer customer = Customer.builder()
                 .user(user)
-                .tier(bronzeTier)
+                .tier(customerTierResolver.resolveDefaultCustomerTier())
                 .totalSpent(BigDecimal.ZERO)
                 .build();
 
         return customerRepository.save(customer);
+    }
+
+    private void syncProductStock(Product product) {
+        Integer total = productVariantRepository.sumStockByProductId(product.getId());
+        product.setStock(total != null ? total : 0);
+    }
+
+    private void normalizeProductInventory(Product product) {
+        // Older seeded/imported rows may have null stock/version values; stock updates require concrete numbers.
+        if (product.getStock() == null) {
+            product.setStock(0);
+        }
+        if (product.getVersion() == null) {
+            product.setVersion(0L);
+        }
+    }
+
+    private void normalizeVariantInventory(ProductVariant variant) {
+        // Keep variant checkout safe for imported rows with missing optimistic-lock version.
+        if (variant.getStock() == null) {
+            variant.setStock(0);
+        }
+        if (variant.getVersion() == null) {
+            variant.setVersion(0L);
+        }
     }
 }

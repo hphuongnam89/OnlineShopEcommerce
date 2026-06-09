@@ -16,6 +16,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ReviewController {
 
+    // Customer review API for verified-purchase checks and product reviews.
     private final ReviewService reviewService;
 
     @GetMapping("/product/{productId}")

@@ -1,9 +1,8 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { api } from '../../utils/api';
 import { 
   TrendingUp, 
   ShoppingBag, 
-  Users, 
   Download, 
   AlertTriangle,
   RefreshCw,
@@ -12,8 +11,10 @@ import {
 } from 'lucide-react';
 import CustomModal from '../../components/CustomModal';
 
+// Admin dashboard for revenue chart, customer chart, low-stock alerts, and Excel export.
 const AdminDashboard = () => {
   const [revenueReport, setRevenueReport] = useState([]);
+  const [customerReport, setCustomerReport] = useState([]);
   const [products, setProducts] = useState([]);
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -27,19 +28,18 @@ const AdminDashboard = () => {
   const [orderEnd, setOrderEnd] = useState('');
   const [orderStatus, setOrderStatus] = useState('');
   const [orderSearch, setOrderSearch] = useState('');
+  const [reportPeriod, setReportPeriod] = useState('DAILY');
  
   const [modalConfig, setModalConfig] = useState({ isOpen: false, title: '', message: '', type: 'info' });
  
-  useEffect(() => {
-    fetchDashboardData();
-  }, []);
- 
-  const fetchDashboardData = async () => {
+  const fetchDashboardData = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
-      const revData = await api.admin.reports.getRevenue();
+      const revData = await api.admin.reports.getRevenue({ period: reportPeriod });
       setRevenueReport(revData || []);
+      const customerData = await api.admin.reports.getCustomerReport();
+      setCustomerReport(customerData || []);
       const prodData = await api.products.getAll();
       setProducts(prodData || []);
       const ordData = await api.admin.orders.getAll();
@@ -49,7 +49,14 @@ const AdminDashboard = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [reportPeriod]);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      void fetchDashboardData();
+    }, 0);
+    return () => clearTimeout(timer);
+  }, [fetchDashboardData]);
  
   const handleExportOrders = async () => {
     try {
@@ -199,7 +206,7 @@ const AdminDashboard = () => {
                 fontWeight="bold"
                 textAnchor="middle"
               >
-                {new Date(p.date).toLocaleDateString('vi-VN', { month: 'numeric', day: 'numeric' })}
+                {p.date}
               </text>
             </g>
           ))}
@@ -215,7 +222,7 @@ const AdminDashboard = () => {
               transform: 'translate(-50%, -100%)',
             }}
           >
-            <p className="font-bold text-slate-400">{new Date(hoveredPoint.date).toLocaleDateString('vi-VN', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</p>
+            <p className="font-bold text-slate-400">{hoveredPoint.date}</p>
             <div className="flex items-center gap-3">
               <span className="w-2 h-2 rounded-full bg-blue-500"></span>
               <p className="font-bold text-slate-800">Doanh thu: <span className="text-emerald-600 font-extrabold">{hoveredPoint.revenue?.toLocaleString('vi-VN')} đ</span></p>
@@ -226,6 +233,41 @@ const AdminDashboard = () => {
             </div>
           </div>
         )}
+      </div>
+    );
+  };
+
+  const renderCustomerChart = () => {
+    if (customerReport.length === 0) {
+      return (
+        <div className="h-40 flex flex-col items-center justify-center text-slate-400">
+          <Info size={24} className="mb-2 text-slate-300" />
+          <p className="text-xs font-semibold">Chưa có dữ liệu khách hàng</p>
+        </div>
+      );
+    }
+
+    const maxSpent = Math.max(...customerReport.map(c => Number(c.totalSpent) || 0), 1);
+    return (
+      <div className="space-y-3">
+        {customerReport.map((customer) => {
+          const spent = Number(customer.totalSpent) || 0;
+          const width = Math.max((spent / maxSpent) * 100, spent > 0 ? 5 : 0);
+          return (
+            <div key={customer.customerId} className="space-y-1">
+              <div className="flex justify-between items-center gap-2 text-[11px]">
+                <span className="font-bold text-slate-700 truncate">{customer.fullName || `Khách hàng #${customer.customerId}`}</span>
+                <span className="font-mono font-bold text-slate-500 shrink-0">{spent.toLocaleString('vi-VN')} đ | {customer.orderCount || 0} đơn</span>
+              </div>
+              <div className="h-3 rounded-full bg-slate-100 overflow-hidden">
+                <div
+                  className="h-full rounded-full bg-gradient-to-r from-emerald-500 to-teal-400"
+                  style={{ width: `${width}%` }}
+                />
+              </div>
+            </div>
+          );
+        })}
       </div>
     );
   };
@@ -325,9 +367,28 @@ const AdminDashboard = () => {
         <div className="xl:col-span-2 space-y-6">
           {/* Revenue Trend Chart */}
           <div className="bg-white border border-slate-200/80 shadow-xs rounded-2xl p-6">
-            <div className="flex justify-between items-center mb-6">
-              <h2 className="text-xs font-bold text-slate-800 tracking-wider uppercase font-heading">Xu hướng doanh thu hàng ngày</h2>
-              <span className="text-[10px] text-slate-400 font-bold">Di chuột để xem số liệu</span>
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-6">
+              <div>
+                <h2 className="text-xs font-bold text-slate-800 tracking-wider uppercase font-heading">
+                  Xu hướng doanh thu {reportPeriod === 'DAILY' ? 'hàng ngày' : reportPeriod === 'WEEKLY' ? 'theo tuần' : 'theo tháng'}
+                </h2>
+                <p className="text-[10px] text-slate-400 font-bold mt-1">Di chuột để xem số liệu</p>
+              </div>
+              <div className="flex items-center gap-2 text-[10px] font-black uppercase">
+                {['DAILY', 'WEEKLY', 'MONTHLY'].map((period) => (
+                  <button
+                    key={period}
+                    onClick={() => setReportPeriod(period)}
+                    className={`px-3 py-1.5 rounded-full border transition-colors ${
+                      reportPeriod === period
+                        ? 'bg-blue-600 text-white border-blue-600'
+                        : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-50'
+                    }`}
+                  >
+                    {period === 'DAILY' ? 'Ngày' : period === 'WEEKLY' ? 'Tuần' : 'Tháng'}
+                  </button>
+                ))}
+              </div>
             </div>
             {loading ? (
               <div className="h-48 flex items-center justify-center text-slate-400 text-xs">Đang dựng biểu đồ thống kê...</div>
@@ -445,6 +506,18 @@ const AdminDashboard = () => {
                 <span>Xuất file Excel báo cáo</span>
               </button>
             </div>
+          </div>
+
+          <div className="bg-white border border-slate-200/80 shadow-xs rounded-2xl p-6 space-y-4">
+            <div className="flex justify-between items-center gap-2 border-b border-slate-100 pb-3">
+              <h2 className="text-xs font-bold text-slate-800 uppercase tracking-wider font-heading">Báo Cáo Khách Hàng</h2>
+              <span className="text-[10px] bg-emerald-50 text-emerald-700 px-2 py-0.5 rounded-full font-black uppercase">Bar chart</span>
+            </div>
+            {loading ? (
+              <div className="h-40 flex items-center justify-center text-slate-400 text-xs">Đang tải dữ liệu khách hàng...</div>
+            ) : (
+              renderCustomerChart()
+            )}
           </div>
 
           {/* Stock warning list panel */}

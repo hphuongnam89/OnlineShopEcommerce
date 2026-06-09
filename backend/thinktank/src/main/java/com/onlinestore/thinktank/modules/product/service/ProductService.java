@@ -34,6 +34,7 @@ public class ProductService {
     @Transactional(readOnly = true)
     public Page<Product> getProducts(int page, int limit, Long categoryId, String search,
                                      BigDecimal minPrice, BigDecimal maxPrice, String sort) {
+        // Public catalog query with pagination, filtering, and sort options for the storefront.
         Sort springSort = Sort.by(Sort.Direction.DESC, "createdAt");
         if (sort != null) {
             switch (sort) {
@@ -53,18 +54,20 @@ public class ProductService {
 
     @Transactional(readOnly = true)
     public Product getProductById(Long id) {
+        // Soft-deleted products are filtered out by Hibernate @Where on the entity.
         return productRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Product not found with id: " + id));
     }
 
     public Product createProduct(ProductRequest request) {
+        // Build the base product first, then attach variants so stock can be aggregated correctly.
         Category category = null;
         if (request.getCategoryId() != null) {
             category = categoryRepository.findById(request.getCategoryId())
                     .orElseThrow(() -> new RuntimeException("Category not found with id: " + request.getCategoryId()));
         }
 
-        String slug = generateUniqueSlug(request.getName());
+        String slug = generateUniqueSlug(request.getName(), null);
 
         Product product = Product.builder()
                 .category(category)
@@ -80,30 +83,36 @@ public class ProductService {
                 .material(request.getMaterial())
                 .dimensions(request.getDimensions())
                 .sku(request.getSku())
+                .highlights(request.getHighlights())
                 .build();
 
         Product savedProduct = productRepository.save(product);
 
         if (request.getVariants() != null && !request.getVariants().isEmpty()) {
+            // Variants are stored as separate rows so the admin can edit them independently.
+            Product productForVariants = savedProduct;
             List<ProductVariant> variants = request.getVariants().stream()
                     .map(vr -> ProductVariant.builder()
-                            .product(savedProduct)
+                            .product(productForVariants)
                             .sku(vr.getSku())
                             .name(vr.getName())
                             .price(vr.getPrice())
                             .stock(vr.getStock() != null ? vr.getStock() : 0)
                             .color(vr.getColor())
                             .size(vr.getSize())
+                            .imageUrl(vr.getImageUrl())
                             .build())
                     .collect(Collectors.toList());
             productVariantRepository.saveAll(variants);
-            savedProduct.setVariants(variants);
+            savedProduct.setStock(sumVariantStocks(savedProduct.getId()));
+            savedProduct = productRepository.save(savedProduct);
         }
 
         return savedProduct;
     }
 
     public Product updateProduct(Long id, ProductRequest request) {
+        // Update product metadata and keep slug/stock in sync with the latest form values.
         Product product = getProductById(id);
 
         Category category = null;
@@ -113,14 +122,13 @@ public class ProductService {
         }
 
         if (!product.getName().equals(request.getName())) {
-            product.setSlug(generateUniqueSlug(request.getName()));
+            product.setSlug(generateUniqueSlug(request.getName(), id));
         }
 
         product.setCategory(category);
         product.setName(request.getName());
         product.setDescription(request.getDescription());
         product.setPrice(request.getPrice());
-        product.setStock(request.getStock() != null ? request.getStock() : 0);
         product.setImageUrl(request.getImageUrl());
         product.setAdditionalImages(serializeList(request.getAdditionalImages()));
         product.setWeight(request.getWeight());
@@ -128,8 +136,9 @@ public class ProductService {
         product.setMaterial(request.getMaterial());
         product.setDimensions(request.getDimensions());
         product.setSku(request.getSku());
+        product.setHighlights(request.getHighlights());
 
-        // Update variants
+        // Update variants while preserving existing rows whenever possible.
         List<ProductVariant> currentVariants = productVariantRepository.findByProductId(id);
         Map<Long, ProductVariant> currentVariantsMap = currentVariants.stream()
                 .collect(Collectors.toMap(ProductVariant::getId, v -> v));
@@ -140,7 +149,7 @@ public class ProductService {
         if (request.getVariants() != null) {
             for (VariantRequest vr : request.getVariants()) {
                 if (vr.getId() != null && currentVariantsMap.containsKey(vr.getId())) {
-                    // Update existing
+                    // Existing variant: update in place.
                     ProductVariant v = currentVariantsMap.get(vr.getId());
                     v.setSku(vr.getSku());
                     v.setName(vr.getName());
@@ -148,10 +157,11 @@ public class ProductService {
                     v.setStock(vr.getStock() != null ? vr.getStock() : 0);
                     v.setColor(vr.getColor());
                     v.setSize(vr.getSize());
+                    v.setImageUrl(vr.getImageUrl());
                     updatedVariants.add(v);
                     keptVariantIds.add(v.getId());
                 } else {
-                    // Create new
+                    // New variant: create a fresh row and link it to the product.
                     ProductVariant v = ProductVariant.builder()
                             .product(product)
                             .sku(vr.getSku())
@@ -160,13 +170,14 @@ public class ProductService {
                             .stock(vr.getStock() != null ? vr.getStock() : 0)
                             .color(vr.getColor())
                             .size(vr.getSize())
+                            .imageUrl(vr.getImageUrl())
                             .build();
                     updatedVariants.add(v);
                 }
             }
         }
 
-        // Delete removed variants
+        // Removed variants are soft-deleted so historical order data still has a stable reference.
         for (ProductVariant cv : currentVariants) {
             if (!keptVariantIds.contains(cv.getId())) {
                 productVariantRepository.delete(cv);
@@ -175,24 +186,39 @@ public class ProductService {
 
         product.getVariants().clear();
         product.getVariants().addAll(updatedVariants);
+        if (!updatedVariants.isEmpty()) {
+            product.setStock(sumVariantStocks(id));
+        } else {
+            product.setStock(request.getStock() != null ? request.getStock() : 0);
+        }
 
         return productRepository.save(product);
     }
 
     public void deleteProduct(Long id) {
+        // Product itself is soft-deleted through @SQLDelete on the entity.
         Product product = getProductById(id);
+        // Touch the variant collection so cascade soft-delete can be applied deterministically.
+        product.getVariants().size();
         productRepository.delete(product);
     }
 
-    private String generateUniqueSlug(String name) {
+    private String generateUniqueSlug(String name, Long currentProductId) {
         String baseSlug = toSlug(name);
         String slug = baseSlug;
         int counter = 1;
-        while (productRepository.existsBySlug(slug)) {
+        while (slugAlreadyUsed(slug, currentProductId)) {
             slug = baseSlug + "-" + counter;
             counter++;
         }
         return slug;
+    }
+
+    private boolean slugAlreadyUsed(String slug, Long currentProductId) {
+        if (currentProductId == null) {
+            return productRepository.countAnyBySlug(slug) > 0;
+        }
+        return productRepository.countAnyBySlugAndIdNot(slug, currentProductId) > 0;
     }
 
     private String toSlug(String input) {
@@ -214,5 +240,10 @@ public class ProductService {
         } catch (Exception e) {
             return "[]";
         }
+    }
+
+    private Integer sumVariantStocks(Long productId) {
+        Integer total = productVariantRepository.sumStockByProductId(productId);
+        return total != null ? total : 0;
     }
 }

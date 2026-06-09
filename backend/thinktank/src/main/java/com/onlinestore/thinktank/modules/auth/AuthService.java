@@ -7,15 +7,13 @@ import com.onlinestore.thinktank.modules.role.entity.Role;
 import com.onlinestore.thinktank.modules.role.repository.RoleRepository;
 import com.onlinestore.thinktank.modules.customer.entity.Customer;
 import com.onlinestore.thinktank.modules.customer.repository.CustomerRepository;
-import com.onlinestore.thinktank.modules.customertier.entity.CustomerTier;
-import com.onlinestore.thinktank.modules.customertier.repository.CustomerTierRepository;
+import com.onlinestore.thinktank.modules.customertier.service.CustomerTierResolver;
 import com.onlinestore.thinktank.security.jwt.JwtService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.util.List;
 import java.util.Set;
 
 @Service
@@ -23,14 +21,16 @@ import java.util.Set;
 @org.springframework.transaction.annotation.Transactional
 public class AuthService {
 
+    // Handles account creation, password verification, JWT issuing, and customer profile setup.
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
     private final CustomerRepository customerRepository;
-    private final CustomerTierRepository customerTierRepository;
+    private final CustomerTierResolver customerTierResolver;
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
 
     public void register(RegisterRequest req) {
+        // Register customer accounts and create the matching customer profile in one transaction.
         if (userRepository.existsByEmail(req.getEmail())) {
             throw new RuntimeException("Email đã được sử dụng!");
         }
@@ -49,17 +49,10 @@ public class AuthService {
 
         User savedUser = userRepository.save(user);
 
-        // Fetch default BRONZE tier
-        List<CustomerTier> tiers = customerTierRepository.findAllByOrderByMinSpendingAsc();
-        CustomerTier bronzeTier = tiers.stream()
-                .filter(t -> "BRONZE".equals(t.getName()))
-                .findFirst()
-                .orElse(null);
-
         // Save Customer entity
         Customer customer = Customer.builder()
                 .user(savedUser)
-                .tier(bronzeTier)
+                .tier(customerTierResolver.resolveDefaultCustomerTier())
                 .totalSpent(BigDecimal.ZERO)
                 .build();
 
@@ -67,6 +60,7 @@ public class AuthService {
     }
 
     public AuthResponse login(LoginRequest req) {
+        // Validate credentials, issue JWT, and return the basic session profile.
 
         User user = userRepository.findByEmail(req.getEmail())
                 .orElseThrow(() -> new RuntimeException("User not found"));
@@ -90,15 +84,9 @@ public class AuthService {
         if ("ROLE_CUSTOMER".equals(roleName)) {
             boolean hasCustomer = customerRepository.findByUserId(user.getId()).isPresent();
             if (!hasCustomer) {
-                List<CustomerTier> tiers = customerTierRepository.findAllByOrderByMinSpendingAsc();
-                CustomerTier bronzeTier = tiers.stream()
-                        .filter(t -> "BRONZE".equals(t.getName()))
-                        .findFirst()
-                        .orElse(null);
-
                 Customer customer = Customer.builder()
                         .user(user)
-                        .tier(bronzeTier)
+                        .tier(customerTierResolver.resolveDefaultCustomerTier())
                         .totalSpent(BigDecimal.ZERO)
                         .build();
 

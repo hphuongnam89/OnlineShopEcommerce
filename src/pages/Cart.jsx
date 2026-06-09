@@ -10,6 +10,7 @@ const MOCK_STORES = [
   'Showroom Cầu Giấy: 78 Cầu Giấy, Nghĩa Tân, Cầu Giấy, Hà Nội'
 ];
 
+// Cart and checkout page, including quantity edits, address selection, and order creation.
 const Cart = () => {
   const { cartItems, updateQuantity, removeFromCart, cartTotal, clearCart } = useCart();
   const [checkoutStep, setCheckoutStep] = useState(1); // 1: Cart list, 2: Info form, 3: Success
@@ -33,7 +34,7 @@ const Cart = () => {
         });
         setLocationData(mappedData);
       })
-      .catch(err => console.error('Error loading location data:', err));
+      .catch(() => setLocationData({}));
   }, []);
 
   // Custom alert modal state

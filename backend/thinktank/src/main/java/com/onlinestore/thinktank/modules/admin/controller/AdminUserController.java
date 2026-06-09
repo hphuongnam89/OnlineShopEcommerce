@@ -17,6 +17,7 @@ import java.util.Set;
 @RequiredArgsConstructor
 public class AdminUserController {
 
+    // Admin account API for creating administrator users with ROLE_ADMIN.
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
     private final PasswordEncoder passwordEncoder;
