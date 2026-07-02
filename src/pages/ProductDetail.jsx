@@ -84,6 +84,11 @@ const ProductDetail = () => {
 
   // Custom alert modal state
   const [modalConfig, setModalConfig] = useState({ isOpen: false, title: '', message: '', type: 'info' });
+
+  // B2B EXPANSION
+  const userStr = localStorage.getItem('currentUser');
+  const userObj = userStr ? JSON.parse(userStr) : null;
+  const isDealer = userObj && userObj.role === 'ROLE_DEALER';
   const openModal = (title, message, type = 'info') => {
     setModalConfig({ isOpen: true, title, message, type });
   };
@@ -305,7 +310,7 @@ const ProductDetail = () => {
         ? (selectedVariant.name || `${selectedVariant.color || ''}${selectedVariant.color && selectedVariant.size ? ' / ' : ''}${selectedVariant.size || ''}`) 
         : '',
       title: product.title,
-      price: selectedVariant ? selectedVariant.price : product.price,
+      price: (selectedVariant ? selectedVariant.price : product.price) * (isDealer ? 0.8 : 1),
       image: product.image_url || product.image,
       stock: currentStock,
       category: product.category,
@@ -393,8 +398,16 @@ const ProductDetail = () => {
                 </div>
 
                 {/* Price */}
-                <div className="text-2xl font-black text-[#2f5f88] mb-6 bg-[#f4f7fa] w-fit px-6 py-3 rounded-lg border border-[#c9dced] font-heading">
-                  {(selectedVariant ? selectedVariant.price : product.price).toLocaleString('vi-VN')}đ
+                <div className="mb-6 bg-[#f4f7fa] w-fit px-6 py-3 rounded-lg border border-[#c9dced] flex flex-col">
+                  {isDealer && (
+                    <span className="text-sm text-slate-400 line-through mb-1 font-semibold">
+                      {(selectedVariant ? selectedVariant.price : product.price).toLocaleString('vi-VN')}đ
+                    </span>
+                  )}
+                  <span className="text-2xl font-black text-[#2f5f88] font-heading flex items-center gap-2">
+                    {((selectedVariant ? selectedVariant.price : product.price) * (isDealer ? 0.8 : 1)).toLocaleString('vi-VN')}đ
+                    {isDealer && <span className="text-[10px] bg-amber-100 text-amber-700 px-2 py-1 rounded font-bold uppercase tracking-wider font-sans">B2B GIÁ SỈ</span>}
+                  </span>
                 </div>
 
                 {/* Product Variants Selector */}
@@ -541,22 +554,28 @@ const ProductDetail = () => {
                 </div>
 
                 {/* Specifications Summary */}
-                {product.specs && (
+                {product.specs && (product.specs.volume || product.specs.dimensions || product.specs.weight) && (
                   <div className="border border-slate-100 rounded-xl p-5 mb-6">
                     <h3 className="font-bold font-heading text-slate-800 mb-3.5 text-xs uppercase tracking-wider">Thông số cơ bản</h3>
                     <div className="grid grid-cols-1 gap-y-2.5 text-xs font-sans">
-                      <div className="flex justify-between border-b border-slate-100 pb-2">
-                        <span className="text-slate-500">Dung tích:</span>
-                        <span className="font-bold text-slate-800 font-mono">{product.specs.volume}</span>
-                      </div>
-                      <div className="flex justify-between border-b border-slate-100 pb-2">
-                        <span className="text-slate-500">Kích thước:</span>
-                        <span className="font-bold text-slate-800 font-mono">{product.specs.dimensions}</span>
-                      </div>
-                      <div className="flex justify-between border-b border-slate-100 pb-2">
-                        <span className="text-slate-500">Trọng lượng:</span>
-                        <span className="font-bold text-slate-800 font-mono">{product.specs.weight}</span>
-                      </div>
+                      {product.specs.volume && (
+                        <div className="flex justify-between border-b border-slate-100 pb-2">
+                          <span className="text-slate-500">Dung tích:</span>
+                          <span className="font-bold text-slate-800 font-mono">{product.specs.volume}</span>
+                        </div>
+                      )}
+                      {product.specs.dimensions && (
+                        <div className="flex justify-between border-b border-slate-100 pb-2">
+                          <span className="text-slate-500">Kích thước:</span>
+                          <span className="font-bold text-slate-800 font-mono">{product.specs.dimensions}</span>
+                        </div>
+                      )}
+                      {product.specs.weight && (
+                        <div className="flex justify-between border-b border-slate-100 pb-2">
+                          <span className="text-slate-500">Trọng lượng:</span>
+                          <span className="font-bold text-slate-800 font-mono">{product.specs.weight}</span>
+                        </div>
+                      )}
                     </div>
                     <button 
                       onClick={() => setIsSpecsModalOpen(true)}
@@ -870,7 +889,7 @@ const ProductDetail = () => {
                             <div className="absolute left-4 -top-2 w-3 h-3 bg-white border-t border-l border-slate-100 transform rotate-45"></div>
                               <div className="flex items-center gap-1.5 mb-1.5">
                               <span className="bg-[#2f5f88] text-white text-[8px] font-black uppercase px-1.5 py-0.5 rounded font-heading">QTV</span>
-                              <strong className="text-xs text-slate-800 font-heading">Quản trị viên Think Tank</strong>
+                              <strong className="text-xs text-slate-800 font-heading">Quản trị viên Balomayanh</strong>
                             </div>
                             <p className="text-xs text-slate-500 leading-relaxed font-sans">
                               {rev.adminResponse}
@@ -1025,42 +1044,36 @@ const ProductDetail = () => {
             <div className="p-6 overflow-y-auto space-y-4 text-xs text-slate-700 font-sans">
               <table className="w-full border-collapse">
                 <tbody>
-                  <tr className="border-b border-slate-100">
-                    <td className="py-3 font-semibold text-slate-500 w-1/3">Dung tích</td>
-                    <td className="py-3 text-slate-800 font-bold font-mono">{product.specs.volume}</td>
-                  </tr>
-                  <tr className="border-b border-slate-100">
-                    <td className="py-3 font-semibold text-slate-500">Kích thước</td>
-                    <td className="py-3 text-slate-800 font-bold font-mono">{product.specs.dimensions}</td>
-                  </tr>
-                  <tr className="border-b border-slate-100">
-                    <td className="py-3 font-semibold text-slate-500">Trọng lượng</td>
-                    <td className="py-3 text-slate-800 font-bold font-mono">{product.specs.weight}</td>
-                  </tr>
-                  <tr className="border-b border-slate-100">
-                    <td className="py-3 font-semibold text-slate-500">Thời gian bảo hành</td>
-                    <td className="py-3 text-slate-800 font-medium">{product.specs.warranty}</td>
-                  </tr>
-                  <tr className="border-b border-slate-100">
-                    <td className="py-3 font-semibold text-slate-500">Chất liệu chính</td>
-                    <td className="py-3 text-slate-800 font-medium leading-relaxed">{product.specs.material}</td>
-                  </tr>
-                  <tr className="border-b border-slate-100">
-                    <td className="py-3 font-semibold text-slate-500">Loại khóa kéo</td>
-                    <td className="py-3 text-slate-800 font-medium">YKK RC Fuse chống mài mòn chuẩn quân đội</td>
-                  </tr>
-                  <tr className="border-b border-slate-100">
-                    <td className="py-3 font-semibold text-slate-500">Vật liệu lót bên trong</td>
-                    <td className="py-3 text-slate-800 font-medium">Vải sợi nhỏ Velex mềm, có khả năng bám dính Velcro cực tốt</td>
-                  </tr>
-                  <tr className="border-b border-slate-100">
-                    <td className="py-3 font-semibold text-slate-500">Ngăn Laptop</td>
-                    <td className="py-3 text-slate-800 font-medium">Ngăn chống sốc riêng biệt chứa vừa Laptop lên đến 16 inch</td>
-                  </tr>
-                  <tr>
-                    <td className="py-3 font-semibold text-slate-500">Phụ kiện đi kèm</td>
-                    <td className="py-3 text-slate-800 font-medium">Áo mưa phủ chống nước (Rain cover), Dây đeo chân máy chuyên dụng, Vách ngăn đệm mút EVA tháo lắp linh hoạt.</td>
-                  </tr>
+                  {product.specs.volume && (
+                    <tr className="border-b border-slate-100">
+                      <td className="py-3 font-semibold text-slate-500 w-1/3">Dung tích</td>
+                      <td className="py-3 text-slate-800 font-bold font-mono">{product.specs.volume}</td>
+                    </tr>
+                  )}
+                  {product.specs.dimensions && (
+                    <tr className="border-b border-slate-100">
+                      <td className="py-3 font-semibold text-slate-500">Kích thước</td>
+                      <td className="py-3 text-slate-800 font-bold font-mono">{product.specs.dimensions}</td>
+                    </tr>
+                  )}
+                  {product.specs.weight && (
+                    <tr className="border-b border-slate-100">
+                      <td className="py-3 font-semibold text-slate-500">Trọng lượng</td>
+                      <td className="py-3 text-slate-800 font-bold font-mono">{product.specs.weight}</td>
+                    </tr>
+                  )}
+                  {product.specs.material && (
+                    <tr className="border-b border-slate-100">
+                      <td className="py-3 font-semibold text-slate-500">Chất liệu chính</td>
+                      <td className="py-3 text-slate-800 font-medium leading-relaxed">{product.specs.material}</td>
+                    </tr>
+                  )}
+                  {product.specs.warranty && (
+                    <tr>
+                      <td className="py-3 font-semibold text-slate-500">Thời gian bảo hành</td>
+                      <td className="py-3 text-slate-800 font-medium">{product.specs.warranty}</td>
+                    </tr>
+                  )}
                 </tbody>
               </table>
             </div>

@@ -54,6 +54,7 @@ const Auth = () => {
       localStorage.setItem('currentUser', JSON.stringify({
         email: response.email,
         fullName: response.fullName,
+        phone: response.phone,
         role: response.role
       }));
       // Dispatch event to update Navbar session
@@ -81,11 +82,12 @@ const Auth = () => {
       localStorage.setItem('currentUser', JSON.stringify({
         email: loginRes.email,
         fullName: loginRes.fullName,
+        phone: loginRes.phone,
         role: loginRes.role
       }));
       window.dispatchEvent(new Event('storage'));
 
-      openModal('Tạo tài khoản thành công', `Chào mừng thành viên mới ${fullName}! Trải nghiệm Think Tank ngay nào.`, 'success');
+      openModal('Tạo tài khoản thành công', `Chào mừng thành viên mới ${fullName}! Trải nghiệm Balomayanh ngay nào.`, 'success');
     } catch (error) {
       openModal('Lỗi đăng ký', error.message || 'Không thể tạo tài khoản, vui lòng thử lại!', 'warning');
     }

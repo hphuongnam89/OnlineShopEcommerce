@@ -9,6 +9,7 @@ import Contact from './pages/Contact';
 import Auth from './pages/Auth';
 import Cart from './pages/Cart';
 import ProductDetail from './pages/ProductDetail';
+import AirportAdvantageLanding from './pages/AirportAdvantageLanding';
 import MyOrders from './pages/MyOrders';
 import TrackOrder from './pages/TrackOrder';
 import Profile from './pages/Profile';
@@ -28,7 +29,7 @@ const AdminReviews = lazy(() => import('./pages/admin/AdminReviews'));
 // Customer shell keeps public pages wrapped with shared navbar/footer.
 const CustomerLayout = () => {
   return (
-    <div className="min-h-screen flex flex-col font-sans">
+    <div className="storefront min-h-screen flex flex-col">
       <Navbar />
       <main className="flex-grow">
         <Outlet />
@@ -73,6 +74,7 @@ function App() {
         <ScrollToTop />
         <Suspense fallback={<div className="min-h-screen flex items-center justify-center text-slate-500 text-sm font-semibold">Đang tải giao diện...</div>}>
           <Routes>
+            <Route path="/airport-advantage-xt" element={<AirportAdvantageLanding />} />
             {/* Customer Routes (With Navbar & Footer) */}
             <Route element={<CustomerLayout />}>
               <Route path="/" element={<Home />} />

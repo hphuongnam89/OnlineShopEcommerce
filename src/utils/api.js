@@ -75,7 +75,13 @@ async function request(endpoint, options = {}) {
     let errorMessage = 'Đã xảy ra lỗi hệ thống';
     try {
       const errorData = await response.json();
-      errorMessage = errorData.message || errorData.error || errorMessage;
+      if (errorData.details && Array.isArray(errorData.details) && errorData.details.length > 0) {
+        errorMessage = errorData.details
+          .map(d => d.includes(':') ? d.split(':').slice(1).join(':').trim() : d)
+          .join('\n');
+      } else {
+        errorMessage = errorData.message || errorData.error || errorMessage;
+      }
     } catch {
       // Ignore parse errors
     }

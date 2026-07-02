@@ -130,7 +130,7 @@ const Products = () => {
         <div className="absolute inset-0 bg-black/10 pointer-events-none" />
         <div className="relative z-10 max-w-7xl mx-auto space-y-3">
           <span className="text-[#d6c95a] text-sm font-semibold">
-            Catalog Think Tank
+            Catalog Balomayanh
           </span>
           <h1 className="text-3xl sm:text-4xl font-semibold">
             Sản phẩm máy ảnh chuyên dụng

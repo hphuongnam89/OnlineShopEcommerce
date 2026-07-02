@@ -9,7 +9,7 @@ const HERO_SLIDES = [
     id: 1,
     image: 'https://cdn.hstatic.net/products/200001063950/airport-commuter-hero-right-gear_efc274eecf1244988944ec59e8f5eda5.jpg',
     tagline: 'Thiết bị bảo vệ máy ảnh cho người làm nghề',
-    title: 'Think Tank Photo Vietnam',
+    title: 'Balomayanh - Balo & Túi Máy Ảnh',
     desc: 'Balo, vali và túi máy ảnh dành cho nhiếp ảnh gia cần di chuyển nhiều, bảo vệ thiết bị tốt và thao tác nhanh tại hiện trường.',
     cta: 'Khám phá sản phẩm'
   },
@@ -176,7 +176,7 @@ const Home = () => {
             <div className="w-12 h-0.5 bg-[#2f5f88] mx-auto mt-4" />
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {/* Category 1: Rollers */}
             <div className="group relative h-[420px] rounded-2xl overflow-hidden shadow-sm border border-slate-100 flex flex-col justify-end p-8 bg-slate-50">
               <div className="absolute inset-0 p-6 flex items-center justify-center">
@@ -245,6 +245,29 @@ const Home = () => {
                 </Link>
               </div>
             </div>
+
+            {/* Category 4: Tripods & Monopods */}
+            <div className="group relative h-[420px] rounded-2xl overflow-hidden shadow-sm border border-slate-100 flex flex-col justify-end p-8 bg-slate-50">
+              <div className="absolute inset-0 p-6 flex items-center justify-center">
+                <img 
+                  src="https://cdn.hstatic.net/products/200001063950/kit-manfrotto-befree_advanced-mkbfrta4fb-bh_11926e33e78c4ced9b4dff3740c474a5.jpeg" 
+                  alt="Tripods" 
+                  className="w-4/5 h-4/5 object-contain group-hover:scale-105 transition-transform duration-500"
+                />
+              </div>
+              <div className="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-900/35 to-transparent z-10" />
+              <div className="relative z-20 text-white space-y-2">
+                <h3 className="text-xl font-semibold">Chân máy ảnh</h3>
+                <p className="text-xs text-slate-300 font-sans line-clamp-2">Chân máy quay, chân máy ảnh, đầu bi và đầu dầu chuyên nghiệp chính hãng chống rung hình ảnh tuyệt đối.</p>
+                <Link 
+                  to="/products?category=Chân Máy Ảnh" 
+                  className="inline-flex items-center gap-1 text-[#d6c95a] hover:text-white text-xs font-semibold transition-colors pt-2"
+                >
+                  <span>Xem sản phẩm</span>
+                  <ArrowRight size={14} />
+                </Link>
+              </div>
+            </div>
           </div>
         </div>
       </section>
@@ -260,7 +283,7 @@ const Home = () => {
                 Chi tiết nhỏ tạo nên khác biệt khi đi chụp
               </h2>
               <p className="text-slate-600 text-sm leading-relaxed font-sans">
-                Các sản phẩm Think Tank được tạo ra bởi sự hợp tác chặt chẽ của các nhà thiết kế công nghiệp chuyên nghiệp và các nhiếp ảnh gia báo chí thực thụ. Mọi chi tiết nhỏ, từ cách sắp xếp ngăn đựng thẻ nhớ cho tới độ trơn trượt của khóa kéo, đều xuất phát từ trải nghiệm thực tế tại hiện trường tác nghiệp khắc nghiệt.
+                Các sản phẩm tại Balomayanh được tạo ra bởi sự hợp tác chặt chẽ của các nhà thiết kế công nghiệp chuyên nghiệp và các nhiếp ảnh gia báo chí thực thụ. Mọi chi tiết nhỏ, từ cách sắp xếp ngăn đựng thẻ nhớ cho tới độ trơn trượt của khóa kéo, đều xuất phát từ trải nghiệm thực tế tại hiện trường tác nghiệp khắc nghiệt.
               </p>
               <div className="pt-2">
                 <Link 
@@ -416,7 +439,7 @@ const Home = () => {
       <section className="py-20 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center max-w-3xl mx-auto mb-16">
-            <span className="text-[#2f5f88] text-sm font-semibold">Cộng đồng Think Tank</span>
+            <span className="text-[#2f5f88] text-sm font-semibold">Cộng đồng Balomayanh</span>
             <h2 className="text-3xl font-semibold text-[#171717] mt-2">Khoảnh khắc tác nghiệp</h2>
             <div className="w-12 h-0.5 bg-[#2f5f88] mx-auto mt-4" />
           </div>

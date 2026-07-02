@@ -397,10 +397,10 @@ const AdminOrders = () => {
                   <div key={item.id} className="p-4 flex justify-between items-center text-xs gap-3">
                     <div className="flex items-center gap-3">
                       <img 
-                        src={item.product?.image || item.product?.imageUrl || '/images/thinktanklogo.png'} 
+                        src={item.product?.image || item.product?.imageUrl || '/images/balomayanh-logo.png'} 
                         alt={item.product?.name}
                         className="w-12 h-12 object-cover bg-slate-50 border border-slate-200 rounded-xl flex-shrink-0"
-                        onError={(e) => { e.target.src = '/images/thinktanklogo.png'; }}
+                        onError={(e) => { e.target.src = '/images/balomayanh-logo.png'; }}
                       />
                       <div className="min-w-0">
                         <p className="font-bold text-slate-850 text-sm truncate max-w-[280px]">
@@ -640,10 +640,10 @@ const AdminOrders = () => {
                     <div key={idx} className="p-4 flex justify-between items-center text-xs gap-3">
                       <div className="flex items-center gap-3">
                         <img 
-                          src={item.product?.image || item.product?.imageUrl || '/images/thinktanklogo.png'} 
+                          src={item.product?.image || item.product?.imageUrl || '/images/balomayanh-logo.png'} 
                           alt={item.product?.name}
                           className="w-10 h-10 object-cover bg-slate-50 border border-slate-200 rounded-xl flex-shrink-0"
-                          onError={(e) => { e.target.src = '/images/thinktanklogo.png'; }}
+                          onError={(e) => { e.target.src = '/images/balomayanh-logo.png'; }}
                         />
                         <div className="min-w-0">
                           <p className="font-bold text-slate-850 text-xs truncate max-w-[280px]">{item.displayName}</p>

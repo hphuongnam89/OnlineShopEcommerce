@@ -83,7 +83,7 @@ const AdminLayout = () => {
 
   if (!adminUser) {
     return (
-      <div className="min-h-screen bg-slate-50 flex items-center justify-center text-slate-800">
+      <div className="admin-shell min-h-screen bg-slate-50 flex items-center justify-center text-slate-800">
         <div className="text-center">
           <div className="w-10 h-10 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
           <p className="text-slate-500 text-sm font-semibold">Đang xác thực thông tin quản trị...</p>
@@ -104,7 +104,7 @@ const AdminLayout = () => {
   ];
 
   return (
-    <div className="h-screen bg-[#f8f9fc] text-slate-800 flex overflow-hidden font-sans">
+    <div className="admin-shell h-screen bg-[#f8f9fc] text-slate-800 flex overflow-hidden">
       
       {/* SIDEBAR */}
       <aside 
@@ -116,7 +116,7 @@ const AdminLayout = () => {
         <div className={`h-16 px-6 border-b border-slate-100 flex items-center shrink-0 ${isSidebarCollapsed ? 'justify-center' : 'justify-between'}`}>
           {!isSidebarCollapsed ? (
             <div className="flex flex-col">
-              <span className="text-[15px] font-black text-blue-600 tracking-wider font-heading uppercase">THINKTANK</span>
+              <span className="text-[15px] font-black text-blue-600 tracking-wider font-heading uppercase">BALOMAYANH</span>
               <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Admin Workspace</span>
             </div>
           ) : (

@@ -134,7 +134,7 @@ const Profile = () => {
         <div className="mb-8">
           <p className="text-sm font-semibold text-blue-600 mb-2">Tài khoản</p>
           <h1 className="text-3xl md:text-4xl font-semibold text-slate-950">Thông tin của tôi</h1>
-          <p className="text-slate-500 mt-3 max-w-2xl">Quản lý thông tin cá nhân dùng cho đặt hàng, giao hàng và nhận hỗ trợ từ Think Tank.</p>
+          <p className="text-slate-500 mt-3 max-w-2xl">Quản lý thông tin cá nhân dùng cho đặt hàng, giao hàng và nhận hỗ trợ từ Balomayanh.</p>
         </div>
 
         <div className="grid lg:grid-cols-[300px_1fr] gap-6 items-start">

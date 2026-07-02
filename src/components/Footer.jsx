@@ -13,8 +13,8 @@ const Footer = () => {
     if (email.trim()) {
       setModalConfig({
         isOpen: true,
-        title: 'Đăng ký nhận tin thành công',
-        message: `Cảm ơn bạn! Thông tin ưu đãi của Think Tank sẽ được gửi tới email ${email} của bạn.`,
+        title: 'Đăng ký thành công',
+        message: `Cảm ơn bạn! Thông tin ưu đãi của Balomayanh sẽ được gửi tới email ${email} của bạn.`,
         type: 'success'
       });
       setEmail('');
@@ -22,13 +22,13 @@ const Footer = () => {
   };
 
   return (
-    <footer className="bg-[#23323f] text-slate-300 pt-16 mt-20">
+    <footer className="bg-[#1a1a1a] text-slate-300 pt-14 mt-16 border-t-4 border-[#cc0000]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-12">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
           {/* Brand Info */}
           <div className="space-y-4">
             <h3 className="text-2xl font-black text-white tracking-wider uppercase font-heading">
-              THINK TANK
+              BALOMAYANH
             </h3>
             <p className="text-slate-400 text-sm leading-relaxed">
               Chúng tôi là một nhóm các nhà thiết kế sản phẩm và nhiếp ảnh gia chuyên nghiệp với sứ mệnh thiết kế và tạo ra các thiết bị hành lý du lịch chất lượng cao nhất cho các nhiếp ảnh gia trên toàn thế giới.
@@ -119,7 +119,7 @@ const Footer = () => {
           </div>
           <div className="flex items-center gap-3">
             <Mail className="text-[#2f5f88] shrink-0" size={18} />
-            <span>Hỗ trợ kỹ thuật: support@thinktankphoto.vn</span>
+            <span>Hỗ trợ kỹ thuật: support@balomayanh.vn</span>
           </div>
         </div>
       </div>
@@ -128,7 +128,7 @@ const Footer = () => {
       <div className="bg-[#1a252f] py-6 border-t border-slate-900/60">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row justify-between items-center gap-4 text-xs text-slate-500">
           <p>
-            &copy; {new Date().getFullYear()} Think Tank Photo Vietnam. Tất cả các quyền được bảo hộ.
+            &copy; {new Date().getFullYear()} Balomayanh Vietnam. Tất cả các quyền được bảo hộ.
           </p>
           <div className="flex space-x-6">
             <a href="#" className="hover:text-slate-300 transition-colors">Chính sách bảo mật</a>

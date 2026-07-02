@@ -107,7 +107,7 @@ const MyOrders = () => {
         <div className="mb-10 text-center sm:text-left flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
             <h1 className="text-3xl font-semibold text-slate-900 leading-tight">Đơn hàng của tôi</h1>
-            <p className="text-slate-500 text-sm mt-1">Quản lý và theo dõi tiến độ các đơn hàng phụ kiện Think Tank của bạn.</p>
+            <p className="text-slate-500 text-sm mt-1">Quản lý và theo dõi tiến độ các đơn hàng phụ kiện máy ảnh của bạn.</p>
           </div>
           <Link
             to="/products"

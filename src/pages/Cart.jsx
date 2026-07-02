@@ -51,22 +51,49 @@ const Cart = () => {
   const [couponError, setCouponError] = useState('');
 
   // Form state
-  const [formData, setFormData] = useState({
-    gender: 'Anh',
-    name: '',
-    phone: '',
-    email: '',
-    deliveryMethod: 'delivery', // 'delivery' or 'pickup'
-    province: '',
-    district: '',
-    ward: '',
-    street: '',
-    pickupStore: MOCK_STORES[0],
-    requestInvoice: false,
-    companyName: '',
-    companyAddress: '',
-    taxCode: '',
-    notes: ''
+  const [formData, setFormData] = useState(() => {
+    const base = {
+      gender: 'Anh',
+      name: '',
+      phone: '',
+      email: '',
+      deliveryMethod: 'delivery', // 'delivery' or 'pickup'
+      province: '',
+      district: '',
+      ward: '',
+      street: '',
+      pickupStore: MOCK_STORES[0],
+      requestInvoice: false,
+      companyName: '',
+      companyAddress: '',
+      taxCode: '',
+      notes: '',
+      saveInfo: true
+    };
+    try {
+      const userStr = localStorage.getItem('currentUser');
+      const userObj = userStr ? JSON.parse(userStr) : null;
+
+      const savedInfoStr = localStorage.getItem('savedCheckoutInfo');
+      if (savedInfoStr) {
+        const savedInfo = JSON.parse(savedInfoStr);
+        if (!userObj || savedInfo.email === userObj.email) {
+          return { ...base, ...savedInfo };
+        }
+      }
+
+      if (userObj) {
+        return {
+          ...base,
+          name: userObj.fullName || '',
+          phone: userObj.phone || '',
+          email: userObj.email || ''
+        };
+      }
+    } catch (err) {
+      console.warn("Error restoring checkout info from storage", err);
+    }
+    return base;
   });
 
   // Success screen state
@@ -77,7 +104,14 @@ const Cart = () => {
 
   const totalItems = cartItems.reduce((acc, item) => acc + item.quantity, 0);
   const discountAmount = Math.round(cartTotal * (appliedDiscount / 100));
-  const finalTotal = cartTotal - discountAmount;
+
+  // B2B EXPANSION
+  const userStr = localStorage.getItem('currentUser');
+  const userObj = userStr ? JSON.parse(userStr) : null;
+  const isDealer = userObj && userObj.role === 'ROLE_DEALER';
+  const volumeDiscount = (isDealer && cartTotal > 20000000) ? Math.round(cartTotal * 0.02) : 0;
+
+  const finalTotal = cartTotal - discountAmount - volumeDiscount;
 
   const handleApplyCoupon = (e) => {
     e.preventDefault();
@@ -170,11 +204,21 @@ const Cart = () => {
     try {
       const createdOrder = await api.orders.create(orderPayload);
       
+      // Save checkout info if checked
+      if (formData.saveInfo) {
+        const infoToSave = { ...formData };
+        delete infoToSave.notes;
+        delete infoToSave.saveInfo;
+        localStorage.setItem('savedCheckoutInfo', JSON.stringify(infoToSave));
+      } else {
+        localStorage.removeItem('savedCheckoutInfo');
+      }
+
       // Update local ordered details for confirmation screen
       setOrderId(`TT-${createdOrder.id}`);
       setOrderedItems([...cartItems]);
       setOrderedTotal(finalTotal);
-      setOrderedDiscount(discountAmount);
+      setOrderedDiscount(discountAmount + volumeDiscount);
       setCheckoutStep(3);
 
       // Clear actual cart state
@@ -194,7 +238,7 @@ const Cart = () => {
         </div>
         <h2 className="text-3xl font-extrabold text-slate-900 mb-2">Đặt hàng thành công!</h2>
         <p className="text-slate-500 text-sm mb-8">
-          Cảm ơn {formData.gender} <strong className="text-slate-800 font-bold">{formData.name}</strong> đã tin tưởng mua sắm phụ kiện nhiếp ảnh chuyên nghiệp tại Think Tank Photo.
+          Cảm ơn {formData.gender} <strong className="text-slate-800 font-bold">{formData.name}</strong> đã tin tưởng mua sắm phụ kiện nhiếp ảnh chuyên nghiệp tại Balomayanh.
         </p>
         
         {!localStorage.getItem('currentUser') && (
@@ -313,7 +357,7 @@ const Cart = () => {
         </div>
         <h2 className="text-2xl font-bold text-slate-900 mb-3">Giỏ hàng của bạn đang trống</h2>
         <p className="text-slate-500 mb-8 max-w-md mx-auto">
-          Hãy duyệt qua các sản phẩm cao cấp của Think Tank và chọn cho mình chiếc balo ưng ý nhé.
+          Hãy duyệt qua các sản phẩm cao cấp tại Balomayanh và chọn cho mình chiếc balo ưng ý nhé.
         </p>
         <Link
           to="/products"
@@ -329,43 +373,7 @@ const Cart = () => {
   // ---------------- STEP 1 & 2: FILLED RENDER ----------------
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-36 pb-24">
-      {/* Progress Step Bar */}
-      <div className="max-w-xl mx-auto mb-12 relative">
-        <div className="absolute left-0 right-0 top-4 -translate-y-1/2 h-1 bg-slate-100 z-0"></div>
-        <div 
-          className="absolute left-0 top-4 -translate-y-1/2 h-1 bg-blue-600 transition-all duration-300 z-0"
-          style={{ width: checkoutStep === 1 ? '0%' : '100%' }}
-        ></div>
-        
-        <div className="flex justify-between relative z-10 text-center">
-          <div className="flex flex-col items-center">
-            <button 
-              onClick={() => setCheckoutStep(1)}
-              className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-xs cursor-pointer border ${
-                checkoutStep >= 1 ? 'bg-blue-600 border-blue-600 text-white' : 'bg-white border-slate-200 text-slate-400'
-              }`}
-            >
-              1
-            </button>
-            <span className="text-[10px] font-bold text-slate-700 mt-2 bg-white px-2">Giỏ hàng ({totalItems})</span>
-          </div>
 
-          <div className="flex flex-col items-center">
-            <button 
-              onClick={() => {
-                if (checkoutStep > 1) setCheckoutStep(2);
-              }}
-              disabled={checkoutStep < 2}
-              className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-xs border ${
-                checkoutStep >= 2 ? 'bg-blue-600 border-blue-600 text-white' : 'bg-white border-slate-200 text-slate-400'
-              }`}
-            >
-              2
-            </button>
-            <span className="text-[10px] font-bold text-slate-700 mt-2 bg-white px-2">Thông tin giao nhận</span>
-          </div>
-        </div>
-      </div>
 
       <h1 className="text-3xl font-extrabold text-slate-900 mb-8 border-l-4 border-blue-600 pl-4">
         {checkoutStep === 1 ? 'Giỏ hàng của bạn' : 'Thông tin đặt hàng'}
@@ -384,13 +392,20 @@ const Cart = () => {
                   {cartItems.map((item) => (
                     <li key={item.id} className="p-6 flex flex-col sm:flex-row items-start sm:items-center gap-6">
                       {/* Image */}
-                      <div className="w-20 h-20 bg-slate-50 rounded-xl flex items-center justify-center p-2 border border-slate-100 flex-shrink-0">
+                      <Link 
+                        to={`/product/${item.productId || item.id}`}
+                        className="w-20 h-20 bg-slate-50 rounded-xl flex items-center justify-center p-2 border border-slate-100 flex-shrink-0 hover:opacity-80 transition-opacity cursor-pointer"
+                      >
                         <img src={item.image} alt={item.title} className="w-full h-full object-contain" />
-                      </div>
+                      </Link>
                       
                       {/* Info */}
                       <div className="flex-grow min-w-0">
-                        <h3 className="text-base font-bold text-slate-900 truncate">{item.title}</h3>
+                        <h3 className="text-base font-bold text-slate-900 truncate hover:text-[#2f5f88] transition-colors">
+                          <Link to={`/product/${item.productId || item.id}`}>
+                            {item.title}
+                          </Link>
+                        </h3>
                         <p className="text-xs text-slate-400 mt-0.5 flex items-center gap-1.5 flex-wrap">
                           <span>{item.category}</span>
                           {item.variantName && (
@@ -719,8 +734,22 @@ const Cart = () => {
                   )}
                 </div>
 
+                {/* Save Info toggle */}
+                <div className="border-t border-slate-100 pt-6">
+                  <label className="flex items-center gap-2 cursor-pointer font-bold text-slate-800">
+                    <input 
+                      type="checkbox" 
+                      name="saveInfo" 
+                      checked={formData.saveInfo} 
+                      onChange={handleInputChange}
+                      className="w-4.5 h-4.5 text-blue-600 focus:ring-blue-500 rounded border-slate-300 cursor-pointer"
+                    />
+                    <span>Lưu thông tin giao hàng cho lần thanh toán sau</span>
+                  </label>
+                </div>
+
                 {/* Customer notes */}
-                <div className="space-y-1.5 pt-2">
+                <div className="space-y-1.5 pt-6">
                   <label className="font-semibold text-slate-600">Ghi chú giao nhận / thời gian liên hệ</label>
                   <textarea 
                     name="notes" 
@@ -757,6 +786,14 @@ const Cart = () => {
               <div className="flex justify-between text-green-600">
                 <span>Khuyến mãi ({appliedDiscount}%)</span>
                 <span className="font-semibold">-{discountAmount.toLocaleString('vi-VN')}đ</span>
+              </div>
+            )}
+            
+            {/* B2B EXPANSION */}
+            {volumeDiscount > 0 && (
+              <div className="flex justify-between text-amber-600">
+                <span>Chiết khấu Bán sỉ (2%)</span>
+                <span className="font-semibold">-{volumeDiscount.toLocaleString('vi-VN')}đ</span>
               </div>
             )}
             

@@ -343,7 +343,7 @@ const AdminProducts = () => {
       description: description.trim(),
       price: parseFloat(price),
       stock: parseInt(stock),
-      imageUrl: imageUrl.trim() || '/images/thinktanklogo.png',
+      imageUrl: imageUrl.trim() || '/images/balomayanh-logo.png',
       weight: weight.trim(),
       volume: volume.trim(),
       material: material.trim(),
@@ -597,7 +597,7 @@ const AdminProducts = () => {
                         src={imageUrl}
                         alt="Xem trước"
                         className="w-32 h-32 object-contain bg-white rounded-xl border border-slate-200 shadow-xs"
-                        onError={(e) => { e.target.src = '/images/thinktanklogo.png'; }}
+                        onError={(e) => { e.target.src = '/images/balomayanh-logo.png'; }}
                       />
                     </div>
                   ) : (
@@ -1104,10 +1104,10 @@ const AdminProducts = () => {
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-3">
                         <img 
-                          src={p.image || p.imageUrl || '/images/thinktanklogo.png'} 
+                          src={p.image || p.imageUrl || '/images/balomayanh-logo.png'} 
                           alt={p.name || p.title} 
                           className="w-10 h-10 object-cover rounded-xl bg-slate-50 border border-slate-200 flex-shrink-0"
-                          onError={(e) => { e.target.src = '/images/thinktanklogo.png'; }}
+                          onError={(e) => { e.target.src = '/images/balomayanh-logo.png'; }}
                         />
                         <div className="min-w-0">
                           <p className="font-bold text-slate-800 text-sm truncate max-w-[280px]">{p.name || p.title}</p>

@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { api } from '../../utils/api';
 import CustomModal from '../../components/CustomModal';
+import './admin-theme.css';
 
 // Admin login page that routes authenticated admins into the dashboard.
 const AdminLogin = () => {
@@ -68,11 +69,11 @@ const AdminLogin = () => {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 flex items-center justify-center px-4 pt-24 pb-12 font-sans">
+    <div className="admin-login min-h-screen bg-slate-50 flex items-center justify-center px-4 pt-24 pb-12">
       <div className="w-full max-w-md bg-white rounded-2xl border border-slate-200/80 shadow-md p-8">
         <div className="text-center mb-8">
           <div className="inline-block bg-blue-50 text-blue-600 p-4 rounded-2xl mb-4 border border-blue-100">
-            <span className="text-2xl font-extrabold tracking-wider uppercase font-heading">THINKTANK</span>
+            <span className="text-2xl font-extrabold tracking-wider uppercase font-heading">BALOMAYANH</span>
           </div>
           <h2 className="text-xl font-bold text-slate-900 font-heading">Quản Trị Hệ Thống</h2>
           <p className="text-slate-500 text-xs mt-1">Đăng nhập để tiếp tục quản lý cửa hàng</p>
@@ -85,7 +86,7 @@ const AdminLogin = () => {
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              placeholder="admin@thinktank.com"
+              placeholder="admin@balomayanh.vn"
               className="w-full bg-white border border-slate-200 text-slate-800 rounded-xl px-4 py-3 text-xs focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-100 placeholder-slate-400 font-medium"
             />
           </div>

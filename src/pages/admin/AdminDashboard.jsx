@@ -144,8 +144,8 @@ const AdminDashboard = () => {
         <svg viewBox={`0 0 ${width} ${height}`} className="w-full h-auto">
           <defs>
             <linearGradient id="chartGrad" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="#2563eb" stopOpacity="0.15" />
-              <stop offset="100%" stopColor="#2563eb" stopOpacity="0.0" />
+              <stop offset="0%" stopColor="#cc0000" stopOpacity="0.15" />
+              <stop offset="100%" stopColor="#cc0000" stopOpacity="0.0" />
             </linearGradient>
           </defs>
           
@@ -169,7 +169,7 @@ const AdminDashboard = () => {
           <path d={fillPathData} fill="url(#chartGrad)" />
  
           {/* Line Chart */}
-          <path d={pathData} fill="none" stroke="#2563eb" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
+          <path d={pathData} fill="none" stroke="#cc0000" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
  
           {/* interactive Hover Line */}
           {hoveredPoint && (
@@ -191,7 +191,7 @@ const AdminDashboard = () => {
                 cx={p.x} 
                 cy={p.y} 
                 r={hoveredPoint && hoveredPoint.date === p.date ? "6.5" : "4"} 
-                fill={hoveredPoint && hoveredPoint.date === p.date ? "#3b82f6" : "#2563eb"} 
+                fill={hoveredPoint && hoveredPoint.date === p.date ? "#d13205" : "#cc0000"} 
                 stroke="#ffffff" 
                 strokeWidth="2" 
                 className="cursor-pointer transition-all duration-150"

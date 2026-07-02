@@ -73,36 +73,28 @@ const Navbar = () => {
   ];
 
   return (
-    <nav className="fixed top-0 left-0 w-full z-50 bg-white/95 backdrop-blur-sm shadow-sm transition-all duration-300">
+    <nav className="fixed top-0 left-0 w-full z-50 bg-white border-b border-[#e5e7eb]">
       {/* Top Bar */}
-      <div className="bg-slate-900 text-slate-300 text-[11px] sm:text-xs py-2 border-b border-slate-800">
+      <div className="bg-black text-white text-[10px] sm:text-[11px] py-2 border-b border-[#262626] uppercase tracking-wider">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center">
-          <div className="flex items-center gap-1.5">
-            <span className="hidden sm:inline text-slate-400">Xem giá & tồn kho tại:</span>
-            <select className="bg-transparent text-white font-semibold focus:outline-none cursor-pointer border-none p-0 text-xs">
-              <option className="text-slate-800" value="hcm">TP. Hồ Chí Minh</option>
-              <option className="text-slate-800" value="hn">Hà Nội</option>
-              <option className="text-slate-800" value="dn">Đà Nẵng</option>
-            </select>
-          </div>
+          <span className="font-bold">Miễn phí vận chuyển đơn từ 1.000.000đ <span className="mx-2 text-[#737373]">|</span> Bảo hành chính hãng</span>
           <div className="flex items-center gap-4">
-            <span className="hidden md:inline">Hotline: <strong className="text-white">1800.6026</strong> (Miễn phí)</span>
-            <a href="#store" className="hover:text-white transition-colors" onClick={(e) => { e.preventDefault(); setModalConfig({ isOpen: true, title: 'Hệ thống cửa hàng', message: 'Think Tank có showroom tại Quận 1, TP.HCM và Cầu Giấy, Hà Nội.', type: 'info' }); }}>Hệ thống cửa hàng</a>
+            <Link to="/contact" className="hover:text-white transition-colors">Liên hệ</Link>
+            <a href="#store" className="hidden sm:inline hover:text-white transition-colors" onClick={(e) => { e.preventDefault(); setModalConfig({ isOpen: true, title: 'Hệ thống cửa hàng', message: 'Balomayanh có showroom tại Quận 1, TP.HCM và Cầu Giấy, Hà Nội.', type: 'info' }); }}>Hệ thống cửa hàng</a>
             <Link to={currentUser ? "/my-orders" : "/track-order"} className="hover:text-white transition-colors">Tra cứu đơn hàng</Link>
           </div>
         </div>
       </div>
       
       {/* Main Nav Wrapper */}
-      <div className="py-3 border-b border-slate-200/70">
+      <div className="py-3">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center">
-          {/* Logo */}
-          <Link to="/" className="flex-shrink-0 flex items-center">
-            <img
-              src="/images/thinktanklogo.png"
-              alt="Think Tank Logo"
-              className="h-11 w-auto object-contain"
+          <Link to="/" className="flex items-center gap-2">
+            <img 
+              src="/images/balomayanh-logo.png" 
+              alt="Balomayanh Logo" 
+              className="h-[40px] w-auto object-contain" 
             />
           </Link>
 

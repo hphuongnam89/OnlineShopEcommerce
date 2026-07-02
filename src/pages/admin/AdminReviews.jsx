@@ -169,10 +169,10 @@ const AdminReviews = () => {
                     <td className="px-6 py-4 font-bold text-slate-900 max-w-[220px]">
                       <div className="flex items-center gap-3">
                         <img 
-                          src={rev.product?.image || rev.product?.imageUrl || '/images/thinktanklogo.png'} 
+                          src={rev.product?.image || rev.product?.imageUrl || '/images/balomayanh-logo.png'} 
                           alt={rev.product?.name}
                           className="w-10 h-10 object-cover bg-slate-50 border border-slate-200 rounded-xl flex-shrink-0"
-                          onError={(e) => { e.target.src = '/images/thinktanklogo.png'; }}
+                          onError={(e) => { e.target.src = '/images/balomayanh-logo.png'; }}
                         />
                         <span className="truncate text-slate-850 font-bold block text-xs" title={rev.product?.name}>
                           {rev.product?.name || `ID: ${rev.productId}`}
