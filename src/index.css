@@ -1,0 +1,183 @@
+@import url('https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&family=Roboto:wght@400;500;700;900&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --color-primary: #171717; /* Matte Camera Black */
+  --color-accent: #2f5f88;  /* Think Tank Slate Blue */
+  --color-accent-hover: #23323f; /* Think Tank Dark Slate */
+  --color-brand-gold: #ab9f1d; /* Think Tank Mustard Gold */
+
+  --font-sans: "Be Vietnam Pro", system-ui, sans-serif;
+  --font-heading: "Be Vietnam Pro", system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", monospace;
+
+  /* Overrides for blue to match Think Tank slate blue color scheme globally */
+  --color-blue-50: #f4f7fa;
+  --color-blue-100: #e9eff5;
+  --color-blue-200: #c9dced;
+  --color-blue-300: #93b3d1;
+  --color-blue-400: #5d8bb6;
+  --color-blue-500: #3c709e;
+  --color-blue-600: #2f5f88; /* Think Tank Slate Blue */
+  --color-blue-700: #23323f; /* Think Tank Dark Slate */
+  --color-blue-800: #1b2630;
+  --color-blue-900: #131b22;
+  --color-blue-950: #0a0e12;
+}
+
+@layer base {
+  body {
+    background-color: #f7f8fa; /* Quiet storefront surface */
+    color: #171717;
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-heading);
+    letter-spacing: 0;
+    font-weight: 700;
+  }
+}
+
+@layer utilities {
+  /* Tone down the generated-looking extremes without rewriting every component. */
+  .font-black {
+    font-weight: 750 !important;
+  }
+
+  .tracking-tight,
+  .tracking-wide,
+  .tracking-wider,
+  .tracking-widest {
+    letter-spacing: 0 !important;
+  }
+
+  .rounded-3xl {
+    border-radius: 1rem;
+  }
+
+  .rounded-2xl {
+    border-radius: 0.875rem;
+  }
+
+  .shadow-2xl,
+  .shadow-xl,
+  .shadow-lg {
+    box-shadow: 0 14px 40px rgb(15 23 42 / 0.08);
+  }
+
+  .shadow-md,
+  .shadow-sm,
+  .shadow-xs {
+    box-shadow: 0 8px 24px rgb(15 23 42 / 0.05);
+  }
+}
+
+/* Custom Scrollbar for a premium look */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f8f8f8;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #c9dced;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #93b3d1;
+}
+
+/* Shared Think Tank storefront theme; admin remains untouched. */
+.storefront {
+  --store-red: #cc0000;
+  --store-black: #1a1a1a;
+  --store-border: #e5e7eb;
+  background: #fff;
+  color: var(--store-black);
+  font-family: "Roboto", "Helvetica Neue", Arial, sans-serif;
+}
+
+.storefront :is(h1, h2, h3, h4, h5, h6) {
+  font-family: "Roboto", "Helvetica Neue", Arial, sans-serif;
+  font-weight: 900;
+  letter-spacing: -0.02em;
+  text-transform: uppercase;
+}
+
+.storefront :is(button, input, select, textarea) {
+  font-family: inherit;
+}
+
+.storefront :is(input, select, textarea) {
+  border-radius: 2px !important;
+  box-shadow: none !important;
+}
+
+.storefront :is(input, select, textarea):focus {
+  border-color: var(--store-black) !important;
+  outline: 1px solid var(--store-black) !important;
+  --tw-ring-color: transparent !important;
+}
+
+.storefront [class~="rounded-xl"],
+.storefront [class~="rounded-2xl"],
+.storefront [class~="rounded-3xl"],
+.storefront [class~="rounded-lg"],
+.storefront [class~="rounded-md"] {
+  border-radius: 2px !important;
+}
+
+.storefront [class~="shadow-xs"],
+.storefront [class~="shadow-sm"],
+.storefront [class~="shadow-md"],
+.storefront [class~="shadow-lg"],
+.storefront [class~="shadow-xl"],
+.storefront [class~="shadow-2xl"] {
+  box-shadow: none !important;
+}
+
+.storefront [class~="bg-blue-500"],
+.storefront [class~="bg-blue-600"],
+.storefront [class~="bg-[#2f5f88]"] {
+  background-color: var(--store-red) !important;
+}
+
+.storefront [class~="text-blue-500"],
+.storefront [class~="text-blue-600"],
+.storefront [class~="text-blue-700"],
+.storefront [class~="text-[#2f5f88]"] {
+  color: var(--store-red) !important;
+}
+
+.storefront [class~="border-blue-600"],
+.storefront [class~="border-[#2f5f88]"] {
+  border-color: var(--store-red) !important;
+}
+
+.storefront [class~="bg-[#23323f]"] {
+  background-color: var(--store-black) !important;
+}
+
+.storefront [class~="py-20"],
+.storefront [class~="py-24"] {
+  padding-top: 4rem !important;
+  padding-bottom: 4rem !important;
+}
+
+.storefront article,
+.storefront form,
+.storefront table {
+  border-color: var(--store-border);
+}
+
+.storefront button:not(:disabled),
+.storefront a {
+  transition-duration: 150ms !important;
+}
