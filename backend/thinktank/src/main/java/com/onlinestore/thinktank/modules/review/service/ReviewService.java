@@ -3,6 +3,7 @@ package com.onlinestore.thinktank.modules.review.service;
 import com.onlinestore.thinktank.modules.product.entity.Product;
 import com.onlinestore.thinktank.modules.product.repository.ProductRepository;
 import com.onlinestore.thinktank.modules.review.dto.ReviewRequest;
+import com.onlinestore.thinktank.modules.review.dto.ReviewResponse;
 import com.onlinestore.thinktank.modules.review.entity.Review;
 import com.onlinestore.thinktank.modules.review.repository.ReviewRepository;
 import com.onlinestore.thinktank.modules.user.entity.User;
@@ -25,7 +26,7 @@ public class ReviewService {
     private final UserRepository userRepository;
     private final com.onlinestore.thinktank.modules.order.repository.OrderRepository orderRepository;
 
-    public Review addReview(String email, ReviewRequest request) {
+    public ReviewResponse addReview(String email, ReviewRequest request) {
         // Reviews are only allowed after a verified purchase for the requested product.
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("User not found with email: " + email));
@@ -51,7 +52,7 @@ public class ReviewService {
         // Rebuild product score after inserting the new review row.
         recalculateProductStats(product.getId());
 
-        return savedReview;
+        return ReviewResponse.from(savedReview, false);
     }
 
     @Transactional(readOnly = true)
@@ -60,15 +61,19 @@ public class ReviewService {
     }
 
     @Transactional(readOnly = true)
-    public List<Review> getProductReviews(Long productId) {
+    public List<ReviewResponse> getProductReviews(Long productId) {
         // Public review list stays filtered by the entity-level soft delete rule.
-        return reviewRepository.findByProductIdOrderByCreatedAtDesc(productId);
+        return reviewRepository.findByProductIdOrderByCreatedAtDesc(productId).stream()
+                .map(review -> ReviewResponse.from(review, false))
+                .toList();
     }
 
     @Transactional(readOnly = true)
-    public List<Review> getAdminReviews() {
+    public List<ReviewResponse> getAdminReviews() {
         // Admin view is the raw moderation queue for all active reviews.
-        return reviewRepository.findAll();
+        return reviewRepository.findAll().stream()
+                .map(review -> ReviewResponse.from(review, true))
+                .toList();
     }
 
     public void deleteReview(Long id) {

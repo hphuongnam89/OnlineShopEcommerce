@@ -24,14 +24,11 @@ public class RefreshTokenService {
 
     @Transactional
     public RefreshToken createRefreshToken(Long userId) {
-        RefreshToken refreshToken = new RefreshToken();
-
-        refreshToken.setUser(userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found")));
+        var user = userRepository.findById(userId).orElseThrow(() -> new com.onlinestore.thinktank.common.exception.ResourceNotFoundException("Không tìm thấy tài khoản người dùng"));
+        RefreshToken refreshToken = refreshTokenRepository.findByUser(user).orElseGet(RefreshToken::new);
+        refreshToken.setUser(user);
         refreshToken.setExpiryDate(Instant.now().plusMillis(refreshTokenDurationMs));
         refreshToken.setToken(UUID.randomUUID().toString());
-
-        // Remove old tokens
-        refreshTokenRepository.deleteByUser(refreshToken.getUser());
 
         return refreshTokenRepository.save(refreshToken);
     }
@@ -44,7 +41,7 @@ public class RefreshTokenService {
     public RefreshToken verifyExpiration(RefreshToken token) {
         if (token.getExpiryDate().compareTo(Instant.now()) < 0) {
             refreshTokenRepository.delete(token);
-            throw new InvalidRequestException("Refresh token was expired. Please make a new signin request");
+            throw new InvalidRequestException("Phiên làm việc đã hết hạn. Vui lòng đăng nhập lại.");
         }
         return token;
     }

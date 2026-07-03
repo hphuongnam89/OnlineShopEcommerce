@@ -1,6 +1,5 @@
 package com.onlinestore.thinktank.modules.product.service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.onlinestore.thinktank.common.exception.ResourceNotFoundException;
 import com.onlinestore.thinktank.modules.category.entity.Category;
 import com.onlinestore.thinktank.modules.category.repository.CategoryRepository;
@@ -32,7 +31,6 @@ public class ProductService {
     private final ProductRepository productRepository;
     private final ProductVariantRepository productVariantRepository;
     private final CategoryRepository categoryRepository;
-    private final ObjectMapper objectMapper;
 
     @Transactional(readOnly = true)
     public Page<Product> getProducts(int page, int limit, Long categoryId, String search,

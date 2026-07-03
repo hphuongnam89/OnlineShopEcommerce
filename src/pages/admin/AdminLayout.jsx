@@ -13,7 +13,7 @@ import {
   Settings,
   User as UserIcon,
 } from 'lucide-react';
-import { api } from '../../utils/api';
+import { api, clearAuthSession } from '../../utils/api';
 import './admin-theme.css';
 
 // Shared admin shell with sidebar navigation, topbar, notifications, and nested pages.
@@ -40,9 +40,18 @@ const AdminLayout = () => {
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
   const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
   const [recentOrders, setRecentOrders] = useState([]);
+  const [lastSeenOrderId, setLastSeenOrderId] = useState(() => {
+    return Number(localStorage.getItem('lastSeenOrderId') || 0);
+  });
   
   const notifRef = useRef(null);
   const profileRef = useRef(null);
+  const recentOrdersRef = useRef([]);
+
+  useEffect(() => {
+    recentOrdersRef.current = recentOrders;
+  }, [recentOrders]);
+
   useEffect(() => {
     const token = localStorage.getItem('token');
     
@@ -64,7 +73,14 @@ const AdminLayout = () => {
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (notifRef.current && !notifRef.current.contains(event.target)) {
-        setIsNotificationsOpen(false);
+        setIsNotificationsOpen(prev => {
+          if (prev && recentOrdersRef.current.length > 0) {
+            const maxId = recentOrdersRef.current[0].id;
+            localStorage.setItem('lastSeenOrderId', String(maxId));
+            setLastSeenOrderId(maxId);
+          }
+          return false;
+        });
       }
       if (profileRef.current && !profileRef.current.contains(event.target)) {
         setIsProfileMenuOpen(false);
@@ -74,10 +90,31 @@ const AdminLayout = () => {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
+  const handleToggleNotifications = () => {
+    setIsNotificationsOpen(prev => {
+      const nextState = !prev;
+      if (!nextState && recentOrders.length > 0) {
+        // Mark as read khi đóng dropdown
+        const maxId = recentOrders[0].id;
+        localStorage.setItem('lastSeenOrderId', String(maxId));
+        setLastSeenOrderId(maxId);
+      }
+      return nextState;
+    });
+  };
+
+  const handleNotificationClick = (orderId) => {
+    setIsNotificationsOpen(false);
+    if (recentOrders.length > 0) {
+      const maxId = recentOrders[0].id;
+      localStorage.setItem('lastSeenOrderId', String(maxId));
+      setLastSeenOrderId(maxId);
+    }
+    navigate(`/admin/orders?search=TT-${orderId}`);
+  };
+
   const handleLogout = () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('currentUser');
-    window.dispatchEvent(new Event('storage'));
+    clearAuthSession();
     navigate('/admin/login');
   };
 
@@ -210,11 +247,11 @@ const AdminLayout = () => {
             {/* Notifications Dropdown */}
             <div className="relative" ref={notifRef}>
               <button 
-                onClick={() => setIsNotificationsOpen(!isNotificationsOpen)}
+                onClick={handleToggleNotifications}
                 className="relative w-9 h-9 rounded-full flex items-center justify-center text-slate-500 hover:bg-slate-100 hover:text-blue-600 transition-colors cursor-pointer"
               >
                 <Bell size={20} />
-                {recentOrders.length > 0 && (
+                {recentOrders.length > 0 && recentOrders[0].id > lastSeenOrderId && (
                   <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-rose-500 rounded-full border border-white"></span>
                 )}
               </button>
@@ -224,14 +261,18 @@ const AdminLayout = () => {
                 <div className="absolute right-0 mt-2 w-80 bg-white border border-slate-100 rounded-2xl shadow-xl py-2 z-50 animate-in slide-in-from-top-2 duration-200">
                   <div className="px-4 py-2 border-b border-slate-100 flex justify-between items-center">
                     <h4 className="text-xs font-bold text-slate-800 uppercase tracking-wider">Thông báo mới</h4>
-                    <span className="text-[10px] bg-rose-100 text-rose-600 px-2 py-0.5 rounded-full font-bold">{recentOrders.length}</span>
+                    {recentOrders.filter(o => o.id > lastSeenOrderId).length > 0 && (
+                      <span className="text-[10px] bg-rose-100 text-rose-600 px-2 py-0.5 rounded-full font-bold">
+                        {recentOrders.filter(o => o.id > lastSeenOrderId).length}
+                      </span>
+                    )}
                   </div>
                   <div className="max-h-[300px] overflow-y-auto admin-scrollbar">
                     {recentOrders.length === 0 ? (
                       <div className="p-4 text-center text-xs text-slate-500">Chưa có thông báo nào.</div>
                     ) : (
                       recentOrders.map(order => (
-                        <div key={order.id} className="p-3 border-b border-slate-50 hover:bg-slate-50 transition-colors cursor-pointer flex gap-3 items-start">
+                        <div key={order.id} onClick={() => handleNotificationClick(order.id)} className="p-3 border-b border-slate-50 hover:bg-slate-50 transition-colors cursor-pointer flex gap-3 items-start">
                           <div className="w-8 h-8 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center flex-shrink-0 mt-0.5">
                             <ShoppingBag size={14} />
                           </div>

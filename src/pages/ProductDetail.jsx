@@ -234,11 +234,11 @@ const ProductDetail = () => {
               const relatedPage = await api.products.getPage({
                 page: 0,
                 limit: 4,
-                categoryId: mergedProduct.category_id || undefined,
+                categoryId: foundProduct.category_id || undefined,
                 sort: 'rating_desc',
               });
               const related = relatedPage.items
-                .filter((p) => p.id !== mergedProduct.id)
+                .filter((p) => p.id !== foundProduct.id)
                 .slice(0, 3);
               setRelatedProducts(related);
             } catch {
@@ -847,7 +847,7 @@ const ProductDetail = () => {
                       <div key={rev.id} className="bg-[#f8f8f8] p-5 rounded-xl border border-slate-100">
                         <div className="flex items-center justify-between mb-2">
                           <div className="flex items-center gap-2">
-                            <span className="font-bold text-slate-800 text-xs font-heading uppercase">{rev.name || rev.user?.fullName}</span>
+                            <span className="font-bold text-slate-800 text-xs font-heading uppercase">{rev.reviewerName || 'Khách hàng'}</span>
                             <span className="bg-emerald-50 text-emerald-700 border border-emerald-200 text-[9px] font-bold px-1.5 py-0.5 rounded-full flex items-center gap-0.5 font-sans">
                               ✓ Đã mua hàng
                             </span>

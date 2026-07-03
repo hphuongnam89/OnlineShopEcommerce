@@ -4,11 +4,11 @@ import lombok.*;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Map;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
 
 @Getter
 @Setter
@@ -36,7 +36,7 @@ public class ProductRequest {
     private String material;
     private String dimensions;
     private String sku;
-    private List<String> highlights;
+    private List<Map<String, String>> highlights;
     @Valid
     private List<VariantRequest> variants;
 }

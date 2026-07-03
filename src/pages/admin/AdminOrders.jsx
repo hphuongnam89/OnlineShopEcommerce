@@ -41,6 +41,15 @@ const AdminOrders = () => {
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [isDetailsOpen, setIsDetailsOpen] = useState(false);
 
+  // Read search query parameter from URL on mount
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const searchParam = urlParams.get('search');
+    if (searchParam) {
+      setSearch(searchParam);
+    }
+  }, []);
+
   const fetchOrders = useCallback(async () => {
     setLoading(true);
     setError(null);

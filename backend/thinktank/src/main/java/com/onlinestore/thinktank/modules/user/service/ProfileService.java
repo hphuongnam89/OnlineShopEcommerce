@@ -80,7 +80,7 @@ public class ProfileService {
                 .phone(user.getPhone())
                 .address(resolveAddress(user))
                 .role(roleName)
-                .tierName(resolvedTier != null ? resolvedTier.getName() : "SILVER")
+                .tierName(resolvedTier != null ? resolvedTier.getName() : "BRONZE")
                 .totalSpent(totalSpent)
                 .discountPercent(resolvedTier != null ? resolvedTier.getDiscountPercent() : 0)
                 .nextTierName(nextTier != null ? nextTier.getName() : null)
@@ -123,7 +123,7 @@ public class ProfileService {
 
     private CustomerTier resolveDefaultTier() {
         return customerTierRepository.findAllByOrderByMinSpendingAsc().stream()
-                .filter(tier -> "SILVER".equalsIgnoreCase(tier.getName()))
+                .filter(tier -> "BRONZE".equalsIgnoreCase(tier.getName()))
                 .findFirst()
                 .orElse(null);
     }

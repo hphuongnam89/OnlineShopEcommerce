@@ -6,6 +6,7 @@ import com.onlinestore.thinktank.modules.order.dto.UpdateOrderRequest;
 import com.onlinestore.thinktank.modules.order.entity.Order;
 import com.onlinestore.thinktank.modules.order.service.OrderService;
 import lombok.RequiredArgsConstructor;
+import jakarta.validation.Valid;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -34,7 +35,7 @@ public class AdminOrderController {
     }
 
     @PostMapping
-    public ResponseEntity<OrderResponse> createOrder(@RequestBody CheckoutRequest request) {
+    public ResponseEntity<OrderResponse> createOrder(@Valid @RequestBody CheckoutRequest request) {
         Order order = orderService.createOrder(request);
         return ResponseEntity.ok(OrderResponse.from(order));
     }
@@ -46,7 +47,7 @@ public class AdminOrderController {
     ) {
         String status = body.get("status");
         if (status == null || status.trim().isEmpty()) {
-            throw new RuntimeException("Status is required");
+            throw new com.onlinestore.thinktank.common.exception.InvalidRequestException("Status is required");
         }
         Order order = orderService.updateOrderStatus(id, status);
         return ResponseEntity.ok(OrderResponse.from(order));
@@ -55,7 +56,7 @@ public class AdminOrderController {
     @PutMapping("/{id}")
     public ResponseEntity<OrderResponse> updateOrder(
             @PathVariable(name = "id") Long id,
-            @RequestBody UpdateOrderRequest request
+            @Valid @RequestBody UpdateOrderRequest request
     ) {
         Order order = orderService.updateOrder(id, request);
         return ResponseEntity.ok(OrderResponse.from(order));

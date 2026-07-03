@@ -6,7 +6,7 @@ import com.onlinestore.thinktank.modules.user.entity.User;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.SQLDelete;
-import org.hibernate.annotations.Where;
+import org.hibernate.annotations.SQLRestriction;
 
 import java.math.BigDecimal;
 
@@ -19,7 +19,7 @@ import java.math.BigDecimal;
 @Builder
 @com.fasterxml.jackson.annotation.JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 @SQLDelete(sql = "UPDATE customers SET deleted = true WHERE id = ?")
-@Where(clause = "deleted = false")
+@SQLRestriction("deleted = false")
 public class Customer extends BaseEntity {
 
     // Customer profile linked to a user account and loyalty tier.
@@ -31,7 +31,7 @@ public class Customer extends BaseEntity {
     @JoinColumn(name = "user_id", unique = true)
     private User user;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "tier_id")
     private CustomerTier tier;
 

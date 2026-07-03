@@ -24,10 +24,10 @@ public class CustomUserDetailsService implements UserDetailsService {
 
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() ->
-                        new UsernameNotFoundException("User not found"));
+                        new UsernameNotFoundException("Tài khoản người dùng không tồn tại"));
 
         if (Boolean.FALSE.equals(user.getEnabled())) {
-            throw new DisabledException("User account is disabled");
+            throw new DisabledException("Tài khoản người dùng đã bị vô hiệu hóa");
         }
 
         return new org.springframework.security.core.userdetails.User(

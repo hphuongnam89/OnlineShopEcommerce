@@ -2,6 +2,8 @@ package com.onlinestore.thinktank.modules.auth;
 
 import com.onlinestore.thinktank.modules.auth.dto.AuthResponse;
 import com.onlinestore.thinktank.modules.auth.dto.LoginRequest;
+import com.onlinestore.thinktank.modules.auth.entity.RefreshToken;
+import com.onlinestore.thinktank.modules.auth.service.RefreshTokenService;
 import com.onlinestore.thinktank.modules.customer.repository.CustomerRepository;
 import com.onlinestore.thinktank.modules.customertier.repository.CustomerTierRepository;
 import com.onlinestore.thinktank.modules.role.entity.Role;
@@ -32,12 +34,14 @@ class AuthServiceTest {
     @Mock private CustomerTierRepository customerTierRepository;
     @Mock private PasswordEncoder passwordEncoder;
     @Mock private JwtService jwtService;
+    @Mock private RefreshTokenService refreshTokenService;
 
     @InjectMocks private AuthService authService;
 
     @Test
     void login_shouldRejectDisabledAccount() {
         User user = User.builder()
+                .id(1L)
                 .email("admin@thinktank.com")
                 .passwordHash("$2a$10$hash")
                 .enabled(false)
@@ -61,6 +65,7 @@ class AuthServiceTest {
     void login_shouldReturnAuthResponseForActiveUser() {
         Role adminRole = Role.builder().name("ROLE_ADMIN").build();
         User user = User.builder()
+                .id(1L)
                 .email("admin@thinktank.com")
                 .passwordHash("hashed")
                 .fullName("Admin")
@@ -71,6 +76,8 @@ class AuthServiceTest {
         when(userRepository.findByEmail("admin@thinktank.com")).thenReturn(Optional.of(user));
         when(passwordEncoder.matches("Admin@123456", "hashed")).thenReturn(true);
         when(jwtService.generateToken("admin@thinktank.com")).thenReturn("jwt-token");
+        when(refreshTokenService.createRefreshToken(1L))
+                .thenReturn(RefreshToken.builder().token("refresh-token").user(user).build());
 
         LoginRequest request = new LoginRequest();
         request.setEmail("admin@thinktank.com");
@@ -79,6 +86,7 @@ class AuthServiceTest {
         AuthResponse response = authService.login(request);
 
         assertEquals("jwt-token", response.getToken());
+        assertEquals("refresh-token", response.getRefreshToken());
         assertEquals("ROLE_ADMIN", response.getRole());
     }
 }

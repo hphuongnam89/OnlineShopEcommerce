@@ -5,11 +5,12 @@ import com.onlinestore.thinktank.modules.category.entity.Category;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.SQLDelete;
-import org.hibernate.annotations.Where;
+import org.hibernate.annotations.SQLRestriction;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @Entity
 @Table(name = "products")
@@ -20,7 +21,7 @@ import java.util.List;
 @Builder
 @com.fasterxml.jackson.annotation.JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 @SQLDelete(sql = "UPDATE products SET deleted = true WHERE id = ? AND version = ?")
-@Where(clause = "deleted = false")
+@SQLRestriction("deleted = false")
 public class Product extends BaseEntity {
 
     // Main catalog item shown on storefront and managed from admin products.
@@ -76,7 +77,7 @@ public class Product extends BaseEntity {
 
     @org.hibernate.annotations.JdbcTypeCode(org.hibernate.type.SqlTypes.JSON)
     @Column(name = "highlights", columnDefinition = "json")
-    private List<String> highlights;
+    private List<Map<String, String>> highlights;
 
     @Column(name = "average_rating", precision = 3, scale = 2)
     @Builder.Default

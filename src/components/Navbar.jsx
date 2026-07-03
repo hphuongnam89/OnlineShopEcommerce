@@ -3,6 +3,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { ShoppingCart, Menu, X, Search } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import CustomModal from './CustomModal';
+import { clearAuthSession } from '../utils/api';
 
 // Storefront navigation with search, account session, mobile menu, and cart badge.
 const Navbar = () => {
@@ -57,9 +58,7 @@ const Navbar = () => {
   }, []);
 
   const handleLogout = () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('currentUser');
-    window.dispatchEvent(new Event('storage'));
+    clearAuthSession();
     setIsMobileMenuOpen(false);
     setIsAccountDropdownOpen(false);
     navigate('/');

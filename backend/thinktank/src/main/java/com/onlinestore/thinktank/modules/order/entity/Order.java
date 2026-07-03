@@ -5,7 +5,7 @@ import com.onlinestore.thinktank.modules.customer.entity.Customer;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.SQLDelete;
-import org.hibernate.annotations.Where;
+import org.hibernate.annotations.SQLRestriction;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -19,7 +19,7 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 @SQLDelete(sql = "UPDATE orders SET deleted = true WHERE id = ?")
-@Where(clause = "deleted = false")
+@SQLRestriction("deleted = false")
 public class Order extends BaseEntity {
 
     // Customer order header with contact info, totals, status, and order lines.

@@ -349,7 +349,7 @@ const AdminProducts = () => {
       material: material.trim(),
       dimensions: dimensions.trim(),
       sku: sku.trim() || `TT-${Date.now()}`,
-      highlights: JSON.stringify(highlights),
+      highlights,
       variants: formVariants.map(v => ({
         id: v.id || null,
         sku: v.sku || `TT-VAR-${Date.now()}-${Math.random().toString(36).substr(2, 5)}`,

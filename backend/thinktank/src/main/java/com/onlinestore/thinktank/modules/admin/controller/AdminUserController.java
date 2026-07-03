@@ -7,6 +7,7 @@ import com.onlinestore.thinktank.modules.role.repository.RoleRepository;
 import com.onlinestore.thinktank.modules.user.entity.User;
 import com.onlinestore.thinktank.modules.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import jakarta.validation.Valid;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,7 +24,7 @@ public class AdminUserController {
     private final PasswordEncoder passwordEncoder;
 
     @PostMapping("/admins")
-    public AdminUserResponse createAdmin(@RequestBody CreateAdminRequest req) {
+    public AdminUserResponse createAdmin(@Valid @RequestBody CreateAdminRequest req) {
         if (req.getEmail() == null || req.getEmail().isBlank()) {
             throw new RuntimeException("Email không được để trống");
         }

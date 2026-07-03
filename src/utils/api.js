@@ -91,7 +91,7 @@ async function request(endpoint, options = {}) {
         } else {
           clearAuthSession();
         }
-      } catch (e) {
+      } catch {
         clearAuthSession();
       }
     } else {
@@ -230,17 +230,16 @@ export const api = {
   // Products & Categories
   products: {
     getAll: async (params = {}) => {
-      const query = new URLSearchParams();
-      const finalParams = { page: 0, limit: 20, ...params };
-      Object.entries(finalParams).forEach(([key, val]) => {
-        if (val !== undefined && val !== null && val !== '') {
-          query.append(key, val);
-        }
-      });
-      const queryString = query.toString();
-      const res = await request(`/api/products${queryString ? `?${queryString}` : ''}`);
-      const page = mapProductPageResponse(res);
-      return page.items;
+      const items = [];
+      let page = 0;
+      let totalPages = 1;
+      while (page < totalPages) {
+        const result = await api.products.getPage({ ...params, page, limit: 100 });
+        items.push(...result.items);
+        totalPages = result.totalPages;
+        page += 1;
+      }
+      return items;
     },
     getPage: async (params = {}) => {
       const query = new URLSearchParams();

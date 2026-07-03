@@ -169,21 +169,21 @@ const AdminReviews = () => {
                     <td className="px-6 py-4 font-bold text-slate-900 max-w-[220px]">
                       <div className="flex items-center gap-3">
                         <img 
-                          src={rev.product?.image || rev.product?.imageUrl || '/images/balomayanh-logo.png'} 
-                          alt={rev.product?.name}
+                          src={rev.productImageUrl || '/images/balomayanh-logo.png'}
+                          alt={rev.productName}
                           className="w-10 h-10 object-cover bg-slate-50 border border-slate-200 rounded-xl flex-shrink-0"
                           onError={(e) => { e.target.src = '/images/balomayanh-logo.png'; }}
                         />
-                        <span className="truncate text-slate-850 font-bold block text-xs" title={rev.product?.name}>
-                          {rev.product?.name || `ID: ${rev.productId}`}
+                        <span className="truncate text-slate-850 font-bold block text-xs" title={rev.productName}>
+                          {rev.productName || `ID: ${rev.productId}`}
                         </span>
                       </div>
                     </td>
                     <td className="px-6 py-4">
                       <div>
-                        <p className="font-bold text-slate-850 text-xs">{rev.customer?.user?.fullName || 'Khách vãng lai'}</p>
-                        <p className="text-[10px] text-slate-400 font-mono font-medium mt-0.5">{rev.customer?.user?.email || 'N/A'}</p>
-                        {rev.customer?.user && (
+                        <p className="font-bold text-slate-850 text-xs">{rev.reviewerName || 'Khách vãng lai'}</p>
+                        <p className="text-[10px] text-slate-400 font-mono font-medium mt-0.5">{rev.reviewerEmail || 'N/A'}</p>
+                        {rev.reviewerName && (
                           <span className="inline-flex items-center gap-0.5 bg-emerald-50 text-emerald-750 border border-emerald-150 px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider mt-1.5">
                             ✓ Đã mua hàng
                           </span>

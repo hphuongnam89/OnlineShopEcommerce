@@ -86,6 +86,7 @@ const AdminDashboard = () => {
   // Calculations
   const totalRevenue = revenueReport.reduce((acc, curr) => acc + (curr.revenue || 0), 0);
   const totalOrdersCount = orders.length;
+  const pendingOrdersCount = orders.filter(o => o.status === 'PENDING').length;
   const cancelledOrdersCount = orders.filter(o => o.status === 'CANCELLED').length;
   
   // Products out of stock / low stock alerts
@@ -303,9 +304,9 @@ const AdminDashboard = () => {
           <p className="text-xs font-semibold">{error}</p>
         </div>
       )}
- 
+
       {/* Cards Row */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6">
         <div className="bg-white border border-slate-200/80 shadow-xs rounded-2xl p-5 flex items-center gap-4">
           <div className="bg-blue-50 text-blue-600 p-3 rounded-xl border border-blue-100/50">
             <TrendingUp size={20} />
@@ -326,6 +327,18 @@ const AdminDashboard = () => {
             <p className="text-slate-500 text-[10px] font-bold uppercase tracking-wider">Tổng đơn hàng</p>
             <h3 className="text-base font-black text-slate-900 mt-1">
               {loading ? '---' : totalOrdersCount} đơn
+            </h3>
+          </div>
+        </div>
+
+        <div className="bg-white border border-slate-200/80 shadow-xs rounded-2xl p-5 flex items-center gap-4">
+          <div className="bg-amber-50 text-amber-600 p-3 rounded-xl border border-amber-100/50">
+            <RefreshCw size={20} className={`text-amber-600 ${pendingOrdersCount > 0 ? 'animate-spin' : ''}`} />
+          </div>
+          <div>
+            <p className="text-slate-500 text-[10px] font-bold uppercase tracking-wider">Đơn hàng chờ duyệt</p>
+            <h3 className="text-base font-black text-slate-900 mt-1 text-amber-600">
+              {loading ? '---' : pendingOrdersCount} đơn
             </h3>
           </div>
         </div>

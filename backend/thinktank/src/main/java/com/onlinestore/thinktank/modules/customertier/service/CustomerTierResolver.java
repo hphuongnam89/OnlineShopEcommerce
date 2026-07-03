@@ -50,10 +50,6 @@ public class CustomerTierResolver {
         if (tiers.isEmpty()) {
             return null;
         }
-        CustomerTier silver = findTierByName(tiers, "SILVER", null);
-        if (silver != null) {
-            return silver;
-        }
         return findBronzeTier(tiers);
     }
 

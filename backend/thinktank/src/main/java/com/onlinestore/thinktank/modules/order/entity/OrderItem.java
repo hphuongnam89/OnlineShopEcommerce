@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.SQLDelete;
-import org.hibernate.annotations.Where;
+import org.hibernate.annotations.SQLRestriction;
 import com.onlinestore.thinktank.modules.product.entity.Product;
 import com.onlinestore.thinktank.modules.product.entity.ProductVariant;
 
@@ -18,7 +18,7 @@ import java.math.BigDecimal;
 @AllArgsConstructor
 @Builder
 @SQLDelete(sql = "UPDATE order_items SET deleted = true WHERE id = ?")
-@Where(clause = "deleted = false")
+@SQLRestriction("deleted = false")
 public class OrderItem {
 
     @Id

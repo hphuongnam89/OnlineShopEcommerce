@@ -13,6 +13,7 @@ import java.util.List;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.EntityGraph;
 import java.util.Optional;
@@ -23,6 +24,10 @@ public interface OrderRepository extends JpaRepository<Order, Long>, JpaSpecific
     @Override
     @EntityGraph(attributePaths = {"customer", "items", "items.product", "items.variant"})
     Page<Order> findAll(Specification<Order> spec, Pageable pageable);
+
+    @Override
+    @EntityGraph(attributePaths = {"customer", "items", "items.product", "items.variant"})
+    List<Order> findAll(Specification<Order> spec, Sort sort);
 
     @Override
     @EntityGraph(attributePaths = {"customer", "items", "items.product", "items.variant"})

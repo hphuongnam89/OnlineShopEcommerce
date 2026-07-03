@@ -60,17 +60,17 @@ public class CustomerService {
     public Customer createCustomer(CustomerRequest request) {
         // Create the linked user account first so the customer record can reference it safely.
         if (request.getEmail() == null || request.getEmail().trim().isEmpty()) {
-            throw new RuntimeException("Email is required");
+            throw new RuntimeException("Email không được để trống");
         }
         if (userRepository.existsByEmail(request.getEmail())) {
-            throw new RuntimeException("Email is already taken");
+            throw new RuntimeException("Email đã được sử dụng");
         }
         if (request.getPassword() == null || request.getPassword().trim().isEmpty()) {
-            throw new RuntimeException("Password is required");
+            throw new RuntimeException("Mật khẩu không được để trống");
         }
 
         Role customerRole = roleRepository.findByName("ROLE_CUSTOMER")
-                .orElseThrow(() -> new RuntimeException("ROLE_CUSTOMER role not found"));
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy quyền ROLE_CUSTOMER"));
 
         User user = User.builder()
                 .email(request.getEmail().trim())
@@ -98,17 +98,17 @@ public class CustomerService {
     public Customer updateCustomer(Long id, CustomerRequest request) {
         // Update the user profile and customer spending/tier together to keep the pair in sync.
         Customer customer = customerRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Customer not found with id: " + id));
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy khách hàng với id: " + id));
 
         User user = customer.getUser();
         if (user == null) {
-            throw new RuntimeException("Associated user not found for customer: " + id);
+            throw new RuntimeException("Không tìm thấy tài khoản liên kết với khách hàng: " + id);
         }
 
         if (request.getEmail() != null && !request.getEmail().trim().isEmpty()) {
             String newEmail = request.getEmail().trim();
             if (!newEmail.equalsIgnoreCase(user.getEmail()) && userRepository.existsByEmail(newEmail)) {
-                throw new RuntimeException("Email is already taken");
+                throw new RuntimeException("Email đã được sử dụng");
             }
             user.setEmail(newEmail);
         }
@@ -140,7 +140,7 @@ public class CustomerService {
     public void deleteCustomer(Long id) {
         // Soft delete the customer and its linked user account so the identity cannot be reused accidentally.
         Customer customer = customerRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Customer not found with id: " + id));
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy khách hàng với id: " + id));
 
         User user = customer.getUser();
 
@@ -196,7 +196,7 @@ public class CustomerService {
 
     public AdminCustomerResponse getAdminCustomerById(Long id) {
         Customer customer = customerRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Customer not found with id: " + id));
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy khách hàng với id: " + id));
         Map<Long, Long> orderCountMap = loadOrderCountMap(List.of(customer));
         return toAdminResponse(customer, orderCountMap.getOrDefault(customer.getId(), 0L));
     }

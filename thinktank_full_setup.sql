@@ -14,6 +14,7 @@ DROP TABLE IF EXISTS products;
 DROP TABLE IF EXISTS categories;
 DROP TABLE IF EXISTS customers;
 DROP TABLE IF EXISTS customer_tiers;
+DROP TABLE IF EXISTS refresh_tokens;
 DROP TABLE IF EXISTS permissions;
 DROP TABLE IF EXISTS roles;
 DROP TABLE IF EXISTS users;
@@ -32,14 +33,25 @@ CREATE TABLE users (
     password_hash VARCHAR(255) NOT NULL,
     full_name VARCHAR(255),
     phone VARCHAR(20),
+    address VARCHAR(500),
     enabled BOOLEAN DEFAULT TRUE,
+    deleted BOOLEAN NOT NULL DEFAULT FALSE,
     created_at DATETIME,
     updated_at DATETIME
+);
+
+CREATE TABLE refresh_tokens (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    token VARCHAR(255) NOT NULL UNIQUE,
+    user_id BIGINT NOT NULL UNIQUE,
+    expiry_date DATETIME NOT NULL,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
 
 CREATE TABLE roles (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(100) NOT NULL UNIQUE,
+    deleted BOOLEAN NOT NULL DEFAULT FALSE,
     created_at DATETIME,
     updated_at DATETIME
 );
@@ -47,6 +59,7 @@ CREATE TABLE roles (
 CREATE TABLE permissions (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(100) NOT NULL UNIQUE,
+    deleted BOOLEAN NOT NULL DEFAULT FALSE,
     created_at DATETIME,
     updated_at DATETIME
 );
@@ -72,6 +85,7 @@ CREATE TABLE customer_tiers (
     name VARCHAR(100) NOT NULL UNIQUE,
     min_spending DECIMAL(15,2) DEFAULT 0,
     discount_percent INT DEFAULT 0,
+    deleted BOOLEAN NOT NULL DEFAULT FALSE,
     created_at DATETIME,
     updated_at DATETIME
 );
@@ -81,6 +95,7 @@ CREATE TABLE customers (
     user_id BIGINT UNIQUE,
     tier_id BIGINT,
     total_spent DECIMAL(15,2) DEFAULT 0,
+    deleted BOOLEAN NOT NULL DEFAULT FALSE,
     created_at DATETIME,
     updated_at DATETIME,
     FOREIGN KEY (user_id) REFERENCES users(id),
@@ -138,6 +153,7 @@ CREATE TABLE categories (
     name VARCHAR(255) NOT NULL UNIQUE,
     slug VARCHAR(255) NOT NULL UNIQUE,
     description TEXT,
+    deleted BOOLEAN NOT NULL DEFAULT FALSE,
     created_at DATETIME,
     updated_at DATETIME
 );
@@ -151,14 +167,17 @@ CREATE TABLE products (
     price DECIMAL(15,2) NOT NULL,
     stock INT DEFAULT 0,
     image_url VARCHAR(500),
-    additional_images TEXT,
+    additional_images JSON,
     weight VARCHAR(100),
     volume VARCHAR(100),
     material VARCHAR(255),
     dimensions VARCHAR(255),
     sku VARCHAR(100),
+    highlights JSON,
     average_rating DECIMAL(3,2) DEFAULT 0.00,
     review_count INT DEFAULT 0,
+    version BIGINT NOT NULL DEFAULT 0,
+    deleted BOOLEAN NOT NULL DEFAULT FALSE,
     created_at DATETIME,
     updated_at DATETIME,
     FOREIGN KEY (category_id) REFERENCES categories(id) ON DELETE SET NULL
@@ -174,6 +193,8 @@ CREATE TABLE product_variants (
     color VARCHAR(50),
     size VARCHAR(50),
     image_url VARCHAR(500),
+    version BIGINT NOT NULL DEFAULT 0,
+    deleted BOOLEAN NOT NULL DEFAULT FALSE,
     created_at DATETIME,
     updated_at DATETIME,
     FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE
@@ -191,6 +212,7 @@ CREATE TABLE orders (
     discount_amount DECIMAL(15,2) DEFAULT 0,
     final_amount DECIMAL(15,2) NOT NULL,
     status VARCHAR(50) DEFAULT 'PENDING',
+    deleted BOOLEAN NOT NULL DEFAULT FALSE,
     created_at DATETIME,
     updated_at DATETIME,
     FOREIGN KEY (customer_id) REFERENCES customers(id) ON DELETE SET NULL
@@ -204,6 +226,7 @@ CREATE TABLE order_items (
     quantity INT NOT NULL,
     price DECIMAL(15,2) NOT NULL,
     subtotal DECIMAL(15,2) NOT NULL,
+    deleted BOOLEAN NOT NULL DEFAULT FALSE,
     FOREIGN KEY (order_id) REFERENCES orders(id) ON DELETE CASCADE,
     FOREIGN KEY (product_id) REFERENCES products(id),
     FOREIGN KEY (variant_id) REFERENCES product_variants(id) ON DELETE SET NULL
@@ -215,6 +238,7 @@ CREATE TABLE reviews (
     user_id BIGINT NOT NULL,
     rating INT NOT NULL,
     comment TEXT,
+    deleted BOOLEAN NOT NULL DEFAULT FALSE,
     created_at DATETIME,
     updated_at DATETIME,
     FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE,
@@ -659,8 +683,6 @@ WHERE id = 1
 -- MIGRATION: V6__add_product_highlights.sql
 -- ==========================================================
 
-ALTER TABLE products ADD COLUMN highlights TEXT NULL;
-
 -- Seed highlights for Balo máy ảnh Think Tank FocusPoint RollTop 30L (ID: 1071589874)
 UPDATE products 
 SET highlights = '[{"title": "Chất liệu cao cấp chống mài mòn & chống nước", "description": "Được chế tạo từ vải nylon chống thấm nước 1680D Ballistic siêu bền, kết hợp khóa kéo YKK RC Fuse cao cấp nổi tiếng toàn cầu, giúp bảo vệ tối đa các thiết bị đắt tiền bên trong khỏi mọi tác động của thời tiết và ngoại lực. Thiết kế khóa thông minh hỗ trợ móc khóa số giúp nâng cao an ninh khi đi sân bay.", "imageUrl": "https://cdn.hstatic.net/products/200001063950/0a85d23b-7c51-4a06-8d05-288b9820bfbe_3ce7328051cb43d2877441b56767685b.jpg"}, {"title": "Cách phân chia ngăn thông minh, tùy chỉnh linh hoạt", "description": "Các vách ngăn đệm mút dày sử dụng công nghệ chống sốc EVA cao cấp, có thể tháo rời và sắp xếp lại linh hoạt theo ý muốn. Thiết kế tối ưu hóa sức chứa giúp bạn mang theo đầy đủ thân máy chuyên nghiệp, ống kính zoom lớn, laptop chuyên dụng cùng nhiều phụ kiện dây cáp kèm theo được cố định chắc chắn.", "imageUrl": "https://cdn.hstatic.net/products/200001063950/5b6-13de-4bfe-9364-bce70dc68102_999419a7a3534024b2c29fc419397162_large_d7339d25143f4541b8c17056ed4c2dbd.jpg"}]'
@@ -670,4 +692,3 @@ WHERE id = 1071589874;
 UPDATE products 
 SET highlights = '[{"title": "Thiết kế roll-top linh hoạt, nhỏ gọn hơn", "description": "Phiên bản 22L sở hữu thiết kế roll-top thông minh có thể mở rộng thêm dung tích khi cần thiết, lý tưởng cho việc đi lại hàng ngày hoặc đi chụp nhanh trong ngày. Vải nylon chống thấm cao cấp kết hợp khóa đóng tiện lợi.", "imageUrl": "https://cdn.hstatic.net/products/200001063950/focuspoint-22l-side-golden-hour_96eee87d57754a7aae65107fb15c847b.jpg"}, {"title": "Ngăn truy cập nhanh từ hông balo", "description": "Cho phép lấy máy ảnh ra chỉ trong vài giây mà không cần đặt balo xuống đất. Vách ngăn đệm chống va đập dày và mềm giúp bảo vệ body và lens luôn an toàn trong suốt chuyến hành trình.", "imageUrl": "https://cdn.hstatic.net/products/200001063950/focuspoint-22l-hero-right-golden-hour-gear_1a115caccae24af0b3ac2b3d0f78ad4d.jpg"}]'
 WHERE id = 1073362756;
-

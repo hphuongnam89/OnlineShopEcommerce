@@ -5,7 +5,6 @@ import com.onlinestore.thinktank.modules.category.repository.CategoryRepository;
 import com.onlinestore.thinktank.modules.product.dto.ProductRequest;
 import com.onlinestore.thinktank.modules.product.dto.VariantRequest;
 import com.onlinestore.thinktank.modules.product.entity.Product;
-import com.onlinestore.thinktank.modules.product.entity.ProductVariant;
 import com.onlinestore.thinktank.modules.product.repository.ProductRepository;
 import com.onlinestore.thinktank.modules.product.repository.ProductVariantRepository;
 import org.junit.jupiter.api.Test;

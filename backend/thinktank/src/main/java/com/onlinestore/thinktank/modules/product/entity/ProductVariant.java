@@ -5,7 +5,7 @@ import com.onlinestore.thinktank.common.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.SQLDelete;
-import org.hibernate.annotations.Where;
+import org.hibernate.annotations.SQLRestriction;
 
 import java.math.BigDecimal;
 
@@ -18,7 +18,7 @@ import java.math.BigDecimal;
 @Builder
 @com.fasterxml.jackson.annotation.JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 @SQLDelete(sql = "UPDATE product_variants SET deleted = true WHERE id = ? AND version = ?")
-@Where(clause = "deleted = false")
+@SQLRestriction("deleted = false")
 public class ProductVariant extends BaseEntity {
 
     // Variant row for product options such as color, size, SKU, image, and stock.

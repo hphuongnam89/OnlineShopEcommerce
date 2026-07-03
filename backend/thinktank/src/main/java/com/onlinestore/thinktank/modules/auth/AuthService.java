@@ -47,7 +47,7 @@ public class AuthService {
         }
 
         Role customerRole = roleRepository.findByName("ROLE_CUSTOMER")
-                .orElseThrow(() -> new ResourceNotFoundException("Default customer role not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy quyền khách hàng mặc định (ROLE_CUSTOMER)"));
 
         User user = User.builder()
                 .email(req.getEmail())
@@ -79,7 +79,7 @@ public class AuthService {
         User user = userRepository.findByEmail(req.getEmail())
                 .orElseThrow(() -> {
                     log.warn("Login failed - user not found: {}", req.getEmail());
-                    return new ResourceNotFoundException("User not found");
+                    return new ResourceNotFoundException("Tài khoản không tồn tại");
                 });
 
         if (Boolean.FALSE.equals(user.getEnabled())) {
@@ -89,7 +89,7 @@ public class AuthService {
 
         if (!passwordEncoder.matches(req.getPassword(), user.getPasswordHash())) {
             log.warn("Login failed - invalid password for: {}", req.getEmail());
-            throw new InvalidRequestException("Invalid password");
+            throw new InvalidRequestException("Mật khẩu không chính xác");
         }
 
         String token = jwtService.generateToken(user.getEmail());

@@ -102,7 +102,29 @@ const Cart = () => {
   const [orderedTotal, setOrderedTotal] = useState(0);
   const [orderedDiscount, setOrderedDiscount] = useState(0);
 
+  // Customer Loyalty Tier Discount
+  const [userTier, setUserTier] = useState(null);
+  const [tierDiscount, setTierDiscount] = useState(0);
+
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    const userStr = localStorage.getItem('currentUser');
+    if (token && userStr) {
+      api.profile.get()
+        .then(profile => {
+          if (profile) {
+            setUserTier(profile.tierName || 'BRONZE');
+            setTierDiscount(profile.discountPercent || 0);
+          }
+        })
+        .catch(err => {
+          console.warn("Failed to fetch user profile for discount", err);
+        });
+    }
+  }, []);
+
   const totalItems = cartItems.reduce((acc, item) => acc + item.quantity, 0);
+  const tierDiscountAmount = Math.round(cartTotal * (tierDiscount / 100));
   const discountAmount = Math.round(cartTotal * (appliedDiscount / 100));
 
   // B2B EXPANSION
@@ -111,7 +133,7 @@ const Cart = () => {
   const isDealer = userObj && userObj.role === 'ROLE_DEALER';
   const volumeDiscount = (isDealer && cartTotal > 20000000) ? Math.round(cartTotal * 0.02) : 0;
 
-  const finalTotal = cartTotal - discountAmount - volumeDiscount;
+  const finalTotal = cartTotal - tierDiscountAmount - discountAmount - volumeDiscount;
 
   const handleApplyCoupon = (e) => {
     e.preventDefault();
@@ -208,8 +230,8 @@ const Cart = () => {
       // Update local ordered details for confirmation screen
       setOrderId(`TT-${createdOrder.id}`);
       setOrderedItems([...cartItems]);
-      setOrderedTotal(finalTotal);
-      setOrderedDiscount(discountAmount + volumeDiscount);
+      setOrderedTotal(Number(createdOrder.finalAmount ?? finalTotal));
+      setOrderedDiscount(Number(createdOrder.discountAmount ?? (discountAmount + volumeDiscount)));
       setCheckoutStep(3);
 
       // Clear actual cart state
@@ -772,6 +794,13 @@ const Cart = () => {
               <span>Phí vận chuyển</span>
               <span className="font-semibold text-green-600">Miễn phí</span>
             </div>
+            
+            {tierDiscount > 0 && (
+              <div className="flex justify-between text-green-600">
+                <span>Ưu đãi hạng {userTier === 'SILVER' ? 'Bạc' : userTier === 'GOLD' ? 'Vàng' : userTier === 'PLATINUM' ? 'Bạch kim' : userTier === 'VIP' ? 'VIP' : 'Đồng'} ({tierDiscount}%)</span>
+                <span className="font-semibold">-{tierDiscountAmount.toLocaleString('vi-VN')}đ</span>
+              </div>
+            )}
             
             {appliedDiscount > 0 && (
               <div className="flex justify-between text-green-600">
