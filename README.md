@@ -1,81 +1,94 @@
-# Balomayanh - Online Store Project
+# Balomayanh · Online Store
 
-Dự án website bán hàng trực tuyến chuyên phân phối balo máy ảnh, tích hợp đầy đủ tính năng đặt hàng, quản trị sản phẩm, quản lý đơn hàng, và phân quyền người dùng. Hệ thống được thiết kế tối ưu hóa hiệu năng, bảo mật cao và trải nghiệm người dùng mượt mà.
+Nền tảng thương mại điện tử chuyên về balo, vali và phụ kiện máy ảnh. Dự án gồm storefront cho khách hàng và trang quản trị cho vận hành sản phẩm, đơn hàng, khách hàng và đánh giá.
 
----
+## Tổng quan
 
-## 🚀 Công Nghệ Sử Dụng
+- **Khách hàng:** duyệt sản phẩm, tìm kiếm/lọc, giỏ hàng, thanh toán, theo dõi đơn hàng và quản lý tài khoản.
+- **Quản trị viên:** dashboard, CRUD sản phẩm/biến thể, quản lý khách hàng, duyệt trạng thái đơn hàng, đánh giá và xuất báo cáo.
+- **Bảo mật:** Spring Security, JWT access/refresh token, phân quyền ADMIN/CUSTOMER, chuẩn hóa dữ liệu đầu vào và bảo vệ nội dung HTML.
 
-### Frontend
-- **React 18** & **Vite 8**: Đảm bảo tốc độ render và hot-reload cực nhanh.
-- **Tailwind CSS 4**: Thiết kế giao diện hiện đại, responsive hoàn toàn trên Mobile và Desktop.
-- **DOMPurify**: Bảo mật chống tấn công chèn mã độc (XSS).
+## Công nghệ
 
-### Backend
-- **Spring Boot 3.5.16** (Java 21): Framework backend mạnh mẽ và bảo mật.
-- **Spring Security** & **JWT (JSON Web Token)**: Hệ thống xác thực và phân quyền (Admin & Customer).
-- **Spring Data JPA** & **Hibernate 6**: Quản trị cơ sở dữ liệu quan hệ một cách tối ưu.
+| Thành phần | Công nghệ |
+| --- | --- |
+| Frontend | React 19, Vite 8, Tailwind CSS, Axios, React Router |
+| Backend | Java 21, Spring Boot, Spring Security, Spring Data JPA, Hibernate |
+| Database | MySQL 8+ và Flyway migrations |
+| Kiểm thử | Maven Surefire, Spring Boot Test, ESLint, Vite production build |
 
-### Database
-- **PostgreSQL / MySQL**: Hệ thống lưu trữ dữ liệu bền vững, hỗ trợ lưu trữ kiểu JSON nguyên bản.
+## Cấu trúc dự án
 
----
+```text
+.
+├── src/                         # React storefront và admin UI
+├── public/                      # Tài nguyên tĩnh
+├── backend/thinktank/           # Spring Boot API
+│   └── src/main/resources/db/   # Flyway migrations
+├── thinktank_full_setup.sql     # Schema và dữ liệu khởi tạo
+└── .env.example                 # Mẫu biến môi trường frontend
+```
 
-## 🛠️ Các Cải Tiến Quan Trọng Gần Đây
+## Yêu cầu
 
-Dự án đã được nâng cấp chuyên sâu để giải quyết các vấn đề về bảo mật và hiệu năng:
+- Node.js 20+
+- Java 21+
+- MySQL 8+
+- Maven Wrapper đi kèm trong `backend/thinktank`
 
-1. **Vá lỗi bảo mật XSS**: Tích hợp cơ chế lọc dữ liệu đầu vào và làm sạch mã HTML của mô tả sản phẩm thông qua thư viện `DOMPurify` trước khi render lên UI.
-2. **Khắc phục lỗi N+1 Query**: Chuyển đổi toàn bộ cơ chế Fetch dữ liệu quan hệ từ `EAGER` sang `LAZY` trên các Entity chính (`Product`, `Order`, `OrderItem`, `Customer`). Tích hợp `@EntityGraph` để nạp dữ liệu liên quan tối ưu chỉ trong 1 câu truy vấn `JOIN FETCH`.
-3. **Chặn lỗi nghẽn cổ chai (Deadlock)**: Cải tiến logic đặt hàng trong `OrderService` bằng cách tự động sắp xếp sản phẩm/biến thể theo ID tăng dần trước khi thực hiện Khóa bi quan (`Pessimistic Lock`), triệt tiêu hoàn toàn khả năng xảy ra deadlock khi nhiều người đặt hàng đồng thời.
-4. **Tích hợp Refresh Token**: Phát triển cơ chế gia hạn phiên đăng nhập thông qua Refresh Token an toàn. Phía Frontend tự động đánh chặn lỗi `401` để xin cấp lại Access Token mới ngầm dưới nền giúp người dùng không bị gián đoạn trải nghiệm.
-5. **Tối ưu hóa lưu trữ mảng (JSON Mapping)**: Sử dụng `@JdbcTypeCode(SqlTypes.JSON)` lưu trực tiếp danh sách chuỗi (như ảnh bổ sung, điểm nổi bật sản phẩm) dưới dạng JSON trong DB thay vì phải chuyển đổi thủ công sang text, tăng tốc độ xử lý I/O DB.
+## Cài đặt và chạy local
 
----
+### 1. Database
 
-## 💻 Hướng Dẫn Cài Đặt và Khởi Chạy
+Tạo database rồi import `thinktank_full_setup.sql`:
 
-### 1. Cấu hình Cơ sở dữ liệu
-Import file script SQL khởi tạo dữ liệu vào DB của bạn:
-- Đường dẫn file: `thinktank_full_setup.sql`
+```sql
+CREATE DATABASE thinktank CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+```
 
-### 2. Chạy Backend (Spring Boot)
-1. Di chuyển vào thư mục backend:
-   ```bash
-   cd backend/thinktank
-   ```
-2. Thiết lập biến môi trường (không lưu secret vào Git):
-   ```bash
-   export JWT_SECRET="$(openssl rand -base64 48)"
-   export AUTH_SECURE_COOKIE=false # chỉ dùng khi chạy HTTP local
-   # Tuỳ chọn: tạo admin một lần khi DB chưa có tài khoản này
-   export ADMIN_BOOTSTRAP_EMAIL="admin@example.com"
-   export ADMIN_BOOTSTRAP_PASSWORD="mat-khau-manh-toi-thieu-12-ky-tu"
-   ```
-   Khi production, bật profile `prod`, đặt `AUTH_SECURE_COOKIE=true`, chỉ nhận forwarded headers qua reverse proxy tin cậy và dùng `DB_URL` có TLS, ví dụ `useSSL=true&requireSSL=true&verifyServerCertificate=true`.
-3. Khởi chạy ứng dụng bằng Maven:
-   ```bash
-   ./mvnw spring-boot:run
-   ```
+### 2. Backend
 
-### 3. Chạy Frontend (React + Vite)
-1. Di chuyển vào thư mục gốc dự án:
-   ```bash
-   cd ../..
-   ```
-2. Cài đặt các thư viện phụ thuộc:
-   ```bash
-   npm install
-   ```
-3. Tạo `.env` từ `.env.example`; đặt `VITE_SUPPORT_EMAIL` nếu muốn hiển thị email hỗ trợ công khai.
-4. Khởi chạy môi trường phát triển:
-   ```bash
-   npm run dev
-   ```
-5. Truy cập website tại địa chỉ local: `http://localhost:5173`
+```bash
+cd backend/thinktank
+export DB_URL='jdbc:mysql://localhost:3306/thinktank?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC'
+export DB_USERNAME='root'
+export DB_PASSWORD='your-password'
+export JWT_SECRET="$(openssl rand -base64 48)"
+export AUTH_SECURE_COOKIE=false # chỉ dùng cho HTTP local
+./mvnw spring-boot:run
+```
 
----
+API mặc định chạy tại `http://localhost:8080`.
 
-## 👥 Phân Quyền Người Dùng
-- **Khách hàng (Customer)**: Xem danh sách balo máy ảnh, bộ lọc sản phẩm, chi tiết sản phẩm, giỏ hàng, đặt hàng, theo dõi trạng thái đơn hàng và lịch sử mua sắm cá nhân.
-- **Quản trị viên (Admin)**: Quản lý Dashboard thống kê, danh sách sản phẩm (CRUD kèm biến thể màu sắc/kích thước), quản lý đơn hàng (cập nhật trạng thái), danh sách khách hàng và các đánh giá từ người dùng.
+Muốn tạo tài khoản admin ban đầu, đặt thêm `ADMIN_BOOTSTRAP_EMAIL` và `ADMIN_BOOTSTRAP_PASSWORD` khi khởi động backend. Không commit các giá trị này vào Git.
+
+### 3. Frontend
+
+```bash
+cd ../..
+npm install
+cp .env.example .env
+npm run dev
+```
+
+Frontend chạy tại `http://localhost:5173`. Đặt `VITE_API_URL` trong `.env` nếu API không chạy ở địa chỉ mặc định.
+
+## Kiểm tra chất lượng
+
+```bash
+# Frontend
+npm run lint
+npm run build
+
+# Backend
+cd backend/thinktank
+./mvnw test
+```
+
+## Migration và triển khai
+
+Flyway tự động áp dụng migration khi backend khởi động. Production nên dùng profile `prod`, bật HTTPS và `AUTH_SECURE_COOKIE=true`; các secret như JWT, database password và thông tin bootstrap admin phải được cấp qua secret manager hoặc biến môi trường.
+
+## Giấy phép
+
+Dự án nội bộ Balomayanh. Không phát hành lại hoặc sử dụng thương mại nếu chưa có sự cho phép của chủ sở hữu.
