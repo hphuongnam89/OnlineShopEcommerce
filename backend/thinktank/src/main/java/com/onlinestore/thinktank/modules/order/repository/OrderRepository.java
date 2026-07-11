@@ -17,13 +17,17 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.EntityGraph;
 import java.util.Optional;
+import java.time.LocalDateTime;
 
 @Repository
+// Truy vấn đơn hàng, hỗ trợ tìm kiếm động và thống kê doanh thu.
 public interface OrderRepository extends JpaRepository<Order, Long>, JpaSpecificationExecutor<Order> {
 
     @Override
-    @EntityGraph(attributePaths = {"customer", "items", "items.product", "items.variant"})
     Page<Order> findAll(Specification<Order> spec, Pageable pageable);
+
+    @EntityGraph(attributePaths = {"customer", "items", "items.product", "items.variant"})
+    List<Order> findAllByIdIn(Collection<Long> ids);
 
     @Override
     @EntityGraph(attributePaths = {"customer", "items", "items.product", "items.variant"})
@@ -32,6 +36,11 @@ public interface OrderRepository extends JpaRepository<Order, Long>, JpaSpecific
     @Override
     @EntityGraph(attributePaths = {"customer", "items", "items.product", "items.variant"})
     Optional<Order> findById(Long id);
+    @EntityGraph(attributePaths = {"items", "items.product", "items.variant"})
+    Optional<Order> findByTrackingToken(String trackingToken);
+    @EntityGraph(attributePaths = {"customer", "items", "items.product", "items.variant"})
+    Optional<Order> findByIdempotencyKey(String idempotencyKey);
+    List<Order> findTop100ByStatusAndCreatedAtBeforeOrderByCreatedAtAsc(String status, LocalDateTime createdAt);
     @EntityGraph(attributePaths = {"customer", "items", "items.product", "items.variant"})
     List<Order> findByCustomerUserIdOrderByCreatedAtDesc(Long userId);
 

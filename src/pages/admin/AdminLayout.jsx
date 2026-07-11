@@ -13,7 +13,7 @@ import {
   Settings,
   User as UserIcon,
 } from 'lucide-react';
-import { api, clearAuthSession } from '../../utils/api';
+import { api, clearAuthSession, getValidToken } from '../../utils/api';
 import './admin-theme.css';
 
 // Shared admin shell with sidebar navigation, topbar, notifications, and nested pages.
@@ -23,7 +23,7 @@ const AdminLayout = () => {
   const [adminUser] = useState(() => {
     try {
       const userStr = localStorage.getItem('currentUser');
-      const token = localStorage.getItem('token');
+      const token = getValidToken();
       if (!userStr || !token) return null;
       const user = JSON.parse(userStr);
       if (user.role !== 'ROLE_ADMIN' && user.role !== 'ADMIN') {
@@ -53,7 +53,7 @@ const AdminLayout = () => {
   }, [recentOrders]);
 
   useEffect(() => {
-    const token = localStorage.getItem('token');
+    const token = getValidToken();
     
     if (!adminUser || !token) {
       navigate('/admin/login');

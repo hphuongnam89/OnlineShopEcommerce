@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { api } from '../../utils/api';
+import { api, getValidToken, setAuthSession } from '../../utils/api';
 import CustomModal from '../../components/CustomModal';
 import './admin-theme.css';
 
@@ -15,7 +15,7 @@ const AdminLogin = () => {
 
   useEffect(() => {
     const userStr = localStorage.getItem('currentUser');
-    const token = localStorage.getItem('token');
+    const token = getValidToken();
     if (userStr && token) {
       const user = JSON.parse(userStr);
       if (user.role === 'ROLE_ADMIN' || user.role === 'ADMIN') {
@@ -47,15 +47,7 @@ const AdminLogin = () => {
         throw new Error('Tài khoản của bạn không có quyền truy cập trang quản trị!');
       }
 
-      localStorage.setItem('token', response.token);
-      if (response.refreshToken) localStorage.setItem('refreshToken', response.refreshToken);
-      localStorage.setItem('currentUser', JSON.stringify({
-        email: response.email,
-        fullName: response.fullName,
-        role: response.role
-      }));
-      
-      window.dispatchEvent(new Event('storage'));
+      setAuthSession(response);
       navigate('/admin/dashboard');
     } catch (err) {
       setModalConfig({
@@ -82,9 +74,11 @@ const AdminLogin = () => {
 
         <form onSubmit={handleLogin} className="space-y-5">
           <div>
-            <label className="block text-slate-700 text-xs font-bold mb-2 uppercase tracking-wider">Email Quản Trị</label>
+            <label htmlFor="admin-email" className="block text-slate-700 text-xs font-bold mb-2 uppercase tracking-wider">Email Quản Trị</label>
             <input
+              id="admin-email"
               type="email"
+              autoComplete="username"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="admin@balomayanh.vn"
@@ -93,9 +87,11 @@ const AdminLogin = () => {
           </div>
 
           <div>
-            <label className="block text-slate-700 text-xs font-bold mb-2 uppercase tracking-wider">Mật Khẩu</label>
+            <label htmlFor="admin-password" className="block text-slate-700 text-xs font-bold mb-2 uppercase tracking-wider">Mật Khẩu</label>
             <input
+              id="admin-password"
               type="password"
+              autoComplete="current-password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="••••••••"
@@ -106,7 +102,7 @@ const AdminLogin = () => {
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-blue-600 hover:bg-blue-750 text-white font-bold py-3 px-4 rounded-xl transition-all duration-200 cursor-pointer flex justify-center items-center gap-2 mt-4 text-xs"
+            className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-xl transition-all duration-200 cursor-pointer flex justify-center items-center gap-2 mt-4 text-xs"
           >
             {loading ? 'Đang xác thực...' : 'Đăng Nhập'}
           </button>

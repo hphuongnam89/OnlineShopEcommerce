@@ -27,6 +27,12 @@ public class Order extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(name = "tracking_token", nullable = false, unique = true, length = 36)
+    private String trackingToken;
+
+    @Column(name = "idempotency_key", nullable = false, unique = true, length = 36)
+    private String idempotencyKey;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "customer_id")
     private Customer customer;

@@ -2,7 +2,6 @@ package com.onlinestore.thinktank.modules.auth;
 
 import com.onlinestore.thinktank.modules.auth.dto.AuthResponse;
 import com.onlinestore.thinktank.modules.auth.dto.LoginRequest;
-import com.onlinestore.thinktank.modules.auth.entity.RefreshToken;
 import com.onlinestore.thinktank.modules.auth.service.RefreshTokenService;
 import com.onlinestore.thinktank.modules.customer.repository.CustomerRepository;
 import com.onlinestore.thinktank.modules.customertier.repository.CustomerTierRepository;
@@ -26,6 +25,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
+// Kiểm tra nghiệp vụ đăng ký, đăng nhập và cấp token xác thực.
 class AuthServiceTest {
 
     @Mock private UserRepository userRepository;
@@ -58,7 +58,7 @@ class AuthServiceTest {
                 authService.login(request)
         );
 
-        assertEquals("Tài khoản đã bị vô hiệu hóa", ex.getMessage());
+        assertEquals("Email hoặc mật khẩu không đúng", ex.getMessage());
     }
 
     @Test
@@ -77,7 +77,7 @@ class AuthServiceTest {
         when(passwordEncoder.matches("Admin@123456", "hashed")).thenReturn(true);
         when(jwtService.generateToken("admin@thinktank.com")).thenReturn("jwt-token");
         when(refreshTokenService.createRefreshToken(1L))
-                .thenReturn(RefreshToken.builder().token("refresh-token").user(user).build());
+                .thenReturn("refresh-token");
 
         LoginRequest request = new LoginRequest();
         request.setEmail("admin@thinktank.com");

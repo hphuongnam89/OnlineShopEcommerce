@@ -13,14 +13,15 @@ import java.time.Instant;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+// Lưu refresh token để cấp lại access token mà không yêu cầu người dùng đăng nhập lại.
 public class RefreshToken {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, unique = true)
-    private String token;
+    @Column(name = "token", nullable = false, unique = true, length = 64, columnDefinition = "CHAR(64)")
+    private String tokenHash;
 
     @OneToOne
     @JoinColumn(name = "user_id", referencedColumnName = "id")

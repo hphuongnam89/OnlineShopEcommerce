@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
+// Truy vấn các biến thể sản phẩm như màu sắc, kích thước, SKU và tồn kho.
 public interface ProductVariantRepository extends JpaRepository<ProductVariant, Long> {
     Optional<ProductVariant> findBySku(String sku);
     List<ProductVariant> findByProductId(Long productId);

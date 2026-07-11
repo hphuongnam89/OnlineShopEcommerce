@@ -17,6 +17,7 @@ const AdminDashboard = () => {
   const [customerReport, setCustomerReport] = useState([]);
   const [products, setProducts] = useState([]);
   const [orders, setOrders] = useState([]);
+  const [orderCounts, setOrderCounts] = useState({ total: 0, pending: 0, cancelled: 0 });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   
@@ -42,8 +43,17 @@ const AdminDashboard = () => {
       setCustomerReport(customerData || []);
       const prodData = await api.products.getAll();
       setProducts(prodData || []);
-      const ordData = await api.admin.orders.getAll();
-      setOrders(ordData || []);
+      const [ordData, pendingData, cancelledData] = await Promise.all([
+        api.admin.orders.getAll({ page: 0, size: 5 }),
+        api.admin.orders.getAll({ page: 0, size: 1, status: 'PENDING' }),
+        api.admin.orders.getAll({ page: 0, size: 1, status: 'CANCELLED' }),
+      ]);
+      setOrders(ordData?.content || []);
+      setOrderCounts({
+        total: ordData?.totalElements || 0,
+        pending: pendingData?.totalElements || 0,
+        cancelled: cancelledData?.totalElements || 0,
+      });
     } catch (err) {
       setError(err.message || 'Không thể tải báo cáo doanh thu.');
     } finally {
@@ -85,9 +95,9 @@ const AdminDashboard = () => {
  
   // Calculations
   const totalRevenue = revenueReport.reduce((acc, curr) => acc + (curr.revenue || 0), 0);
-  const totalOrdersCount = orders.length;
-  const pendingOrdersCount = orders.filter(o => o.status === 'PENDING').length;
-  const cancelledOrdersCount = orders.filter(o => o.status === 'CANCELLED').length;
+  const totalOrdersCount = orderCounts.total;
+  const pendingOrdersCount = orderCounts.pending;
+  const cancelledOrdersCount = orderCounts.cancelled;
   
   // Products out of stock / low stock alerts
   const outOfStockProducts = products.filter(p => (p.stock || 0) === 0);
@@ -108,10 +118,10 @@ const AdminDashboard = () => {
  
   const getStatusClass = (statusStr) => {
     switch (statusStr) {
-      case 'DELIVERED': return 'bg-emerald-50 text-emerald-700 border border-emerald-250/50';
-      case 'SHIPPING': return 'bg-blue-50 text-blue-700 border border-blue-250/50';
-      case 'CANCELLED': return 'bg-rose-50 text-rose-700 border border-rose-250/50';
-      default: return 'bg-amber-50 text-amber-700 border border-amber-250/50';
+      case 'DELIVERED': return 'bg-emerald-50 text-emerald-700 border border-emerald-200/50';
+      case 'SHIPPING': return 'bg-blue-50 text-blue-700 border border-blue-200/50';
+      case 'CANCELLED': return 'bg-rose-50 text-rose-700 border border-rose-200/50';
+      default: return 'bg-amber-50 text-amber-700 border border-amber-200/50';
     }
   };
  
@@ -424,7 +434,7 @@ const AdminDashboard = () => {
               <div className="overflow-x-auto">
                 <table className="w-full text-left border-collapse">
                   <thead>
-                    <tr className="border-b border-slate-200/80 text-slate-500 text-[10px] font-bold uppercase tracking-wider bg-slate-55/30">
+                    <tr className="border-b border-slate-200/80 text-slate-500 text-[10px] font-bold uppercase tracking-wider bg-slate-50/30">
                       <th className="px-6 py-3.5">Mã đơn</th>
                       <th className="px-6 py-3.5">Người nhận</th>
                       <th className="px-6 py-3.5">Ngày tạo</th>
@@ -432,7 +442,7 @@ const AdminDashboard = () => {
                       <th className="px-6 py-3.5 text-right">Tổng tiền</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-slate-100 text-slate-650 text-xs font-semibold">
+                  <tbody className="divide-y divide-slate-100 text-slate-600 text-xs font-semibold">
                     {recentOrders.map((o) => (
                       <tr key={o.id} className="hover:bg-slate-50/40 transition-colors">
                         <td className="px-6 py-3.5 font-mono text-slate-900 font-bold">TT-{o.id}</td>

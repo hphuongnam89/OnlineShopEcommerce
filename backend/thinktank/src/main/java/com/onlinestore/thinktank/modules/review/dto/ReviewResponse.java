@@ -6,6 +6,7 @@ import com.onlinestore.thinktank.modules.user.entity.User;
 
 import java.time.LocalDateTime;
 
+// Dữ liệu đánh giá đã định dạng để trả về cho giao diện sản phẩm.
 public record ReviewResponse(
         Long id,
         Long productId,

@@ -18,6 +18,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.EntityGraph;
 
 @Repository
+// Truy vấn sản phẩm, tìm kiếm, phân trang và khóa bản ghi khi cập nhật tồn kho.
 public interface ProductRepository extends JpaRepository<Product, Long>, JpaSpecificationExecutor<Product> {
     
     @Override

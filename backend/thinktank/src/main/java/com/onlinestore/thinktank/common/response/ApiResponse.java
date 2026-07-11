@@ -13,6 +13,7 @@ import java.io.Serializable;
 @NoArgsConstructor
 @AllArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
+// Vỏ phản hồi chung chứa dữ liệu, thông báo và trạng thái của API.
 public class ApiResponse<T> implements Serializable {
     private boolean success;
     private String message;

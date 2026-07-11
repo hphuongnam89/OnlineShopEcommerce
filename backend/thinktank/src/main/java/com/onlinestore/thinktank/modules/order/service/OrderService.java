@@ -24,10 +24,15 @@ import com.onlinestore.thinktank.modules.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.beans.factory.annotation.Value;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -56,9 +61,16 @@ public class OrderService {
     private final ProductVariantRepository productVariantRepository;
     private final PasswordEncoder passwordEncoder;
 
+    @Value("${app.orders.pending-timeout-minutes:30}")
+    private long pendingTimeoutMinutes;
+
     public Order createOrder(CheckoutRequest request) {
         if (request.getItems() == null || request.getItems().isEmpty()) {
             throw new InvalidRequestException("Đơn hàng phải chứa ít nhất một sản phẩm.");
+        }
+        Optional<Order> existingOrder = orderRepository.findByIdempotencyKey(request.getIdempotencyKey());
+        if (existingOrder.isPresent()) {
+            return existingOrder.get();
         }
 
         // Checkout flow:
@@ -72,6 +84,8 @@ public class OrderService {
         List<OrderItem> orderItems = new ArrayList<>();
 
         Order order = Order.builder()
+                .trackingToken(UUID.randomUUID().toString())
+                .idempotencyKey(request.getIdempotencyKey())
                 .customer(customer)
                 .fullName(request.getFullName())
                 .phone(request.getPhone())
@@ -180,6 +194,32 @@ public class OrderService {
         return orderRepository.findAll(spec, Sort.by(Sort.Direction.DESC, "createdAt"));
     }
 
+    @Transactional(readOnly = true)
+    public Page<Order> getAdminOrdersPage(String search, LocalDateTime startDate, LocalDateTime endDate,
+                                          String status, int page, int size) {
+        if (page < 0 || size < 1 || size > 100) {
+            throw new InvalidRequestException("Phân trang không hợp lệ");
+        }
+        Specification<Order> spec = OrderSpecification.filter(search, startDate, endDate, status);
+        PageRequest pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
+        Page<Order> orderPage = orderRepository.findAll(spec, pageable);
+        List<Long> ids = orderPage.getContent().stream().map(Order::getId).toList();
+        if (ids.isEmpty()) {
+            return new PageImpl<>(List.of(), pageable, orderPage.getTotalElements());
+        }
+
+        var positions = new java.util.HashMap<Long, Integer>();
+        for (int i = 0; i < ids.size(); i++) positions.put(ids.get(i), i);
+        List<Order> orders = new ArrayList<>(orderRepository.findAllByIdIn(ids));
+        orders.sort(java.util.Comparator.comparingInt(order -> positions.get(order.getId())));
+        return new PageImpl<>(orders, pageable, orderPage.getTotalElements());
+    }
+
+    @Transactional(readOnly = true)
+    public Optional<Order> findByIdempotencyKey(String idempotencyKey) {
+        return orderRepository.findByIdempotencyKey(idempotencyKey);
+    }
+
     public Order updateOrderStatus(Long id, String status) {
         // Status changes can affect stock and customer lifetime spending, so we handle them here.
         Order order = orderRepository.findById(id)
@@ -259,32 +299,19 @@ public class OrderService {
         orderRepository.delete(order);
     }
 
-    public Order trackOrder(String orderIdStr, String phone) {
-        if (orderIdStr == null || orderIdStr.trim().isEmpty() || phone == null || phone.trim().isEmpty()) {
-            throw new InvalidRequestException("Mã đơn hàng và số điện thoại không được để trống.");
+    public Order trackOrder(String trackingToken) {
+        if (trackingToken == null || !trackingToken.matches("^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$")) {
+            throw new ResourceNotFoundException("Không tìm thấy đơn hàng.");
         }
-        
-        String cleanId = orderIdStr.toUpperCase().replace("TT-", "").trim();
-        Long id;
-        try {
-            id = Long.parseLong(cleanId);
-        } catch (NumberFormatException e) {
-            throw new InvalidRequestException("Mã đơn hàng không hợp lệ.");
-        }
+        return orderRepository.findByTrackingToken(trackingToken)
+                .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy đơn hàng."));
+    }
 
-        Order order = orderRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy đơn hàng nào với mã cung cấp."));
-
-        if (order.getCustomer() == null || order.getCustomer().getUser() == null) {
-            throw new InvalidRequestException("Dữ liệu đơn hàng bị lỗi (không có thông tin khách hàng).");
-        }
-
-        String orderPhone = order.getCustomer().getUser().getPhone();
-        if (!phone.trim().equals(orderPhone)) {
-            throw new InvalidRequestException("Số điện thoại không khớp với thông tin đặt hàng.");
-        }
-
-        return order;
+    @Scheduled(fixedDelayString = "${app.orders.cleanup-delay-ms:900000}")
+    public void cancelExpiredPendingOrders() {
+        LocalDateTime cutoff = LocalDateTime.now().minusMinutes(pendingTimeoutMinutes);
+        orderRepository.findTop100ByStatusAndCreatedAtBeforeOrderByCreatedAtAsc("PENDING", cutoff)
+                .forEach(order -> updateOrderStatus(order.getId(), "CANCELLED"));
     }
 
     private Customer lookupOrCreateCustomer(CheckoutRequest request) {

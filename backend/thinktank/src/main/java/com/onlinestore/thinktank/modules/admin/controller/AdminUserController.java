@@ -1,5 +1,8 @@
 package com.onlinestore.thinktank.modules.admin.controller;
 
+import com.onlinestore.thinktank.common.exception.DuplicateResourceException;
+import com.onlinestore.thinktank.common.exception.InvalidRequestException;
+import com.onlinestore.thinktank.common.exception.ResourceNotFoundException;
 import com.onlinestore.thinktank.modules.admin.dto.AdminUserResponse;
 import com.onlinestore.thinktank.modules.admin.dto.CreateAdminRequest;
 import com.onlinestore.thinktank.modules.role.entity.Role;
@@ -12,6 +15,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Set;
+import java.util.Locale;
 
 @RestController
 @RequestMapping("/api/admin/users")
@@ -26,20 +30,21 @@ public class AdminUserController {
     @PostMapping("/admins")
     public AdminUserResponse createAdmin(@Valid @RequestBody CreateAdminRequest req) {
         if (req.getEmail() == null || req.getEmail().isBlank()) {
-            throw new RuntimeException("Email không được để trống");
+            throw new InvalidRequestException("Email không được để trống");
         }
         if (req.getPassword() == null || req.getPassword().isBlank()) {
-            throw new RuntimeException("Mật khẩu không được để trống");
+            throw new InvalidRequestException("Mật khẩu không được để trống");
         }
-        if (userRepository.existsByEmail(req.getEmail())) {
-            throw new RuntimeException("Email đã được sử dụng!");
+        String email = req.getEmail().trim().toLowerCase(Locale.ROOT);
+        if (userRepository.existsByEmail(email)) {
+            throw new DuplicateResourceException("Email đã được sử dụng!");
         }
 
         Role adminRole = roleRepository.findByName("ROLE_ADMIN")
-                .orElseThrow(() -> new RuntimeException("Admin role not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy quyền ROLE_ADMIN"));
 
         User admin = User.builder()
-                .email(req.getEmail().trim())
+                .email(email)
                 .passwordHash(passwordEncoder.encode(req.getPassword()))
                 .fullName(req.getFullName())
                 .phone(req.getPhone())

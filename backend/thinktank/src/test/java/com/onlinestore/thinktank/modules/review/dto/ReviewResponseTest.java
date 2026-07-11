@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
+// Kiểm tra ánh xạ dữ liệu đánh giá từ entity sang response trả cho frontend.
 class ReviewResponseTest {
 
     @Test

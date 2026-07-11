@@ -23,6 +23,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
+// Kiểm tra CRUD sản phẩm, biến thể, tồn kho và cơ chế xóa mềm.
 class ProductServiceTest {
 
     @Mock private ProductRepository productRepository;

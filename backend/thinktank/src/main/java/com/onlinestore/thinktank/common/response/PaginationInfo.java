@@ -12,6 +12,7 @@ import java.io.Serializable;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+// Mô tả thông tin phân trang như trang hiện tại, tổng trang và tổng số bản ghi.
 public class PaginationInfo implements Serializable {
     private long totalElements;
     private int totalPages;

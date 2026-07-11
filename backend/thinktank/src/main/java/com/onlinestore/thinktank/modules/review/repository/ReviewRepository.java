@@ -9,7 +9,9 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
+// Truy vấn đánh giá sản phẩm và tính các số liệu tổng hợp về điểm đánh giá.
 public interface ReviewRepository extends JpaRepository<Review, Long> {
+    boolean existsByUserIdAndProductId(Long userId, Long productId);
 
     List<Review> findByProductIdOrderByCreatedAtDesc(Long productId);
 

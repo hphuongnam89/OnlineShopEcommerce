@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { ShieldCheck, Wrench, Compass, Star, ChevronLeft, ChevronRight, Quote, Heart, ArrowRight } from 'lucide-react';
+import { ShieldCheck, Wrench, Compass, ChevronLeft, ChevronRight, Quote, Heart, ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import ProductCard from '../components/ProductCard';
 import { api } from '../utils/api';
@@ -23,34 +23,7 @@ const HERO_SLIDES = [
   }
 ];
 
-const TESTIMONIALS = [
-  {
-    id: 1,
-    name: 'Hoàng Nam',
-    role: 'Nhiếp ảnh gia Báo chí / Photojournalist',
-    rating: 5,
-    comment: 'Chiếc Airport Accelerator đã cùng tôi đi qua 15 quốc gia, trải qua bao mùa mưa bão mà máy ảnh bên trong vẫn khô ráo, an toàn tuyệt đối. Khóa kéo YKK vô cùng bền bỉ.',
-    avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=120'
-  },
-  {
-    id: 2,
-    name: 'Minh Thư',
-    role: 'Nhiếp ảnh gia Phong cảnh / Landscape Photographer',
-    rating: 5,
-    comment: 'Balo Airport Commuter phân bổ trọng lực rất tốt. Đeo cả bộ gear máy ảnh và ống kính hơn 10kg đi bộ đường rừng cả ngày mà vai vẫn không bị đau mỏi.',
-    avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80&w=120'
-  },
-  {
-    id: 3,
-    name: 'Khánh Duy',
-    role: 'Quay phim Thương mại / Commercial Director',
-    rating: 5,
-    comment: 'Vali Tripod Manager và các túi Cable Management là cứu cánh cho ekip của tôi trong các buổi quay xa. Mọi thứ được sắp xếp cực kỳ ngăn nắp và chuyên nghiệp.',
-    avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&q=80&w=120'
-  }
-];
-
-// Storefront landing page with hero carousel, category blocks, best sellers, and testimonials.
+// Storefront landing page with hero carousel, category blocks, and best sellers.
 const Home = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [featuredProducts, setFeaturedProducts] = useState([]);
@@ -59,22 +32,15 @@ const Home = () => {
       if (res && res.items) {
         setFeaturedProducts(res.items);
       }
-    }).catch(console.error);
+    }).catch(() => setFeaturedProducts([]));
   }, []);
-  const [activeTestimonial, setActiveTestimonial] = useState(0);
-
   useEffect(() => {
     const slideTimer = setInterval(() => {
       setCurrentSlide((prev) => (prev + 1) % HERO_SLIDES.length);
     }, 8000);
 
-    const testimonialTimer = setInterval(() => {
-      setActiveTestimonial((prev) => (prev + 1) % TESTIMONIALS.length);
-    }, 6000);
-    
     return () => {
       clearInterval(slideTimer);
-      clearInterval(testimonialTimer);
     };
   }, []);
 
@@ -103,6 +69,9 @@ const Home = () => {
               <img 
                 src={slide.image} 
                 alt={slide.title} 
+                loading={index === 0 ? 'eager' : 'lazy'}
+                decoding="async"
+                fetchPriority={index === 0 ? 'high' : 'low'}
                 className="w-full h-full object-cover object-center"
               />
               
@@ -113,9 +82,11 @@ const Home = () => {
                     <span className="inline-block text-[#d6c95a] text-xs sm:text-sm font-semibold">
                       {slide.tagline}
                     </span>
-                    <h2 className="text-3xl sm:text-5xl lg:text-6xl font-semibold leading-tight">
-                      {slide.title}
-                    </h2>
+                    {index === 0 ? (
+                      <h1 className="text-3xl sm:text-5xl lg:text-6xl font-semibold leading-tight">{slide.title}</h1>
+                    ) : (
+                      <h2 className="text-3xl sm:text-5xl lg:text-6xl font-semibold leading-tight">{slide.title}</h2>
+                    )}
                     <p className="text-slate-300 text-sm sm:text-lg max-w-lg font-sans leading-relaxed">
                       {slide.desc}
                     </p>
@@ -137,14 +108,14 @@ const Home = () => {
           {/* Left/Right Buttons */}
           <button 
             onClick={prevSlide}
-            className="absolute left-4 top-1/2 -translate-y-1/2 bg-black/40 hover:bg-[#2f5f88] text-white p-2.5 sm:p-3 rounded-lg z-30 cursor-pointer transition-all border border-white/10 active:scale-95"
+            className="hidden sm:flex absolute left-4 top-1/2 -translate-y-1/2 bg-black/40 hover:bg-[#2f5f88] text-white p-3 rounded-lg z-30 cursor-pointer transition-all border border-white/10 active:scale-95"
             aria-label="Previous slide"
           >
             <ChevronLeft size={20} />
           </button>
           <button 
             onClick={nextSlide}
-            className="absolute right-4 top-1/2 -translate-y-1/2 bg-black/40 hover:bg-[#2f5f88] text-white p-2.5 sm:p-3 rounded-lg z-30 cursor-pointer transition-all border border-white/10 active:scale-95"
+            className="hidden sm:flex absolute right-4 top-1/2 -translate-y-1/2 bg-black/40 hover:bg-[#2f5f88] text-white p-3 rounded-lg z-30 cursor-pointer transition-all border border-white/10 active:scale-95"
             aria-label="Next slide"
           >
             <ChevronRight size={20} />
@@ -156,11 +127,13 @@ const Home = () => {
               <button
                 key={index}
                 onClick={() => setCurrentSlide(index)}
-                className={`w-2.5 h-2.5 rounded-full transition-all duration-300 cursor-pointer ${
-                  currentSlide === index ? 'bg-[#2f5f88] w-8' : 'bg-white/40 hover:bg-white/80'
-                }`}
+                className="w-8 h-8 flex items-center justify-center cursor-pointer"
                 aria-label={`Go to slide ${index + 1}`}
-              />
+              >
+                <span className={`h-2.5 rounded-full transition-all duration-300 ${
+                  currentSlide === index ? 'bg-[#2f5f88] w-8' : 'bg-white/40 w-2.5'
+                }`} />
+              </button>
             ))}
           </div>
         </div>
@@ -175,13 +148,15 @@ const Home = () => {
             <div className="w-12 h-0.5 bg-[#2f5f88] mx-auto mt-4" />
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {/* Category 1: Rollers */}
             <div className="group relative h-[420px] rounded-2xl overflow-hidden shadow-sm border border-slate-100 flex flex-col justify-end p-8 bg-slate-50">
               <div className="absolute inset-0 p-6 flex items-center justify-center">
                 <img 
                   src="https://cdn.hstatic.net/products/200001063950/imgi_10_vali-may-anh-think-tank-airport-advantage_-black-1_fe7d8554a50d4eeaadcec12852503925.jpg" 
                   alt="Rollers" 
+                  loading="lazy"
+                  decoding="async"
                   className="w-4/5 h-4/5 object-contain group-hover:scale-105 transition-transform duration-500"
                 />
               </div>
@@ -205,6 +180,8 @@ const Home = () => {
                 <img 
                   src="https://cdn.hstatic.net/products/200001063950/airport-accelerator-hero-right-gear_b0c0130d5eb3477298dd80e48e6c2d07.jpg" 
                   alt="Backpacks" 
+                  loading="lazy"
+                  decoding="async"
                   className="w-4/5 h-4/5 object-contain group-hover:scale-105 transition-transform duration-500"
                 />
               </div>
@@ -228,6 +205,8 @@ const Home = () => {
                 <img 
                   src="https://cdn.hstatic.net/products/200001063950/0c95b172-3f1e-47bd-a639-e3d01c001236_4437b45b666247a0a89b2080a158f854.jpg" 
                   alt="Accessories" 
+                  loading="lazy"
+                  decoding="async"
                   className="w-4/5 h-4/5 object-contain group-hover:scale-105 transition-transform duration-500"
                 />
               </div>
@@ -245,28 +224,6 @@ const Home = () => {
               </div>
             </div>
 
-            {/* Category 4: Tripods & Monopods */}
-            <div className="group relative h-[420px] rounded-2xl overflow-hidden shadow-sm border border-slate-100 flex flex-col justify-end p-8 bg-slate-50">
-              <div className="absolute inset-0 p-6 flex items-center justify-center">
-                <img 
-                  src="https://cdn.hstatic.net/products/200001063950/kit-manfrotto-befree_advanced-mkbfrta4fb-bh_11926e33e78c4ced9b4dff3740c474a5.jpeg" 
-                  alt="Tripods" 
-                  className="w-4/5 h-4/5 object-contain group-hover:scale-105 transition-transform duration-500"
-                />
-              </div>
-              <div className="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-900/35 to-transparent z-10" />
-              <div className="relative z-20 text-white space-y-2">
-                <h3 className="text-xl font-semibold">Chân máy ảnh</h3>
-                <p className="text-xs text-slate-300 font-sans line-clamp-2">Chân máy quay, chân máy ảnh, đầu bi và đầu dầu chuyên nghiệp chính hãng chống rung hình ảnh tuyệt đối.</p>
-                <Link 
-                  to="/products?category=Chân Máy Ảnh" 
-                  className="inline-flex items-center gap-1 text-[#d6c95a] hover:text-white text-xs font-semibold transition-colors pt-2"
-                >
-                  <span>Xem sản phẩm</span>
-                  <ArrowRight size={14} />
-                </Link>
-              </div>
-            </div>
           </div>
         </div>
       </section>
@@ -325,7 +282,7 @@ const Home = () => {
                   <Compass size={28} />
                 </div>
                 <div className="space-y-1">
-                  <h4 className="text-sm font-bold uppercase font-heading text-slate-800">Mút ĐệmPE Chống Sốc</h4>
+                  <h4 className="text-sm font-bold uppercase font-heading text-slate-800">Mút đệm PE chống sốc</h4>
                   <p className="text-xs text-slate-500 leading-relaxed font-sans">Vách chia đệm PE (closed-cell foam) gia cố bằng nhựa tổng hợp giữ khuôn balo đứng vững chãi.</p>
                 </div>
               </div>
@@ -372,68 +329,6 @@ const Home = () => {
         </div>
       </section>
 
-      {/* Interactive Customer Testimonials Section */}
-      <section className="py-20 bg-[#23323f] text-white overflow-hidden relative">
-        <div className="absolute inset-0 bg-slate-950/20 pointer-events-none" />
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 relative z-10">
-          <div className="text-center mb-10">
-            <span className="text-[#d6c95a] text-sm font-semibold">Khách hàng sử dụng thực tế</span>
-            <h2 className="text-2xl sm:text-3xl font-semibold mt-2">Ý kiến khách hàng</h2>
-            <div className="w-12 h-0.5 bg-[#2f5f88] mx-auto mt-3" />
-          </div>
-
-          <div className="relative min-h-[260px] flex flex-col items-center justify-center text-center">
-            {TESTIMONIALS.map((test, index) => (
-              <div
-                key={test.id}
-                className={`w-full transition-all duration-700 absolute ${
-                  activeTestimonial === index 
-                    ? 'opacity-100 translate-x-0 relative z-10 scale-100' 
-                    : 'opacity-0 translate-x-12 z-0 scale-95 pointer-events-none'
-                }`}
-              >
-                <div className="text-slate-400 mb-6 flex justify-center">
-                  <Quote size={48} className="opacity-20 text-[#2f5f88]" />
-                </div>
-                <p className="text-sm sm:text-lg text-slate-200 italic leading-relaxed max-w-2xl mx-auto px-4 font-sans">
-                  "{test.comment}"
-                </p>
-                <div className="flex justify-center text-[#ab9f1d] gap-1 my-4">
-                  {[...Array(test.rating)].map((_, i) => (
-                    <Star key={i} size={14} fill="currentColor" className="border-none" />
-                  ))}
-                </div>
-                <div className="flex items-center justify-center gap-3 mt-4">
-                  <img 
-                    src={test.avatar} 
-                    alt={test.name}
-                    className="w-10 h-10 rounded-full object-cover border-2 border-[#2f5f88]"
-                  />
-                  <div className="text-left">
-                    <h4 className="text-xs font-extrabold uppercase font-heading text-white">{test.name}</h4>
-                    <p className="text-[10px] text-slate-400 font-sans">{test.role}</p>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-
-          {/* Dots Indicator */}
-          <div className="flex justify-center gap-2.5 mt-8">
-            {TESTIMONIALS.map((_, index) => (
-              <button
-                key={index}
-                onClick={() => setActiveTestimonial(index)}
-                className={`w-2 h-2 rounded-full cursor-pointer transition-all ${
-                  activeTestimonial === index ? 'bg-[#ab9f1d] scale-125' : 'bg-slate-500 hover:bg-slate-300'
-                }`}
-                aria-label={`Go to slide ${index + 1}`}
-              />
-            ))}
-          </div>
-        </div>
-      </section>
-
       {/* Community Lifestyle Photo Grid */}
       <section className="py-20 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -448,6 +343,8 @@ const Home = () => {
               <img 
                 src="https://images.unsplash.com/photo-1542038784456-1ea8e935640e?auto=format&fit=crop&q=80&w=400" 
                 alt="Photographer taking pictures in mountain" 
+                loading="lazy"
+                decoding="async"
                 className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
               />
               <div className="absolute inset-0 bg-[#171717]/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center text-white">
@@ -458,6 +355,8 @@ const Home = () => {
               <img 
                 src="https://images.unsplash.com/photo-1516035069371-29a1b244cc32?auto=format&fit=crop&q=80&w=400" 
                 alt="Camera and photography gear layout" 
+                loading="lazy"
+                decoding="async"
                 className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
               />
               <div className="absolute inset-0 bg-[#171717]/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center text-white">
@@ -468,6 +367,8 @@ const Home = () => {
               <img 
                 src="https://images.unsplash.com/photo-1452780212940-6f5c0d14d848?auto=format&fit=crop&q=80&w=400" 
                 alt="Reporter holding a professional lens" 
+                loading="lazy"
+                decoding="async"
                 className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
               />
               <div className="absolute inset-0 bg-[#171717]/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center text-white">
@@ -478,6 +379,8 @@ const Home = () => {
               <img 
                 src="https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?auto=format&fit=crop&q=80&w=400" 
                 alt="Photographer taking pictures in sunset forest" 
+                loading="lazy"
+                decoding="async"
                 className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
               />
               <div className="absolute inset-0 bg-[#171717]/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center text-white">

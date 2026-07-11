@@ -1,119 +1,50 @@
-import { MapPin, Phone, Mail, Clock, Send } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { Mail, PackageSearch, ShoppingBag, UserRound } from 'lucide-react';
 
-// Static contact page with store contact details and message form layout.
+// Self-service support page; direct email is shown only when configured for the deployment.
 const Contact = () => {
+  const supportEmail = import.meta.env.VITE_SUPPORT_EMAIL?.trim();
+  const supportCards = [
+    { title: 'Tra cứu đơn hàng', description: 'Kiểm tra trạng thái bằng mã tra cứu nhận được sau khi đặt hàng.', to: '/track-order', icon: PackageSearch },
+    { title: 'Danh mục sản phẩm', description: 'Tìm sản phẩm, mức giá và biến thể phù hợp với bộ thiết bị của bạn.', to: '/products', icon: ShoppingBag },
+    { title: 'Tài khoản của tôi', description: 'Xem thông tin cá nhân và lịch sử đơn hàng sau khi đăng nhập.', to: '/profile', icon: UserRound },
+  ];
+
   return (
-    <div className="bg-slate-50 min-h-screen pt-[120px] pb-20">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        
-        {/* Header */}
-        <div className="text-center max-w-2xl mx-auto mb-16">
-          <h1 className="text-4xl md:text-5xl font-bold text-slate-900 mb-4">Liên Hệ Chúng Tôi</h1>
-          <p className="text-lg text-slate-600">Chúng tôi luôn sẵn sàng lắng nghe và hỗ trợ bạn. Vui lòng để lại lời nhắn hoặc liên hệ trực tiếp.</p>
-        </div>
+    <main className="bg-slate-50 min-h-screen pt-[140px] pb-20">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+        <header className="text-center max-w-2xl mx-auto mb-12">
+          <span className="text-[#2f5f88] text-sm font-semibold">Hỗ trợ Balomayanh</span>
+          <h1 className="text-4xl md:text-5xl font-bold text-slate-900 mt-2 mb-4">Chúng tôi có thể giúp gì?</h1>
+          <p className="text-slate-600">Chọn đúng khu vực hỗ trợ để giải quyết yêu cầu nhanh nhất.</p>
+        </header>
 
-        <div className="grid lg:grid-cols-3 gap-10">
-          {/* Contact Info */}
-          <div className="lg:col-span-1 space-y-6">
-            <div className="bg-white p-8 rounded-2xl shadow-sm border border-slate-100">
-              <h3 className="text-2xl font-bold text-slate-900 mb-8">Thông Tin Liên Hệ</h3>
-              
-              <div className="space-y-6">
-                <div className="flex gap-4">
-                  <div className="w-12 h-12 bg-blue-50 text-blue-600 rounded-full flex items-center justify-center shrink-0">
-                    <MapPin size={24} />
-                  </div>
-                  <div>
-                    <h4 className="font-semibold text-slate-900 mb-1">Địa Chỉ</h4>
-                    <p className="text-slate-600">123 Đường Nguyễn Huệ, Quận 1, TP.HCM, Việt Nam</p>
-                  </div>
-                </div>
+        <section className="grid md:grid-cols-3 gap-6" aria-label="Các hình thức hỗ trợ">
+          {supportCards.map(({ title, description, to, icon: Icon }) => (
+            <Link key={to} to={to} className="group bg-white border border-slate-200 rounded-2xl p-7 hover:border-[#2f5f88] hover:shadow-md transition-all">
+              <span className="w-12 h-12 rounded-xl bg-slate-100 text-[#2f5f88] flex items-center justify-center mb-5 group-hover:bg-[#2f5f88] group-hover:text-white transition-colors">
+                <Icon size={24} />
+              </span>
+              <h2 className="text-lg font-bold text-slate-900 mb-2">{title}</h2>
+              <p className="text-sm text-slate-600 leading-relaxed">{description}</p>
+            </Link>
+          ))}
+        </section>
 
-                <div className="flex gap-4">
-                  <div className="w-12 h-12 bg-blue-50 text-blue-600 rounded-full flex items-center justify-center shrink-0">
-                    <Phone size={24} />
-                  </div>
-                  <div>
-                    <h4 className="font-semibold text-slate-900 mb-1">Điện Thoại</h4>
-                    <p className="text-slate-600">+84 28 1234 5678</p>
-                    <p className="text-slate-600">+84 908 765 4321</p>
-                  </div>
-                </div>
-
-                <div className="flex gap-4">
-                  <div className="w-12 h-12 bg-blue-50 text-blue-600 rounded-full flex items-center justify-center shrink-0">
-                    <Mail size={24} />
-                  </div>
-                  <div>
-                    <h4 className="font-semibold text-slate-900 mb-1">Email</h4>
-                    <p className="text-slate-600">info@balomayanh.vn</p>
-                    <p className="text-slate-600">support@balomayanh.vn</p>
-                  </div>
-                </div>
-
-                <div className="flex gap-4">
-                  <div className="w-12 h-12 bg-blue-50 text-blue-600 rounded-full flex items-center justify-center shrink-0">
-                    <Clock size={24} />
-                  </div>
-                  <div>
-                    <h4 className="font-semibold text-slate-900 mb-1">Giờ Hoạt Động</h4>
-                    <p className="text-slate-600">Thứ 2 - Thứ 6: 8:00 - 17:00</p>
-                    <p className="text-slate-600">Thứ 7: 9:00 - 13:00</p>
-                  </div>
-                </div>
-              </div>
+        {supportEmail && (
+          <section className="mt-10 bg-[#23323f] text-white rounded-2xl p-8 flex flex-col sm:flex-row sm:items-center justify-between gap-5">
+            <div>
+              <h2 className="text-xl font-bold mb-1">Cần hỗ trợ thêm?</h2>
+              <p className="text-slate-300 text-sm">Gửi email kèm mã đơn hàng hoặc mã tra cứu để được hỗ trợ nhanh hơn.</p>
             </div>
-          </div>
-
-          {/* Contact Form */}
-          <div className="lg:col-span-2">
-            <div className="bg-white p-8 md:p-10 rounded-2xl shadow-sm border border-slate-100">
-              <h3 className="text-2xl font-bold text-slate-900 mb-2">Gửi Tin Nhắn</h3>
-              <p className="text-slate-600 mb-8">Điền thông tin dưới đây, chúng tôi sẽ liên hệ với bạn sớm nhất.</p>
-
-              <form className="space-y-6">
-                <div className="grid md:grid-cols-2 gap-6">
-                  <div className="space-y-2">
-                    <label className="text-sm font-semibold text-slate-700">Họ và Tên</label>
-                    <input type="text" className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition-colors" placeholder="Nhập tên của bạn" />
-                  </div>
-                  <div className="space-y-2">
-                    <label className="text-sm font-semibold text-slate-700">Email</label>
-                    <input type="email" className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition-colors" placeholder="example@email.com" />
-                  </div>
-                </div>
-
-                <div className="grid md:grid-cols-2 gap-6">
-                  <div className="space-y-2">
-                    <label className="text-sm font-semibold text-slate-700">Số Điện Thoại</label>
-                    <input type="tel" className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition-colors" placeholder="0123456789" />
-                  </div>
-                  <div className="space-y-2">
-                    <label className="text-sm font-semibold text-slate-700">Chủ Đề</label>
-                    <select className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition-colors text-slate-600">
-                      <option value="">Chọn chủ đề</option>
-                      <option value="product">Hỏi về sản phẩm</option>
-                      <option value="order">Về đơn hàng</option>
-                      <option value="shipping">Về giao hàng</option>
-                    </select>
-                  </div>
-                </div>
-
-                <div className="space-y-2">
-                  <label className="text-sm font-semibold text-slate-700">Tin Nhắn</label>
-                  <textarea rows="5" className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition-colors resize-none" placeholder="Nhập tin nhắn của bạn..."></textarea>
-                </div>
-
-                <button type="button" className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-4 px-8 rounded-xl flex items-center justify-center gap-2 transition-colors w-full sm:w-auto">
-                  <Send size={20} />
-                  Gửi Tin Nhắn
-                </button>
-              </form>
-            </div>
-          </div>
-        </div>
+            <a href={`mailto:${supportEmail}`} className="inline-flex items-center justify-center gap-2 bg-white text-[#23323f] rounded-lg px-5 py-3 font-semibold text-sm hover:bg-slate-100">
+              <Mail size={18} />
+              {supportEmail}
+            </a>
+          </section>
+        )}
       </div>
-    </div>
+    </main>
   );
 };
 

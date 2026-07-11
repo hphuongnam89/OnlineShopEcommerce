@@ -1,23 +1,22 @@
-import { useEffect, lazy, Suspense } from 'react';
+import { useEffect, lazy, Suspense, useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, Outlet, Navigate } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import Home from './pages/Home';
-import Products from './pages/Products';
-import About from './pages/About';
-import Contact from './pages/Contact';
-import Auth from './pages/Auth';
-import Cart from './pages/Cart';
-import ProductDetail from './pages/ProductDetail';
-
-import MyOrders from './pages/MyOrders';
-import TrackOrder from './pages/TrackOrder';
-import Profile from './pages/Profile';
 import { CartProvider } from './context/CartContext';
 import ScrollToTop from './components/ScrollToTop';
 
-import { clearAuthSession, getValidToken } from './utils/api';
+import { getValidToken, restoreAuthSession } from './utils/api';
 
+const Products = lazy(() => import('./pages/Products'));
+const About = lazy(() => import('./pages/About'));
+const Contact = lazy(() => import('./pages/Contact'));
+const Auth = lazy(() => import('./pages/Auth'));
+const Cart = lazy(() => import('./pages/Cart'));
+const ProductDetail = lazy(() => import('./pages/ProductDetail'));
+const MyOrders = lazy(() => import('./pages/MyOrders'));
+const TrackOrder = lazy(() => import('./pages/TrackOrder'));
+const Profile = lazy(() => import('./pages/Profile'));
 const AdminLogin = lazy(() => import('./pages/admin/AdminLogin'));
 const AdminLayout = lazy(() => import('./pages/admin/AdminLayout'));
 const AdminDashboard = lazy(() => import('./pages/admin/AdminDashboard'));
@@ -42,7 +41,7 @@ const CustomerLayout = () => {
 const AdminRedirect = () => {
   // Send authenticated admins directly to dashboard; otherwise require admin login.
   const userStr = localStorage.getItem('currentUser');
-  const token = localStorage.getItem('token');
+  const token = getValidToken();
   if (userStr && token) {
     const user = JSON.parse(userStr);
     if (user.role === 'ROLE_ADMIN' || user.role === 'ADMIN') {
@@ -53,14 +52,15 @@ const AdminRedirect = () => {
 };
 
 function App() {
-
+  const [sessionReady, setSessionReady] = useState(false);
 
   useEffect(() => {
-    // Drop expired or malformed sessions before any protected route tries to use them.
-    if (!getValidToken()) {
-      clearAuthSession();
-    }
+    void restoreAuthSession().finally(() => setSessionReady(true));
   }, []);
+
+  if (!sessionReady) {
+    return <div className="min-h-screen flex items-center justify-center text-slate-500 text-sm font-semibold">Đang xác thực phiên đăng nhập...</div>;
+  }
 
   return (
     <CartProvider>

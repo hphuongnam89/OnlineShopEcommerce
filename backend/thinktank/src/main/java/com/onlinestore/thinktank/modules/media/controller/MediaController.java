@@ -4,18 +4,20 @@ import com.onlinestore.thinktank.common.exception.InvalidRequestException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.imageio.ImageIO;
+import javax.imageio.ImageReader;
+import javax.imageio.stream.ImageInputStream;
+import java.awt.image.BufferedImage;
 import java.io.IOException;
-import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.StandardCopyOption;
+import java.util.Iterator;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -26,8 +28,8 @@ import java.util.UUID;
 public class MediaController {
 
     private static final long MAX_FILE_SIZE_BYTES = 5L * 1024 * 1024;
-    private static final Set<String> ALLOWED_CONTENT_TYPES = Set.of("image/png", "image/jpeg", "image/webp");
-    private static final Set<String> ALLOWED_EXTENSIONS = Set.of(".png", ".jpg", ".jpeg", ".webp");
+    private static final long MAX_PIXELS = 12_000_000L;
+    private static final Set<String> ALLOWED_FORMATS = Set.of("png", "jpeg");
 
     @Value("${app.upload.dir:uploads}")
     private String uploadDir;
@@ -45,23 +47,41 @@ public class MediaController {
             throw new InvalidRequestException("File vượt quá kích thước tối đa 5MB");
         }
 
-        String originalName = StringUtils.cleanPath(file.getOriginalFilename() == null ? "" : file.getOriginalFilename());
-        String extension = getExtension(originalName);
-        String contentType = file.getContentType();
+        try (ImageInputStream imageInput = ImageIO.createImageInputStream(file.getInputStream())) {
+            if (imageInput == null) throw new InvalidRequestException("File ảnh không hợp lệ");
+            Iterator<ImageReader> readers = ImageIO.getImageReaders(imageInput);
+            if (!readers.hasNext()) throw new InvalidRequestException("File ảnh không hợp lệ");
 
-        if (!ALLOWED_EXTENSIONS.contains(extension.toLowerCase()) || !ALLOWED_CONTENT_TYPES.contains(contentType)) {
-            throw new InvalidRequestException("Loại file không được hỗ trợ");
-        }
+            ImageReader reader = readers.next();
+            String format;
+            BufferedImage image;
+            try {
+                reader.setInput(imageInput, true, true);
+                format = reader.getFormatName().toLowerCase();
+                if (!ALLOWED_FORMATS.contains(format)) {
+                    throw new InvalidRequestException("Chỉ hỗ trợ ảnh PNG hoặc JPEG");
+                }
+                int width = reader.getWidth(0);
+                int height = reader.getHeight(0);
+                if (width <= 0 || height <= 0 || (long) width * height > MAX_PIXELS) {
+                    throw new InvalidRequestException("Kích thước ảnh không hợp lệ");
+                }
+                image = reader.read(0);
+            } finally {
+                reader.dispose();
+            }
 
-        try (InputStream inputStream = file.getInputStream()) {
-            String filename = UUID.randomUUID() + extension;
+            String outputFormat = format.equals("jpeg") ? "jpg" : "png";
+            String filename = UUID.randomUUID() + "." + outputFormat;
             Path uploadPath = Path.of(uploadDir).toAbsolutePath().normalize();
             Files.createDirectories(uploadPath);
             Path target = uploadPath.resolve(filename).normalize();
             if (!target.startsWith(uploadPath)) {
                 throw new InvalidRequestException("Đường dẫn lưu file không hợp lệ");
             }
-            Files.copy(inputStream, target, StandardCopyOption.REPLACE_EXISTING);
+            if (!ImageIO.write(image, outputFormat, target.toFile())) {
+                throw new InvalidRequestException("Không thể xử lý file ảnh");
+            }
 
             deleteOldFileIfNeeded(oldUrl, uploadPath);
 
@@ -70,17 +90,6 @@ public class MediaController {
             response.put("url", "/uploads/" + filename);
             return ResponseEntity.status(HttpStatus.CREATED).body(response);
         }
-    }
-
-    private String getExtension(String originalName) {
-        if (originalName == null || originalName.isBlank()) {
-            return "";
-        }
-        int dotIndex = originalName.lastIndexOf('.');
-        if (dotIndex < 0 || dotIndex == originalName.length() - 1) {
-            return "";
-        }
-        return originalName.substring(dotIndex);
     }
 
     private void deleteOldFileIfNeeded(String oldUrl, Path uploadPath) {

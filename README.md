@@ -12,7 +12,7 @@ Dự án website bán hàng trực tuyến chuyên phân phối balo máy ảnh,
 - **DOMPurify**: Bảo mật chống tấn công chèn mã độc (XSS).
 
 ### Backend
-- **Spring Boot 3.5.14** (Java 21): Framework backend mạnh mẽ và bảo mật.
+- **Spring Boot 3.5.16** (Java 21): Framework backend mạnh mẽ và bảo mật.
 - **Spring Security** & **JWT (JSON Web Token)**: Hệ thống xác thực và phân quyền (Admin & Customer).
 - **Spring Data JPA** & **Hibernate 6**: Quản trị cơ sở dữ liệu quan hệ một cách tối ưu.
 
@@ -44,10 +44,18 @@ Import file script SQL khởi tạo dữ liệu vào DB của bạn:
    ```bash
    cd backend/thinktank
    ```
-2. Cấu hình các thông số kết nối cơ sở dữ liệu và biến môi trường `JWT_SECRET` trong file `src/main/resources/application.properties` (hoặc cấu hình thông qua Environment Variables).
+2. Thiết lập biến môi trường (không lưu secret vào Git):
+   ```bash
+   export JWT_SECRET="$(openssl rand -base64 48)"
+   export AUTH_SECURE_COOKIE=false # chỉ dùng khi chạy HTTP local
+   # Tuỳ chọn: tạo admin một lần khi DB chưa có tài khoản này
+   export ADMIN_BOOTSTRAP_EMAIL="admin@example.com"
+   export ADMIN_BOOTSTRAP_PASSWORD="mat-khau-manh-toi-thieu-12-ky-tu"
+   ```
+   Khi production, bật profile `prod`, đặt `AUTH_SECURE_COOKIE=true`, chỉ nhận forwarded headers qua reverse proxy tin cậy và dùng `DB_URL` có TLS, ví dụ `useSSL=true&requireSSL=true&verifyServerCertificate=true`.
 3. Khởi chạy ứng dụng bằng Maven:
    ```bash
-   ./mvnw.cmd spring-boot:run
+   ./mvnw spring-boot:run
    ```
 
 ### 3. Chạy Frontend (React + Vite)
@@ -59,11 +67,12 @@ Import file script SQL khởi tạo dữ liệu vào DB của bạn:
    ```bash
    npm install
    ```
-3. Khởi chạy môi trường phát triển:
+3. Tạo `.env` từ `.env.example`; đặt `VITE_SUPPORT_EMAIL` nếu muốn hiển thị email hỗ trợ công khai.
+4. Khởi chạy môi trường phát triển:
    ```bash
    npm run dev
    ```
-4. Truy cập website tại địa chỉ local: `http://localhost:5173`
+5. Truy cập website tại địa chỉ local: `http://localhost:5173`
 
 ---
 

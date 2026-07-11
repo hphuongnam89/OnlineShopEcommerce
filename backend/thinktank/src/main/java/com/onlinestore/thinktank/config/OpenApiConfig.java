@@ -26,5 +26,6 @@ import org.springframework.context.annotation.Configuration;
         bearerFormat = "JWT",
         description = "JWT Bearer Token"
 )
+// Cấu hình tài liệu Swagger/OpenAPI để xem và thử các endpoint của backend.
 public class OpenApiConfig {
 }

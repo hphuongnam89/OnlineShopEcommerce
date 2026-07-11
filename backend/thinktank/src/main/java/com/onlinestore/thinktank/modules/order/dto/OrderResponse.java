@@ -16,6 +16,7 @@ import java.util.List;
 public class OrderResponse {
     // Public-safe order shape used by checkout, order history, tracking, and admin order screens.
     private Long id;
+    private String trackingToken;
     private String fullName;
     private String phone;
     private String address;
@@ -32,6 +33,7 @@ public class OrderResponse {
     public static OrderResponse from(Order order) {
         return OrderResponse.builder()
                 .id(order.getId())
+                .trackingToken(order.getTrackingToken())
                 .fullName(order.getFullName())
                 .phone(order.getPhone())
                 .address(order.getAddress())

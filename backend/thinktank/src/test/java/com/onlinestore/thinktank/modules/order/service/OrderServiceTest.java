@@ -28,6 +28,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -41,6 +44,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
+// Kiểm tra đặt hàng, trừ/hoàn tồn kho, đổi trạng thái và xóa mềm đơn hàng.
 class OrderServiceTest {
 
     @Mock private OrderRepository orderRepository;
@@ -150,5 +154,18 @@ class OrderServiceTest {
 
         assertEquals("CANCELLED", order.getStatus());
         assertEquals(0, BigDecimal.valueOf(100).compareTo(customer.getTotalSpent()));
+    }
+
+    @Test
+    void getAdminOrdersPageShouldFetchDetailsWithoutCollectionPagination() {
+        Order newest = Order.builder().id(2L).build();
+        Order older = Order.builder().id(1L).build();
+        when(orderRepository.findAll(any(Specification.class), any(Pageable.class)))
+                .thenReturn(new PageImpl<>(List.of(newest, older)));
+        when(orderRepository.findAllByIdIn(List.of(2L, 1L))).thenReturn(List.of(older, newest));
+
+        var result = orderService.getAdminOrdersPage(null, null, null, null, 0, 20);
+
+        assertEquals(List.of(2L, 1L), result.getContent().stream().map(Order::getId).toList());
     }
 }

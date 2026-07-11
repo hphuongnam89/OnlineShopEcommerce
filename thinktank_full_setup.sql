@@ -42,7 +42,7 @@ CREATE TABLE users (
 
 CREATE TABLE refresh_tokens (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
-    token VARCHAR(255) NOT NULL UNIQUE,
+    token CHAR(64) NOT NULL UNIQUE,
     user_id BIGINT NOT NULL UNIQUE,
     expiry_date DATETIME NOT NULL,
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
@@ -202,6 +202,8 @@ CREATE TABLE product_variants (
 
 CREATE TABLE orders (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    tracking_token VARCHAR(36) NOT NULL UNIQUE,
+    idempotency_key VARCHAR(36) NOT NULL UNIQUE,
     customer_id BIGINT,
     full_name VARCHAR(255) NOT NULL,
     phone VARCHAR(20) NOT NULL,
@@ -241,6 +243,7 @@ CREATE TABLE reviews (
     deleted BOOLEAN NOT NULL DEFAULT FALSE,
     created_at DATETIME,
     updated_at DATETIME,
+    UNIQUE KEY uk_reviews_user_product (user_id, product_id),
     FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE,
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
@@ -266,14 +269,7 @@ INSERT INTO categories (id, name, slug, description, created_at, updated_at) VAL
 (2, 'Vali Máy Ảnh', 'vali-may-anh', 'Các dòng vali máy ảnh chuyên nghiệp có bánh xe kéo tiện lợi', NOW(), NOW()),
 (3, 'Túi Máy Ảnh', 'tui-may-anh', 'Các dòng túi máy ảnh đeo chéo, phụ kiện tiện ích', NOW(), NOW());
 
--- SEED USERS & ROLES
-INSERT INTO users (id, email, password_hash, full_name, phone, enabled, created_at, updated_at) VALUES
-(1, 'admin@thinktank.com', '$2a$10$X.pT3W55FvJm5jYw9vTTeedS4f6wXJ6U6ZzM7hQG7d8u8N4f7c2yG', 'Administrator', '0999999999', TRUE, NOW(), NOW());
-INSERT INTO user_roles (user_id, role_id) VALUES (1, 1);
-INSERT INTO users (id, email, password_hash, full_name, phone, enabled, created_at, updated_at) VALUES
-(2, 'customer@thinktank.com', '$2a$10$O0Wv1q4m.2g7zX.R6K1PXeL/1eMhI.f.0fT2uQ5x8R2d/vjN67vK2', 'Nguyễn Văn A', '0901234567', TRUE, NOW(), NOW());
-INSERT INTO user_roles (user_id, role_id) VALUES (2, 2);
-INSERT INTO customers (id, user_id, tier_id, total_spent, created_at, updated_at) VALUES (1, 2, 1, 0.00, NOW(), NOW());
+-- Tài khoản quản trị được tạo một lần từ ADMIN_BOOTSTRAP_EMAIL/ADMIN_BOOTSTRAP_PASSWORD.
 
 -- INSERT PRODUCTS
 INSERT INTO products (id, category_id, name, slug, description, price, stock, image_url, additional_images, weight, volume, material, dimensions, sku, average_rating, review_count, created_at, updated_at) VALUES
@@ -669,17 +665,6 @@ INSERT INTO product_variants (id, product_id, sku, name, price, stock, color, si
 
 
 -- ==========================================================
--- MIGRATION: V5__reset_admin_password.sql
--- ==========================================================
-
-UPDATE users
-SET password_hash = '$2a$10$WWJDJj6CmaCnaR.Pz5Xi6eo8D0IGlQNbkxs3f1Lrg.3rMrsaQOxHi'
-WHERE id = 1
-  AND email = 'admin@thinktank.com';
-
-
-
--- ==========================================================
 -- MIGRATION: V6__add_product_highlights.sql
 -- ==========================================================
 
@@ -692,3 +677,14 @@ WHERE id = 1071589874;
 UPDATE products 
 SET highlights = '[{"title": "Thiết kế roll-top linh hoạt, nhỏ gọn hơn", "description": "Phiên bản 22L sở hữu thiết kế roll-top thông minh có thể mở rộng thêm dung tích khi cần thiết, lý tưởng cho việc đi lại hàng ngày hoặc đi chụp nhanh trong ngày. Vải nylon chống thấm cao cấp kết hợp khóa đóng tiện lợi.", "imageUrl": "https://cdn.hstatic.net/products/200001063950/focuspoint-22l-side-golden-hour_96eee87d57754a7aae65107fb15c847b.jpg"}, {"title": "Ngăn truy cập nhanh từ hông balo", "description": "Cho phép lấy máy ảnh ra chỉ trong vài giây mà không cần đặt balo xuống đất. Vách ngăn đệm chống va đập dày và mềm giúp bảo vệ body và lens luôn an toàn trong suốt chuyến hành trình.", "imageUrl": "https://cdn.hstatic.net/products/200001063950/focuspoint-22l-hero-right-golden-hour-gear_1a115caccae24af0b3ac2b3d0f78ad4d.jpg"}]'
 WHERE id = 1073362756;
+
+-- Rating totals must come from real review rows, not imported catalog placeholders.
+UPDATE products p
+LEFT JOIN (
+    SELECT product_id, COUNT(*) AS review_count, COALESCE(AVG(rating), 0) AS average_rating
+    FROM reviews
+    WHERE deleted = FALSE
+    GROUP BY product_id
+) r ON r.product_id = p.id
+SET p.review_count = COALESCE(r.review_count, 0),
+    p.average_rating = COALESCE(r.average_rating, 0);

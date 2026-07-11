@@ -3,8 +3,8 @@ import { useParams, Link } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 import ProductCard from '../components/ProductCard';
 import CustomModal from '../components/CustomModal';
-import { api } from '../utils/api';
-import { Star, Shield, Truck, Sparkles, RefreshCw, ShoppingCart, Minus, Plus, ChevronRight } from 'lucide-react';
+import { api, getValidToken } from '../utils/api';
+import { Star, Shield, Truck, Sparkles, ShoppingCart, Minus, Plus, ChevronRight } from 'lucide-react';
 
 import DOMPurify from 'dompurify';
 
@@ -86,10 +86,6 @@ const ProductDetail = () => {
   // Custom alert modal state
   const [modalConfig, setModalConfig] = useState({ isOpen: false, title: '', message: '', type: 'info' });
 
-  // B2B EXPANSION
-  const userStr = localStorage.getItem('currentUser');
-  const userObj = userStr ? JSON.parse(userStr) : null;
-  const isDealer = userObj && userObj.role === 'ROLE_DEALER';
   const openModal = (title, message, type = 'info') => {
     setModalConfig({ isOpen: true, title, message, type });
   };
@@ -214,7 +210,7 @@ const ProductDetail = () => {
           }
 
           // Check login and purchase status for reviews
-          const token = localStorage.getItem('token');
+          const token = getValidToken();
           if (token) {
             setIsLoggedIn(true);
             try {
@@ -276,6 +272,10 @@ const ProductDetail = () => {
   }
 
   const currentStock = selectedVariant ? selectedVariant.stock : product.stock;
+  const displayedReviewCount = productReviews.length;
+  const displayedRating = displayedReviewCount === 0
+    ? 0
+    : productReviews.reduce((sum, review) => sum + Number(review.rating || 0), 0) / displayedReviewCount;
   const descriptionImages = (product.images || []).filter(Boolean).slice(1, 7);
   const displayHighlights = product.highlights && product.highlights.length > 0
     ? product.highlights
@@ -295,7 +295,7 @@ const ProductDetail = () => {
         ? (selectedVariant.name || `${selectedVariant.color || ''}${selectedVariant.color && selectedVariant.size ? ' / ' : ''}${selectedVariant.size || ''}`) 
         : '',
       title: product.title,
-      price: (selectedVariant ? selectedVariant.price : product.price) * (isDealer ? 0.8 : 1),
+      price: selectedVariant ? selectedVariant.price : product.price,
       image: product.image_url || product.image,
       stock: currentStock,
       category: product.category,
@@ -333,7 +333,9 @@ const ProductDetail = () => {
                 <img 
                   src={activeImage || product.image} 
                   alt={product.title} 
-                  className="w-full h-full object-contain group-hover:scale-102 transition-transform duration-550" 
+                  decoding="async"
+                  fetchPriority="high"
+                  className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-500"
                 />
               </div>
               
@@ -352,6 +354,8 @@ const ProductDetail = () => {
                       <img 
                         src={imgUrl} 
                         alt={`${product.title} thumbnail ${index + 1}`} 
+                        loading="lazy"
+                        decoding="async"
                         className="w-full h-full object-contain"
                       />
                     </button>
@@ -373,25 +377,19 @@ const ProductDetail = () => {
                       <Star 
                         key={i} 
                         size={14} 
-                        fill={i < Math.floor(product.rating) ? 'currentColor' : 'none'} 
-                        className={i < Math.floor(product.rating) ? 'border-none' : 'text-slate-200'} 
+                        fill={i < Math.floor(displayedRating) ? 'currentColor' : 'none'}
+                        className={i < Math.floor(displayedRating) ? 'border-none' : 'text-slate-200'}
                       />
                     ))}
                   </div>
-                  <span className="text-xs font-bold text-slate-700 font-sans">{product.rating} / 5.0</span>
-                  <span className="text-xs text-slate-400 font-sans">({product.reviews} đánh giá)</span>
+                  <span className="text-xs font-bold text-slate-700 font-sans">{displayedRating.toFixed(1)} / 5.0</span>
+                  <span className="text-xs text-slate-400 font-sans">({displayedReviewCount} đánh giá)</span>
                 </div>
 
                 {/* Price */}
                 <div className="mb-6 bg-[#f4f7fa] w-fit px-6 py-3 rounded-lg border border-[#c9dced] flex flex-col">
-                  {isDealer && (
-                    <span className="text-sm text-slate-400 line-through mb-1 font-semibold">
-                      {(selectedVariant ? selectedVariant.price : product.price).toLocaleString('vi-VN')}đ
-                    </span>
-                  )}
                   <span className="text-2xl font-black text-[#2f5f88] font-heading flex items-center gap-2">
-                    {((selectedVariant ? selectedVariant.price : product.price) * (isDealer ? 0.8 : 1)).toLocaleString('vi-VN')}đ
-                    {isDealer && <span className="text-[10px] bg-amber-100 text-amber-700 px-2 py-1 rounded font-bold uppercase tracking-wider font-sans">B2B GIÁ SỈ</span>}
+                    {(selectedVariant ? selectedVariant.price : product.price).toLocaleString('vi-VN')}đ
                   </span>
                 </div>
 
@@ -420,7 +418,7 @@ const ProductDetail = () => {
                                 } ${!isAvailable ? 'opacity-60' : ''}`}
                               >
                                 <span 
-                                  className="w-3 h-3 rounded-full border border-slate-350/50 flex-shrink-0"
+                                  className="w-3 h-3 rounded-full border border-slate-300/50 flex-shrink-0"
                                   style={{ backgroundColor: getColorHex(color) }}
                                 />
                                 <span>{color}</span>
@@ -457,7 +455,7 @@ const ProductDetail = () => {
                                     : !exists
                                       ? 'bg-slate-50 text-slate-300 border-slate-100 cursor-not-allowed opacity-50'
                                       : isOutOfStock
-                                        ? 'bg-white text-slate-400 border-dashed border-slate-200 hover:border-slate-355 cursor-pointer'
+                                        ? 'bg-white text-slate-400 border-dashed border-slate-200 hover:border-slate-300 cursor-pointer'
                                         : 'bg-white text-slate-700 border-slate-200 hover:border-slate-300'
                                 }`}
                               >
@@ -497,46 +495,6 @@ const ProductDetail = () => {
 
                 {/* Description */}
                 <p className="text-slate-600 leading-relaxed mb-6 text-sm font-sans">{getShortDesc(product.desc)}</p>
-
-                {/* Special Promotions Box */}
-                <div className="bg-[#fffcf5] border border-[#f0e6c5] rounded-xl p-5 mb-6 shadow-2xs">
-                  <div className="flex items-center gap-2 text-[#ab9f1d] font-bold text-xs uppercase tracking-widest mb-3 pb-2 border-b border-[#f0e6c5]/50 font-heading">
-                    <Sparkles size={15} />
-                    CHƯƠNG TRÌNH KHUYẾN MÃI
-                  </div>
-                  <ul className="space-y-2 text-xs text-slate-600 leading-relaxed font-sans">
-                    <li className="flex items-start gap-2">
-                      <span className="bg-[#ab9f1d] text-white rounded-full w-4 h-4 flex items-center justify-center text-[10px] font-bold mt-0.5 flex-shrink-0">1</span>
-                      <span>Nhập mã <strong className="text-[#ab9f1d] font-bold">THINKTANK30</strong> giảm ngay 30% giá trị đơn hàng khi thanh toán.</span>
-                    </li>
-                    <li className="flex items-start gap-2">
-                      <span className="bg-[#ab9f1d] text-white rounded-full w-4 h-4 flex items-center justify-center text-[10px] font-bold mt-0.5 flex-shrink-0">2</span>
-                      <span>Miễn phí giao hàng nhanh toàn quốc cho mọi sản phẩm.</span>
-                    </li>
-                    <li className="flex items-start gap-2">
-                      <span className="bg-[#ab9f1d] text-white rounded-full w-4 h-4 flex items-center justify-center text-[10px] font-bold mt-0.5 flex-shrink-0">3</span>
-                      <span>Tặng kèm 1 áo che mưa chống nước cao cấp trị giá 350.000đ.</span>
-                    </li>
-                  </ul>
-                </div>
-
-                {/* Store Availability */}
-                <div className="bg-[#fcfcfc] border border-slate-200 rounded-xl p-4 mb-6">
-                  <div className="flex items-center gap-2 text-slate-700 font-bold text-[10px] uppercase tracking-wider mb-2.5 font-heading">
-                    <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
-                    Tình trạng Showroom
-                  </div>
-                  <div className="space-y-2 text-xs text-slate-500 font-sans">
-                    <div className="flex justify-between items-center border-b border-slate-100 pb-1.5">
-                      <span>Showroom Quận 1, TP.HCM:</span>
-                      <span className="font-bold text-green-600">Còn hàng</span>
-                    </div>
-                    <div className="flex justify-between items-center">
-                      <span>Showroom Cầu Giấy, Hà Nội:</span>
-                      <span className="font-bold text-green-600">Còn hàng (Có mẫu trải nghiệm)</span>
-                    </div>
-                  </div>
-                </div>
 
                 {/* Specifications Summary */}
                 {product.specs && (product.specs.volume || product.specs.dimensions || product.specs.weight) && (
@@ -580,6 +538,7 @@ const ProductDetail = () => {
                     <button 
                       onClick={decrementQty}
                       disabled={product.stock === 0}
+                      aria-label="Giảm số lượng"
                       className="p-1.5 hover:bg-slate-100 rounded transition-colors cursor-pointer text-slate-600 disabled:opacity-50"
                     >
                       <Minus size={14} />
@@ -588,6 +547,7 @@ const ProductDetail = () => {
                     <button 
                       onClick={incrementQty}
                       disabled={product.stock === 0 || quantity >= product.stock}
+                      aria-label="Tăng số lượng"
                       className="p-1.5 hover:bg-slate-100 rounded transition-colors cursor-pointer text-slate-600 disabled:opacity-50"
                     >
                       <Plus size={14} />
@@ -609,37 +569,15 @@ const ProductDetail = () => {
                   </button>
                 </div>
 
-                {/* Installment options - Sleek outlined boxes */}
-                <div className="grid grid-cols-2 gap-3">
-                  <button 
-                    onClick={() => openModal('Mua trả góp 0%', 'Chức năng Trả góp 0% qua công ty tài chính đang được liên kết. Vui lòng liên hệ hotline để được hướng dẫn!', 'info')}
-                    className="border border-slate-200 hover:border-[#2f5f88] hover:bg-slate-50 py-2.5 px-4 rounded-lg text-center cursor-pointer transition-all"
-                  >
-                    <div className="text-[10px] font-bold font-heading uppercase text-slate-800 tracking-wider">MUA TRẢ GÓP 0%</div>
-                    <div className="text-[9px] text-slate-400 font-sans mt-0.5">Duyệt hồ sơ nhanh online</div>
-                  </button>
-                  <button 
-                    onClick={() => openModal('Trả góp qua thẻ', 'Chức năng Trả góp qua thẻ tín dụng đang được liên kết. Hỗ trợ thẻ Visa, Master, JCB của 25 ngân hàng.', 'info')}
-                    className="border border-slate-200 hover:border-[#2f5f88] hover:bg-slate-50 py-2.5 px-4 rounded-lg text-center cursor-pointer transition-all"
-                  >
-                    <div className="text-[10px] font-bold font-heading uppercase text-slate-800 tracking-wider">TRẢ GÓP QUA THẺ</div>
-                    <div className="text-[9px] text-slate-400 font-sans mt-0.5">Visa, Mastercard, JCB</div>
-                  </button>
-                </div>
-
                 {/* Trust Badges */}
-                <div className="grid grid-cols-3 gap-4 pt-6 border-t border-slate-100 text-center text-[10px] text-slate-400 font-sans">
+                <div className="grid grid-cols-2 gap-4 pt-6 border-t border-slate-100 text-center text-[10px] text-slate-400 font-sans">
                   <div className="flex flex-col items-center gap-1.5">
                     <Shield size={18} className="text-[#2f5f88]" />
                     <span className="font-semibold text-slate-700">100% Chính Hãng</span>
                   </div>
                   <div className="flex flex-col items-center gap-1.5">
                     <Truck size={18} className="text-[#2f5f88]" />
-                    <span className="font-semibold text-slate-700">Giao Hàng Miễn Phí</span>
-                  </div>
-                  <div className="flex flex-col items-center gap-1.5">
-                    <RefreshCw size={18} className="text-[#2f5f88]" />
-                    <span className="font-semibold text-slate-700">7 Ngày Đổi Trả</span>
+                    <span className="font-semibold text-slate-700">Miễn phí đơn từ 1 triệu</span>
                   </div>
                 </div>
               </div>
@@ -656,7 +594,7 @@ const ProductDetail = () => {
             {[
               { id: 'description', label: 'Mô tả sản phẩm' },
               { id: 'specs', label: 'Thông số kỹ thuật' },
-              { id: 'reviews', label: `Đánh giá (${productReviews.length})` }
+              { id: 'reviews', label: `Đánh giá (${displayedReviewCount})` }
             ].map((tab) => (
               <button
                 key={tab.id}
@@ -718,6 +656,8 @@ const ProductDetail = () => {
                           <img
                             src={imgUrl}
                             alt={`${product.title} - hình chi tiết ${index + 1}`}
+                            loading="lazy"
+                            decoding="async"
                             className="w-full h-full object-contain group-hover:scale-[1.03] transition-transform duration-300"
                           />
                         </button>
@@ -741,7 +681,7 @@ const ProductDetail = () => {
                           </div>
                           {hl.imageUrl && (
                             <div className="mt-4 bg-slate-50 p-4 rounded-lg border border-slate-100 flex items-center justify-center aspect-video overflow-hidden">
-                              <img src={hl.imageUrl} alt={hl.title} className="w-full h-full object-contain hover:scale-[1.03] transition-transform duration-300" />
+                              <img src={hl.imageUrl} alt={hl.title} loading="lazy" decoding="async" className="w-full h-full object-contain hover:scale-[1.03] transition-transform duration-300" />
                             </div>
                           )}
                         </div>
@@ -979,7 +919,7 @@ const ProductDetail = () => {
                           value={reviewComment}
                           onChange={(e) => setReviewComment(e.target.value)}
                           placeholder="Chia sẻ nhận xét thực tế về chất liệu, độ bền và tính năng của sản phẩm..."
-                          className="w-full bg-[#f8f8f8] border border-slate-200 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#2f5f88] text-slate-750 text-xs"
+                          className="w-full bg-[#f8f8f8] border border-slate-200 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#2f5f88] text-slate-700 text-xs"
                         />
                       </div>
                       
@@ -1014,12 +954,13 @@ const ProductDetail = () => {
       {/* Specifications Full Modal */}
       {isSpecsModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 animate-in fade-in duration-200">
-          <div className="bg-white rounded-xl shadow-2xl max-w-2xl w-full overflow-hidden flex flex-col max-h-[85vh] animate-in zoom-in-95 duration-200">
+          <div role="dialog" aria-modal="true" aria-labelledby="specs-title" className="bg-white rounded-xl shadow-2xl max-w-2xl w-full overflow-hidden flex flex-col max-h-[85vh] animate-in zoom-in-95 duration-200">
             {/* Modal Header */}
             <div className="px-6 py-4 border-b border-slate-100 flex justify-between items-center bg-[#f8f8f8]">
-              <h3 className="font-black font-heading text-slate-800 text-sm uppercase tracking-wider">Thông số kỹ thuật chi tiết</h3>
+              <h3 id="specs-title" className="font-black font-heading text-slate-800 text-sm uppercase tracking-wider">Thông số kỹ thuật chi tiết</h3>
               <button 
                 onClick={() => setIsSpecsModalOpen(false)}
+                aria-label="Đóng thông số kỹ thuật"
                 className="text-slate-400 hover:text-slate-700 text-lg font-bold p-1 cursor-pointer"
               >
                 ✕

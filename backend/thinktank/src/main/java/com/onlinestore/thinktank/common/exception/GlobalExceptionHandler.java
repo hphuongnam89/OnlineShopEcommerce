@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.validation.FieldError;
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -17,6 +18,7 @@ import java.time.Instant;
 import java.util.List;
 
 @RestControllerAdvice
+// Chuyển các exception trong toàn hệ thống thành HTTP response có định dạng thống nhất.
 public class GlobalExceptionHandler {
 
     private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
@@ -42,8 +44,13 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiErrorResponse> handleDomainException(Exception ex, HttpServletRequest request) {
         HttpStatus status = resolveStatus(ex);
         String message = normalizeMessage(ex.getMessage());
-        log.warn("Handled domain exception: {}", ex.getMessage());
+        log.warn("Handled {} for {}", ex.getClass().getSimpleName(), request.getRequestURI());
         return build(status, status.getReasonPhrase(), message, request, List.of());
+    }
+
+    @ExceptionHandler(MaxUploadSizeExceededException.class)
+    public ResponseEntity<ApiErrorResponse> handleOversizedUpload(MaxUploadSizeExceededException ex, HttpServletRequest request) {
+        return build(HttpStatus.PAYLOAD_TOO_LARGE, "Payload Too Large", "File vượt quá kích thước tối đa 5MB", request, List.of());
     }
 
     @ExceptionHandler(Exception.class)

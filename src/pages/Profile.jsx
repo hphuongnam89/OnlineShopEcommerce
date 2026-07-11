@@ -97,6 +97,7 @@ const Profile = () => {
         ...currentUser,
         email: updated.email,
         fullName: updated.fullName,
+        phone: updated.phone,
         role: updated.role
       }));
       window.dispatchEvent(new Event('storage'));

@@ -2,7 +2,6 @@ import { useState, useEffect, useRef } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { ShoppingCart, Menu, X, Search } from 'lucide-react';
 import { useCart } from '../context/CartContext';
-import CustomModal from './CustomModal';
 import { clearAuthSession } from '../utils/api';
 
 // Storefront navigation with search, account session, mobile menu, and cart badge.
@@ -11,7 +10,6 @@ const Navbar = () => {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isAccountDropdownOpen, setIsAccountDropdownOpen] = useState(false);
   const [navSearchQuery, setNavSearchQuery] = useState('');
-  const [modalConfig, setModalConfig] = useState({ isOpen: false, title: '', message: '', type: 'info' });
   const [currentUser, setCurrentUser] = useState(() => {
     const saved = localStorage.getItem('currentUser');
     return saved ? JSON.parse(saved) : null;
@@ -75,11 +73,10 @@ const Navbar = () => {
     <nav className="fixed top-0 left-0 w-full z-50 bg-white border-b border-[#e5e7eb]">
       {/* Top Bar */}
       <div className="bg-black text-white text-[10px] sm:text-[11px] py-2 border-b border-[#262626] uppercase tracking-wider">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center">
-          <span className="font-bold">Miễn phí vận chuyển đơn từ 1.000.000đ <span className="mx-2 text-[#737373]">|</span> Bảo hành chính hãng</span>
-          <div className="flex items-center gap-4">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-center sm:justify-between items-center">
+          <span className="font-bold">Miễn phí vận chuyển đơn từ 1.000.000đ <span className="hidden sm:inline"><span className="mx-2 text-[#737373]">|</span> Bảo hành chính hãng</span></span>
+          <div className="hidden sm:flex items-center gap-4">
             <Link to="/contact" className="hover:text-white transition-colors">Liên hệ</Link>
-            <a href="#store" className="hidden sm:inline hover:text-white transition-colors" onClick={(e) => { e.preventDefault(); setModalConfig({ isOpen: true, title: 'Hệ thống cửa hàng', message: 'Balomayanh có showroom tại Quận 1, TP.HCM và Cầu Giấy, Hà Nội.', type: 'info' }); }}>Hệ thống cửa hàng</a>
             <Link to={currentUser ? "/my-orders" : "/track-order"} className="hover:text-white transition-colors">Tra cứu đơn hàng</Link>
           </div>
         </div>
@@ -93,6 +90,9 @@ const Navbar = () => {
             <img 
               src="/images/balomayanh-logo.png" 
               alt="Balomayanh Logo" 
+              width="859"
+              height="238"
+              decoding="async"
               className="h-[40px] w-auto object-contain" 
             />
           </Link>
@@ -121,6 +121,7 @@ const Navbar = () => {
                 <div className="flex items-center space-x-5">
                   <button 
                     onClick={() => setIsSearchOpen(true)}
+                    aria-label="Mở tìm kiếm"
                     className="text-gray-700 hover:text-blue-600 transition-colors cursor-pointer"
                   >
                     <Search size={20} />
@@ -132,11 +133,14 @@ const Navbar = () => {
                       <button 
                         data-account-menu-button
                         onClick={() => setIsAccountDropdownOpen((open) => !open)}
+                        aria-expanded={isAccountDropdownOpen}
+                        aria-controls="account-navigation"
                         className="text-sm font-medium text-slate-800 hover:text-blue-600 flex items-center gap-1 cursor-pointer py-1.5 focus:outline-none"
                       >
                         Chào, {(currentUser.fullName || currentUser.email || 'Khách').split(' ').pop()} ▾
                       </button>
                       <div
+                        id="account-navigation"
                         data-account-menu
                         className={`absolute right-0 mt-2 w-48 bg-white border border-slate-200 rounded-xl shadow-md py-2 z-50 animate-in fade-in duration-200 ${
                           isAccountDropdownOpen ? 'block' : 'hidden'
@@ -211,7 +215,7 @@ const Navbar = () => {
                     autoFocus
                     className="w-full bg-slate-50 border border-slate-200 rounded-lg pl-4 pr-10 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white text-slate-800"
                   />
-                  <button type="submit" className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-blue-600 cursor-pointer">
+                  <button type="submit" aria-label="Tìm kiếm" className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-blue-600 cursor-pointer">
                     <Search size={18} />
                   </button>
                 </div>
@@ -233,7 +237,7 @@ const Navbar = () => {
           <div className="md:hidden flex items-center gap-4">
             <Link
               to="/cart"
-              className="relative text-gray-700 hover:text-blue-600 transition-colors p-1 cursor-pointer"
+              className="relative text-gray-700 hover:text-blue-600 transition-colors p-2.5 cursor-pointer"
               aria-label="Xem giỏ hàng"
             >
               <ShoppingCart size={24} />
@@ -245,8 +249,10 @@ const Navbar = () => {
             </Link>
             <button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="text-gray-700 hover:text-blue-600 focus:outline-none cursor-pointer"
-              aria-label="Mở menu"
+              className="text-gray-700 hover:text-blue-600 focus:outline-none cursor-pointer p-2"
+              aria-label={isMobileMenuOpen ? 'Đóng menu' : 'Mở menu'}
+              aria-expanded={isMobileMenuOpen}
+              aria-controls="mobile-navigation"
             >
               {isMobileMenuOpen ? <X size={28} /> : <Menu size={28} />}
             </button>
@@ -257,7 +263,7 @@ const Navbar = () => {
 
       {/* Mobile Menu Panel */}
       {isMobileMenuOpen && (
-        <div className="md:hidden bg-white shadow-xl absolute w-full left-0 top-full border-t border-gray-100 animate-in slide-in-from-top-5 duration-200">
+        <div id="mobile-navigation" className="md:hidden bg-white shadow-xl absolute w-full left-0 top-full border-t border-gray-100 animate-in slide-in-from-top-5 duration-200">
           <div className="px-4 pt-2 pb-6 space-y-2">
             {navLinks.map((link) => (
               <Link
@@ -352,13 +358,6 @@ const Navbar = () => {
           </div>
         </div>
       )}
-      <CustomModal 
-        isOpen={modalConfig.isOpen} 
-        onClose={() => setModalConfig(prev => ({ ...prev, isOpen: false }))} 
-        title={modalConfig.title} 
-        message={modalConfig.message} 
-        type={modalConfig.type} 
-      />
     </nav>
   );
 };

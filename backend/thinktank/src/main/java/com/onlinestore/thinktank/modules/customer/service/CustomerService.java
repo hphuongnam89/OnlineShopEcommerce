@@ -1,5 +1,8 @@
 package com.onlinestore.thinktank.modules.customer.service;
 
+import com.onlinestore.thinktank.common.exception.DuplicateResourceException;
+import com.onlinestore.thinktank.common.exception.InvalidRequestException;
+import com.onlinestore.thinktank.common.exception.ResourceNotFoundException;
 import com.onlinestore.thinktank.modules.customer.dto.AdminCustomerResponse;
 import com.onlinestore.thinktank.modules.customer.dto.CustomerRequest;
 import com.onlinestore.thinktank.modules.customer.entity.Customer;
@@ -21,6 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.Set;
@@ -60,20 +64,21 @@ public class CustomerService {
     public Customer createCustomer(CustomerRequest request) {
         // Create the linked user account first so the customer record can reference it safely.
         if (request.getEmail() == null || request.getEmail().trim().isEmpty()) {
-            throw new RuntimeException("Email không được để trống");
+            throw new InvalidRequestException("Email không được để trống");
         }
-        if (userRepository.existsByEmail(request.getEmail())) {
-            throw new RuntimeException("Email đã được sử dụng");
+        String email = request.getEmail().trim().toLowerCase(Locale.ROOT);
+        if (userRepository.existsByEmail(email)) {
+            throw new DuplicateResourceException("Email đã được sử dụng");
         }
         if (request.getPassword() == null || request.getPassword().trim().isEmpty()) {
-            throw new RuntimeException("Mật khẩu không được để trống");
+            throw new InvalidRequestException("Mật khẩu không được để trống");
         }
 
         Role customerRole = roleRepository.findByName("ROLE_CUSTOMER")
-                .orElseThrow(() -> new RuntimeException("Không tìm thấy quyền ROLE_CUSTOMER"));
+                .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy quyền ROLE_CUSTOMER"));
 
         User user = User.builder()
-                .email(request.getEmail().trim())
+                .email(email)
                 .passwordHash(passwordEncoder.encode(request.getPassword().trim()))
                 .fullName(request.getFullName() != null ? request.getFullName().trim() : null)
                 .phone(request.getPhone() != null ? request.getPhone().trim() : null)
@@ -98,17 +103,17 @@ public class CustomerService {
     public Customer updateCustomer(Long id, CustomerRequest request) {
         // Update the user profile and customer spending/tier together to keep the pair in sync.
         Customer customer = customerRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Không tìm thấy khách hàng với id: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy khách hàng với id: " + id));
 
         User user = customer.getUser();
         if (user == null) {
-            throw new RuntimeException("Không tìm thấy tài khoản liên kết với khách hàng: " + id);
+            throw new ResourceNotFoundException("Không tìm thấy tài khoản liên kết với khách hàng: " + id);
         }
 
         if (request.getEmail() != null && !request.getEmail().trim().isEmpty()) {
-            String newEmail = request.getEmail().trim();
+            String newEmail = request.getEmail().trim().toLowerCase(Locale.ROOT);
             if (!newEmail.equalsIgnoreCase(user.getEmail()) && userRepository.existsByEmail(newEmail)) {
-                throw new RuntimeException("Email đã được sử dụng");
+                throw new DuplicateResourceException("Email đã được sử dụng");
             }
             user.setEmail(newEmail);
         }
@@ -140,7 +145,7 @@ public class CustomerService {
     public void deleteCustomer(Long id) {
         // Soft delete the customer and its linked user account so the identity cannot be reused accidentally.
         Customer customer = customerRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Không tìm thấy khách hàng với id: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy khách hàng với id: " + id));
 
         User user = customer.getUser();
 
@@ -196,7 +201,7 @@ public class CustomerService {
 
     public AdminCustomerResponse getAdminCustomerById(Long id) {
         Customer customer = customerRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Không tìm thấy khách hàng với id: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy khách hàng với id: " + id));
         Map<Long, Long> orderCountMap = loadOrderCountMap(List.of(customer));
         return toAdminResponse(customer, orderCountMap.getOrDefault(customer.getId(), 0L));
     }

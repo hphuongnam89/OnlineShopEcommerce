@@ -24,7 +24,7 @@ const About = () => {
           </div>
           <div className="relative">
             <div className="absolute inset-0 bg-blue-100 rounded-3xl transform translate-x-4 translate-y-4 -z-10"></div>
-            <img src="/images/AirportCommuter.jpg" alt="Về Chúng Tôi" className="rounded-3xl shadow-lg w-full object-cover" />
+            <img src="/images/AirportCommuter.jpg" alt="Về Chúng Tôi" width="1800" height="1267" loading="lazy" decoding="async" className="rounded-3xl shadow-lg w-full object-cover" />
           </div>
         </div>
       </section>

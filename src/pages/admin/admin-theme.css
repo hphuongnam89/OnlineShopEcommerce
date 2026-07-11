@@ -174,9 +174,7 @@
 }
 
 .admin-shell [class~="hover:bg-blue-700"]:hover,
-.admin-shell [class~="hover:bg-blue-750"]:hover,
-.admin-login [class~="hover:bg-blue-700"]:hover,
-.admin-login [class~="hover:bg-blue-750"]:hover {
+.admin-login [class~="hover:bg-blue-700"]:hover {
   background-color: #a90000 !important;
 }
 

@@ -1,5 +1,6 @@
 package com.onlinestore.thinktank.modules.category.service;
 
+import com.onlinestore.thinktank.common.exception.ResourceNotFoundException;
 import com.onlinestore.thinktank.modules.category.entity.Category;
 import com.onlinestore.thinktank.modules.category.repository.CategoryRepository;
 import lombok.RequiredArgsConstructor;
@@ -11,6 +12,7 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
+// Xử lý nghiệp vụ đọc danh mục sản phẩm cho giao diện cửa hàng.
 public class CategoryService {
 
     private final CategoryRepository categoryRepository;
@@ -21,6 +23,6 @@ public class CategoryService {
 
     public Category getCategoryById(Long id) {
         return categoryRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Category not found with id: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy danh mục với id: " + id));
     }
 }

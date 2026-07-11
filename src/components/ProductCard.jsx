@@ -7,12 +7,6 @@ const ProductCard = ({ product }) => {
   const { addToCart } = useCart();
   const isOutOfStock = product.stock === 0;
 
-  // B2B EXPANSION
-  const userStr = localStorage.getItem('currentUser');
-  const user = userStr ? JSON.parse(userStr) : null;
-  const isDealer = user && user.role === 'ROLE_DEALER';
-  
-  const displayPrice = isDealer ? product.price * 0.8 : product.price;
   const interiorImage = product.images?.length > 1 ? product.images.at(-1) : null;
 
   return (
@@ -36,12 +30,16 @@ const ProductCard = ({ product }) => {
         <img
           src={product.image} 
           alt={product.title}
+          loading="lazy"
+          decoding="async"
           className={`w-full h-full object-contain transition-opacity duration-300 ${interiorImage ? 'group-hover:opacity-0' : ''}`}
         />
         {interiorImage && (
           <img
             src={interiorImage}
             alt={`${product.title} - khoang chứa thiết bị`}
+            loading="lazy"
+            decoding="async"
             className="absolute inset-5 w-[calc(100%-2.5rem)] h-[calc(100%-2.5rem)] object-contain opacity-0 group-hover:opacity-100 transition-opacity duration-300"
           />
         )}
@@ -77,14 +75,8 @@ const ProductCard = ({ product }) => {
 
         <div className="mt-auto flex items-center justify-between gap-3 pt-2">
           <div className="flex flex-col">
-            {isDealer && (
-              <span className="text-[10px] font-medium text-slate-400 line-through mb-0.5">
-                {product.price.toLocaleString('vi-VN')}đ
-              </span>
-            )}
             <span className="text-base font-black text-[#1a1a1a] whitespace-nowrap flex items-center gap-1.5">
-              {displayPrice.toLocaleString('vi-VN')}đ
-              {isDealer && <span className="text-[9px] bg-amber-100 text-amber-700 px-1.5 py-0.5 rounded font-bold uppercase tracking-wider">B2B</span>}
+              {product.price.toLocaleString('vi-VN')}đ
             </span>
           </div>
           {isOutOfStock ? (
@@ -96,7 +88,7 @@ const ProductCard = ({ product }) => {
             </button>
           ) : (
             <button 
-              onClick={() => addToCart({ ...product, price: displayPrice })}
+              onClick={() => addToCart(product)}
               className="bg-[#cc0000] hover:bg-[#a90000] text-white px-3.5 py-2 text-xs font-black uppercase whitespace-nowrap transition-colors duration-200 flex items-center gap-1.5 cursor-pointer"
             >
               <ShoppingCart size={13} />

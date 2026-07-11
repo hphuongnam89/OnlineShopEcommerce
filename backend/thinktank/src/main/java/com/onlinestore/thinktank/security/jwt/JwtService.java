@@ -6,13 +6,13 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.security.Key;
+import java.nio.charset.StandardCharsets;
 import java.util.Date;
 
 @Service
 public class JwtService {
 
     // JWT helper for creating tokens and reading the email subject from incoming requests.
-    private final String secret;
     private final long expirationMs;
     private final Key cachedKey;
 
@@ -20,22 +20,17 @@ public class JwtService {
             @Value("${app.jwt.secret}") String secret,
             @Value("${app.jwt.expiration-ms}") long expirationMs
     ) {
-        this.secret = secret;
         this.expirationMs = expirationMs;
-        this.cachedKey = buildKey();
+        this.cachedKey = buildKey(secret);
     }
 
-    private Key buildKey() {
-        byte[] keyBytes = secret.getBytes();
+    private Key buildKey(String secret) {
+        if (secret == null || secret.isBlank()) {
+            throw new IllegalStateException("JWT_SECRET is required");
+        }
+        byte[] keyBytes = secret.getBytes(StandardCharsets.UTF_8);
         if (keyBytes.length < 32) {
-            try {
-                java.security.MessageDigest digest = java.security.MessageDigest.getInstance("SHA-256");
-                keyBytes = digest.digest(keyBytes);
-            } catch (java.security.NoSuchAlgorithmException e) {
-                byte[] padded = new byte[32];
-                System.arraycopy(keyBytes, 0, padded, 0, Math.min(keyBytes.length, 32));
-                keyBytes = padded;
-            }
+            throw new IllegalStateException("JWT_SECRET must contain at least 32 UTF-8 bytes");
         }
         return Keys.hmacShaKeyFor(keyBytes);
     }

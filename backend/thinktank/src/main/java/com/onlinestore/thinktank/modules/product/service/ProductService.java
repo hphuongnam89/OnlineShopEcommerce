@@ -1,5 +1,6 @@
 package com.onlinestore.thinktank.modules.product.service;
 
+import com.onlinestore.thinktank.common.exception.InvalidRequestException;
 import com.onlinestore.thinktank.common.exception.ResourceNotFoundException;
 import com.onlinestore.thinktank.modules.category.entity.Category;
 import com.onlinestore.thinktank.modules.category.repository.CategoryRepository;
@@ -36,7 +37,13 @@ public class ProductService {
     public Page<Product> getProducts(int page, int limit, Long categoryId, String search,
                                      BigDecimal minPrice, BigDecimal maxPrice, String sort) {
         // Public catalog query with pagination, filtering, and sort options for the storefront.
-        log.debug("Fetching products - page: {}, limit: {}, categoryId: {}, search: {}", page, limit, categoryId, search);
+        if (page < 0 || limit < 1 || limit > 100) {
+            throw new InvalidRequestException("Phân trang không hợp lệ");
+        }
+        if (search != null && search.length() > 100) {
+            throw new InvalidRequestException("Từ khóa tìm kiếm quá dài");
+        }
+        log.debug("Fetching products - page: {}, limit: {}, categoryId: {}", page, limit, categoryId);
         
         Sort springSort = Sort.by(Sort.Direction.DESC, "createdAt");
         if (sort != null) {

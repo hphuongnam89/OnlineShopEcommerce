@@ -13,6 +13,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+// Nạp tài khoản và quyền từ cơ sở dữ liệu cho cơ chế xác thực của Spring Security.
 public class CustomUserDetailsService implements UserDetailsService {
 
     private final UserRepository userRepository;

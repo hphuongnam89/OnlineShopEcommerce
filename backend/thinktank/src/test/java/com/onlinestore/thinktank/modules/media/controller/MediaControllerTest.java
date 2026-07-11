@@ -5,6 +5,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.util.ReflectionTestUtils;
 
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
@@ -12,6 +15,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+// Kiểm tra API tải ảnh, validate định dạng và xử lý thay thế ảnh cũ.
 class MediaControllerTest {
 
     @Test
@@ -24,7 +28,7 @@ class MediaControllerTest {
                 "file",
                 "hero.png",
                 "image/png",
-                new byte[] {1, 2, 3}
+                validPng()
         );
 
         var response = controller.uploadImage(file, null);
@@ -47,7 +51,7 @@ class MediaControllerTest {
                 "file",
                 "new.png",
                 "image/png",
-                new byte[] {1, 2, 3}
+                validPng()
         );
 
         controller.uploadImage(file, "/uploads/old.png");
@@ -71,5 +75,21 @@ class MediaControllerTest {
         );
 
         assertThrows(InvalidRequestException.class, () -> controller.uploadImage(file, null));
+    }
+
+    @Test
+    void uploadImage_shouldRejectFakeImageWithTrustedExtension() throws Exception {
+        MediaController controller = new MediaController();
+        ReflectionTestUtils.setField(controller, "uploadDir", Files.createTempDirectory("thinktank-upload-fake").toString());
+        MockMultipartFile file = new MockMultipartFile("file", "fake.png", "image/png", new byte[] {1, 2, 3});
+
+        assertThrows(InvalidRequestException.class, () -> controller.uploadImage(file, null));
+    }
+
+    private byte[] validPng() throws Exception {
+        BufferedImage image = new BufferedImage(2, 2, BufferedImage.TYPE_INT_RGB);
+        ByteArrayOutputStream output = new ByteArrayOutputStream();
+        ImageIO.write(image, "png", output);
+        return output.toByteArray();
     }
 }

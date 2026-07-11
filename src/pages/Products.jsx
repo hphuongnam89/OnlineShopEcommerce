@@ -36,6 +36,8 @@ const Products = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalItems, setTotalItems] = useState(0);
   const [categoryReady, setCategoryReady] = useState(false);
+  const [loadError, setLoadError] = useState('');
+  const [retryKey, setRetryKey] = useState(0);
 
   useEffect(() => {
     const fetchCategories = async () => {
@@ -61,6 +63,7 @@ const Products = () => {
     const fetchData = async () => {
       try {
         setLoading(true);
+        setLoadError('');
         const productResult = await api.products.getPage({
           page: currentPage - 1,
           limit: itemsPerPage,
@@ -75,6 +78,7 @@ const Products = () => {
       } catch {
         setProductsList([]);
         setTotalItems(0);
+        setLoadError('Không thể tải danh mục sản phẩm. Vui lòng kiểm tra kết nối và thử lại.');
       } finally {
         setLoading(false);
       }
@@ -83,7 +87,7 @@ const Products = () => {
     if (categoryReady) {
       fetchData();
     }
-  }, [categoryReady, currentPage, itemsPerPage, searchQuery, selectedCategoryId, selectedPrices, sortBy]);
+  }, [categoryReady, currentPage, itemsPerPage, retryKey, searchQuery, selectedCategoryId, selectedPrices, sortBy]);
 
   const totalPages = useMemo(() => Math.max(1, Math.ceil(totalItems / itemsPerPage)), [totalItems, itemsPerPage]);
 
@@ -296,6 +300,17 @@ const Products = () => {
           {loading ? (
             <div className="flex justify-center items-center py-24">
               <div className="w-10 h-10 border-4 border-slate-200 border-t-[#2f5f88] rounded-full animate-spin" />
+            </div>
+          ) : loadError ? (
+            <div className="bg-white rounded-xl p-12 text-center border border-rose-100 shadow-xs">
+              <p className="text-slate-700 font-semibold text-sm mb-4">{loadError}</p>
+              <button
+                onClick={() => setRetryKey((key) => key + 1)}
+                className="inline-flex items-center gap-2 rounded-lg bg-[#2f5f88] px-4 py-2.5 text-xs font-bold text-white hover:bg-[#23323f] cursor-pointer"
+              >
+                <RotateCcw size={14} />
+                Thử lại
+              </button>
             </div>
           ) : productsList.length > 0 ? (
             <div className="grid sm:grid-cols-2 xl:grid-cols-3 gap-6">
