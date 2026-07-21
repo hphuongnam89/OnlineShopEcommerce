@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { Eye, EyeOff } from 'lucide-react';
 import CustomModal from '../components/CustomModal';
 import { api, setAuthSession } from '../utils/api';
 
@@ -11,6 +12,7 @@ const Auth = () => {
   // Form states
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [fullName, setFullName] = useState('');
   const [phone, setPhone] = useState('');
 
@@ -126,17 +128,27 @@ const Auth = () => {
                   
                   <div className="space-y-1.5">
                     <label htmlFor="login-password" className="text-sm font-semibold text-slate-700">Mật Khẩu</label>
-                    <input 
-                      id="login-password"
-                      name="password"
-                      type="password" 
-                      required
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      autoComplete="current-password"
-                      className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition-colors text-slate-800 text-sm" 
-                      placeholder="••••••••" 
-                    />
+                    <div className="relative">
+                      <input 
+                        id="login-password"
+                        name="password"
+                        type={showPassword ? 'text' : 'password'} 
+                        required
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        autoComplete="current-password"
+                        className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 pr-12 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition-colors text-slate-800 text-sm" 
+                        placeholder="••••••••" 
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowPassword((prev) => !prev)}
+                        className="absolute inset-y-0 right-0 flex items-center justify-center px-4 text-slate-500 hover:text-slate-700"
+                        aria-label={showPassword ? 'Ẩn mật khẩu' : 'Hiện mật khẩu'}
+                      >
+                        {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                      </button>
+                    </div>
                   </div>
 
                   <button type="submit" className="w-full bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500/30 text-white font-semibold py-3 rounded-lg transition-all shadow-sm mt-4 cursor-pointer">
@@ -202,17 +214,27 @@ const Auth = () => {
                   
                   <div className="space-y-1.5">
                     <label htmlFor="signup-password" className="text-sm font-semibold text-slate-700">Mật Khẩu</label>
-                    <input 
-                      id="signup-password"
-                      name="password"
-                      type="password" 
-                      required
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      autoComplete="new-password"
-                      className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition-colors text-slate-800 text-sm" 
-                      placeholder="••••••••" 
-                    />
+                    <div className="relative">
+                      <input 
+                        id="signup-password"
+                        name="password"
+                        type={showPassword ? 'text' : 'password'} 
+                        required
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        autoComplete="new-password"
+                        className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 pr-12 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition-colors text-slate-800 text-sm" 
+                        placeholder="••••••••" 
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowPassword((prev) => !prev)}
+                        className="absolute inset-y-0 right-0 flex items-center justify-center px-4 text-slate-500 hover:text-slate-700"
+                        aria-label={showPassword ? 'Ẩn mật khẩu' : 'Hiện mật khẩu'}
+                      >
+                        {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                      </button>
+                    </div>
                   </div>
 
                   <button type="submit" className="w-full bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500/30 text-white font-semibold py-3 rounded-lg transition-all shadow-sm mt-4 cursor-pointer">
