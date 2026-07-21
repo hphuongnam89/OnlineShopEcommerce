@@ -8,4 +8,4 @@ FROM eclipse-temurin:21-jre
 WORKDIR /app
 COPY --from=build /app/target/*.war app.war
 EXPOSE 8080
-ENTRYPOINT ["sh", "-c", "java -Dserver.port=${PORT:-8080} -jar app.war"]
+ENTRYPOINT ["sh", "-c", "java -Dserver.port=${PORT:-8080} -Dspring.datasource.hikari.initialization-fail-timeout=-1 -Dspring.flyway.connect-retries=30 -Dspring.flyway.connect-retries-interval=2 -jar app.war"]
