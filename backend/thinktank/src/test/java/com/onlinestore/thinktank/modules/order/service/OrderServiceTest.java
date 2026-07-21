@@ -1,5 +1,6 @@
 package com.onlinestore.thinktank.modules.order.service;
 
+import com.onlinestore.thinktank.common.exception.InvalidRequestException;
 import com.onlinestore.thinktank.modules.customer.entity.Customer;
 import com.onlinestore.thinktank.modules.customer.repository.CustomerRepository;
 import com.onlinestore.thinktank.modules.customertier.entity.CustomerTier;
@@ -18,6 +19,7 @@ import com.onlinestore.thinktank.modules.role.repository.RoleRepository;
 import com.onlinestore.thinktank.modules.user.entity.User;
 import com.onlinestore.thinktank.modules.user.repository.UserRepository;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
@@ -26,6 +28,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -33,11 +38,13 @@ import java.util.Optional;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
+// Kiểm tra đặt hàng, trừ/hoàn tồn kho, đổi trạng thái và xóa mềm đơn hàng.
 class OrderServiceTest {
 
     @Mock private OrderRepository orderRepository;
@@ -51,6 +58,11 @@ class OrderServiceTest {
     @Mock private PasswordEncoder passwordEncoder;
 
     @InjectMocks private OrderService orderService;
+
+    @AfterEach
+    void clearSecurityContext() {
+        SecurityContextHolder.clearContext();
+    }
 
     @Test
     void createOrder_withVariantShouldSyncAggregateProductStock() {
@@ -73,7 +85,6 @@ class OrderServiceTest {
 
         when(customerRepository.findByUserPhone("0912345678")).thenReturn(Optional.empty());
         when(roleRepository.findByName("ROLE_CUSTOMER")).thenReturn(Optional.of(customerRole));
-        when(userRepository.existsByEmail("guest@example.com")).thenReturn(false);
         when(userRepository.save(any(User.class))).thenReturn(guestUser);
         when(customerTierResolver.resolveDefaultCustomerTier()).thenReturn(defaultTier);
         when(customerRepository.save(any(Customer.class))).thenReturn(guestCustomer);
@@ -96,5 +107,65 @@ class OrderServiceTest {
         verify(productRepository).save(productCaptor.capture());
         assertEquals(4, productCaptor.getValue().getStock());
         assertEquals(4, order.getItems().get(0).getProduct().getStock());
+    }
+
+    @Test
+    void createOrder_shouldRejectVariantFromAnotherProduct() {
+        SecurityContextHolder.getContext().setAuthentication(
+                new UsernamePasswordAuthenticationToken("customer@example.com", null, List.of()));
+
+        User user = User.builder().id(1L).email("customer@example.com").enabled(true).build();
+        Customer customer = Customer.builder().user(user).totalSpent(BigDecimal.ZERO).build();
+        Product requestedProduct = Product.builder().id(10L).name("Bag").price(BigDecimal.valueOf(100000)).stock(5).build();
+        Product otherProduct = Product.builder().id(11L).name("Wallet").price(BigDecimal.valueOf(10000)).stock(5).build();
+        ProductVariant wrongVariant = ProductVariant.builder()
+                .id(20L).product(otherProduct).name("Cheap").price(BigDecimal.valueOf(1000)).stock(5).build();
+
+        when(userRepository.findByEmail("customer@example.com")).thenReturn(Optional.of(user));
+        when(customerRepository.findByUserId(1L)).thenReturn(Optional.of(customer));
+        when(productRepository.findWithLockById(10L)).thenReturn(Optional.of(requestedProduct));
+        when(productVariantRepository.findWithLockById(20L)).thenReturn(Optional.of(wrongVariant));
+
+        CheckoutRequest request = CheckoutRequest.builder()
+                .fullName("Customer")
+                .phone("0912345678")
+                .address("HCM")
+                .items(List.of(CheckoutItemRequest.builder().productId(10L).variantId(20L).quantity(1).build()))
+                .build();
+
+        assertThrows(InvalidRequestException.class, () -> orderService.createOrder(request));
+    }
+
+    @Test
+    void updateOrderStatus_leavingDeliveredShouldRemoveCustomerSpending() {
+        Customer customer = Customer.builder().totalSpent(BigDecimal.valueOf(200)).build();
+        Order order = Order.builder()
+                .id(1L)
+                .customer(customer)
+                .finalAmount(BigDecimal.valueOf(100))
+                .status("DELIVERED")
+                .items(List.of())
+                .build();
+
+        when(orderRepository.findById(1L)).thenReturn(Optional.of(order));
+        when(orderRepository.save(order)).thenReturn(order);
+
+        orderService.updateOrderStatus(1L, "CANCELLED");
+
+        assertEquals("CANCELLED", order.getStatus());
+        assertEquals(0, BigDecimal.valueOf(100).compareTo(customer.getTotalSpent()));
+    }
+
+    @Test
+    void getAdminOrdersPageShouldFetchDetailsWithoutCollectionPagination() {
+        Order newest = Order.builder().id(2L).build();
+        Order older = Order.builder().id(1L).build();
+        when(orderRepository.findAll(any(Specification.class), any(Pageable.class)))
+                .thenReturn(new PageImpl<>(List.of(newest, older)));
+        when(orderRepository.findAllByIdIn(List.of(2L, 1L))).thenReturn(List.of(older, newest));
+
+        var result = orderService.getAdminOrdersPage(null, null, null, null, 0, 20);
+
+        assertEquals(List.of(2L, 1L), result.getContent().stream().map(Order::getId).toList());
     }
 }

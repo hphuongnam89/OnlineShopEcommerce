@@ -1,6 +1,7 @@
 package com.onlinestore.thinktank.modules.product.service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.onlinestore.thinktank.common.exception.InvalidRequestException;
+import com.onlinestore.thinktank.common.exception.ResourceNotFoundException;
 import com.onlinestore.thinktank.modules.category.entity.Category;
 import com.onlinestore.thinktank.modules.category.repository.CategoryRepository;
 import com.onlinestore.thinktank.modules.product.dto.ProductRequest;
@@ -11,6 +12,7 @@ import com.onlinestore.thinktank.modules.product.repository.ProductRepository;
 import com.onlinestore.thinktank.modules.product.repository.ProductVariantRepository;
 import com.onlinestore.thinktank.modules.product.specification.ProductSpecification;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.*;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
@@ -21,6 +23,7 @@ import java.text.Normalizer;
 import java.util.*;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional
@@ -29,12 +32,19 @@ public class ProductService {
     private final ProductRepository productRepository;
     private final ProductVariantRepository productVariantRepository;
     private final CategoryRepository categoryRepository;
-    private final ObjectMapper objectMapper;
 
     @Transactional(readOnly = true)
     public Page<Product> getProducts(int page, int limit, Long categoryId, String search,
                                      BigDecimal minPrice, BigDecimal maxPrice, String sort) {
         // Public catalog query with pagination, filtering, and sort options for the storefront.
+        if (page < 0 || limit < 1 || limit > 100) {
+            throw new InvalidRequestException("Phân trang không hợp lệ");
+        }
+        if (search != null && search.length() > 100) {
+            throw new InvalidRequestException("Từ khóa tìm kiếm quá dài");
+        }
+        log.debug("Fetching products - page: {}, limit: {}, categoryId: {}", page, limit, categoryId);
+        
         Sort springSort = Sort.by(Sort.Direction.DESC, "createdAt");
         if (sort != null) {
             switch (sort) {
@@ -55,16 +65,19 @@ public class ProductService {
     @Transactional(readOnly = true)
     public Product getProductById(Long id) {
         // Soft-deleted products are filtered out by Hibernate @Where on the entity.
+        log.debug("Fetching product by id: {}", id);
         return productRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Product not found with id: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Product not found with id: " + id));
     }
 
     public Product createProduct(ProductRequest request) {
         // Build the base product first, then attach variants so stock can be aggregated correctly.
+        log.info("Creating product: {}", request.getName());
+        
         Category category = null;
         if (request.getCategoryId() != null) {
             category = categoryRepository.findById(request.getCategoryId())
-                    .orElseThrow(() -> new RuntimeException("Category not found with id: " + request.getCategoryId()));
+                    .orElseThrow(() -> new ResourceNotFoundException("Category not found with id: " + request.getCategoryId()));
         }
 
         String slug = generateUniqueSlug(request.getName(), null);
@@ -77,7 +90,7 @@ public class ProductService {
                 .price(request.getPrice())
                 .stock(request.getStock() != null ? request.getStock() : 0)
                 .imageUrl(request.getImageUrl())
-                .additionalImages(serializeList(request.getAdditionalImages()))
+                .additionalImages(request.getAdditionalImages())
                 .weight(request.getWeight())
                 .volume(request.getVolume())
                 .material(request.getMaterial())
@@ -87,6 +100,7 @@ public class ProductService {
                 .build();
 
         Product savedProduct = productRepository.save(product);
+        log.debug("Product created with ID: {}", savedProduct.getId());
 
         if (request.getVariants() != null && !request.getVariants().isEmpty()) {
             // Variants are stored as separate rows so the admin can edit them independently.
@@ -106,19 +120,23 @@ public class ProductService {
             productVariantRepository.saveAll(variants);
             savedProduct.setStock(sumVariantStocks(savedProduct.getId()));
             savedProduct = productRepository.save(savedProduct);
+            log.debug("Added {} variants to product {}", variants.size(), savedProduct.getId());
         }
 
+        log.info("Product {} created successfully", request.getName());
         return savedProduct;
     }
 
     public Product updateProduct(Long id, ProductRequest request) {
         // Update product metadata and keep slug/stock in sync with the latest form values.
+        log.info("Updating product with ID: {}", id);
+        
         Product product = getProductById(id);
 
         Category category = null;
         if (request.getCategoryId() != null) {
             category = categoryRepository.findById(request.getCategoryId())
-                    .orElseThrow(() -> new RuntimeException("Category not found with id: " + request.getCategoryId()));
+                    .orElseThrow(() -> new ResourceNotFoundException("Category not found with id: " + request.getCategoryId()));
         }
 
         if (!product.getName().equals(request.getName())) {
@@ -130,7 +148,7 @@ public class ProductService {
         product.setDescription(request.getDescription());
         product.setPrice(request.getPrice());
         product.setImageUrl(request.getImageUrl());
-        product.setAdditionalImages(serializeList(request.getAdditionalImages()));
+        product.setAdditionalImages(request.getAdditionalImages());
         product.setWeight(request.getWeight());
         product.setVolume(request.getVolume());
         product.setMaterial(request.getMaterial());
@@ -233,14 +251,7 @@ public class ProductService {
         return result;
     }
 
-    private String serializeList(List<String> list) {
-        if (list == null) return "[]";
-        try {
-            return objectMapper.writeValueAsString(list);
-        } catch (Exception e) {
-            return "[]";
-        }
-    }
+
 
     private Integer sumVariantStocks(Long productId) {
         Integer total = productVariantRepository.sumStockByProductId(productId);

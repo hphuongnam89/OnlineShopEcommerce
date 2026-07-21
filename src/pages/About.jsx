@@ -6,7 +6,7 @@ const About = () => {
     <div className="bg-white min-h-screen pt-28">
       {/* Hero Section */}
       <section className="bg-slate-50 py-20 px-4 text-center">
-        <h1 className="text-4xl md:text-5xl font-extrabold text-slate-900 mb-6">Về Think Tank</h1>
+        <h1 className="text-4xl md:text-5xl font-extrabold text-slate-900 mb-6">Về Balomayanh</h1>
         <p className="text-xl text-slate-600 max-w-2xl mx-auto">Hành trình của chúng tôi bắt đầu từ niềm đam mê nhiếp ảnh và khao khát bảo vệ những thiết bị quý giá nhất.</p>
       </section>
 
@@ -16,15 +16,15 @@ const About = () => {
           <div>
             <h2 className="text-3xl font-bold text-slate-900 mb-6">Chúng Tôi Là Ai?</h2>
             <p className="text-lg text-slate-600 mb-4 leading-relaxed">
-              Think Tank là thương hiệu hàng đầu trong lĩnh vực cung cấp các giải pháp bảo vệ thiết bị quang học chuyên dụng. Với hơn 15 năm kinh nghiệm, chúng tôi hiểu rõ những nhu cầu và thách thức mà các nhiếp ảnh gia phải đối mặt hàng ngày.
+              Balomayanh là cửa hàng phân phối hàng đầu trong lĩnh vực cung cấp các giải pháp bảo vệ thiết bị quang học chuyên dụng. Với hơn 15 năm kinh nghiệm, chúng tôi hiểu rõ những nhu cầu và thách thức mà các nhiếp ảnh gia phải đối mặt hàng ngày.
             </p>
             <p className="text-lg text-slate-600 leading-relaxed">
-              Mỗi sản phẩm của Think Tank được thiết kế với sự tỉ mỉ, sử dụng những vật liệu chất lượng cao nhất để đảm bảo an toàn tối đa cho các thiết bị quý giá của bạn, cho dù bạn đang ở studio hay trên đỉnh núi.
+              Mỗi sản phẩm tại Balomayanh được thiết kế với sự tỉ mỉ, sử dụng những vật liệu chất lượng cao nhất để đảm bảo an toàn tối đa cho các thiết bị quý giá của bạn, cho dù bạn đang ở studio hay trên đỉnh núi.
             </p>
           </div>
           <div className="relative">
             <div className="absolute inset-0 bg-blue-100 rounded-3xl transform translate-x-4 translate-y-4 -z-10"></div>
-            <img src="/images/AirportCommuter.jpg" alt="Về Chúng Tôi" className="rounded-3xl shadow-lg w-full object-cover" />
+            <img src="/images/AirportCommuter.jpg" alt="Về Chúng Tôi" width="1800" height="1267" loading="lazy" decoding="async" className="rounded-3xl shadow-lg w-full object-cover" />
           </div>
         </div>
       </section>

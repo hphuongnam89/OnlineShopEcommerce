@@ -2,11 +2,14 @@ package com.onlinestore.thinktank.common.exception;
 
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.validation.FieldError;
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -15,7 +18,10 @@ import java.time.Instant;
 import java.util.List;
 
 @RestControllerAdvice
+// Chuyển các exception trong toàn hệ thống thành HTTP response có định dạng thống nhất.
 public class GlobalExceptionHandler {
+
+    private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ApiErrorResponse> handleValidation(MethodArgumentNotValidException ex, HttpServletRequest request) {
@@ -26,20 +32,30 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler({
+            InvalidRequestException.class,
             IllegalArgumentException.class,
             AuthenticationException.class,
             AccessDeniedException.class,
             EntityNotFoundException.class,
-            RuntimeException.class
+            ResourceNotFoundException.class,
+            DuplicateResourceException.class,
+            InsufficientStockException.class
     })
-    public ResponseEntity<ApiErrorResponse> handleRuntime(Exception ex, HttpServletRequest request) {
+    public ResponseEntity<ApiErrorResponse> handleDomainException(Exception ex, HttpServletRequest request) {
         HttpStatus status = resolveStatus(ex);
         String message = normalizeMessage(ex.getMessage());
+        log.warn("Handled {} for {}", ex.getClass().getSimpleName(), request.getRequestURI());
         return build(status, status.getReasonPhrase(), message, request, List.of());
+    }
+
+    @ExceptionHandler(MaxUploadSizeExceededException.class)
+    public ResponseEntity<ApiErrorResponse> handleOversizedUpload(MaxUploadSizeExceededException ex, HttpServletRequest request) {
+        return build(HttpStatus.PAYLOAD_TOO_LARGE, "Payload Too Large", "File vượt quá kích thước tối đa 5MB", request, List.of());
     }
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiErrorResponse> handleFallback(Exception ex, HttpServletRequest request) {
+        log.error("Unhandled exception", ex);
         return build(HttpStatus.INTERNAL_SERVER_ERROR, "Internal Server Error", "Đã xảy ra lỗi hệ thống", request, List.of());
     }
 
@@ -63,10 +79,13 @@ public class GlobalExceptionHandler {
     }
 
     private HttpStatus resolveStatus(Exception ex) {
-        String message = ex.getMessage() == null ? "" : ex.getMessage().toLowerCase();
         if (ex instanceof AuthenticationException) return HttpStatus.UNAUTHORIZED;
         if (ex instanceof AccessDeniedException) return HttpStatus.FORBIDDEN;
-        if (ex instanceof EntityNotFoundException) return HttpStatus.NOT_FOUND;
+        if (ex instanceof EntityNotFoundException || ex instanceof ResourceNotFoundException) return HttpStatus.NOT_FOUND;
+        if (ex instanceof DuplicateResourceException) return HttpStatus.CONFLICT;
+        if (ex instanceof InsufficientStockException || ex instanceof InvalidRequestException) return HttpStatus.BAD_REQUEST;
+
+        String message = ex.getMessage() == null ? "" : ex.getMessage().toLowerCase();
         if (message.contains("not found") || message.contains("không tìm thấy")) return HttpStatus.NOT_FOUND;
         if (message.contains("already taken") || message.contains("đã được sử dụng") || message.contains("duplicate")) return HttpStatus.CONFLICT;
         if (message.contains("insufficient stock") || message.contains("không hợp lệ") || message.contains("required") || message.contains("đã bị vô hiệu hóa") || message.contains("invalid password")) {

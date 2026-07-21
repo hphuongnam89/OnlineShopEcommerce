@@ -1,7 +1,9 @@
 package com.onlinestore.thinktank.modules.order.controller;
 
+import com.onlinestore.thinktank.common.exception.ResourceNotFoundException;
 import com.onlinestore.thinktank.modules.order.dto.CheckoutRequest;
 import com.onlinestore.thinktank.modules.order.dto.OrderResponse;
+import com.onlinestore.thinktank.modules.order.dto.TrackOrderResponse;
 import com.onlinestore.thinktank.modules.order.entity.Order;
 import com.onlinestore.thinktank.modules.order.service.OrderService;
 import com.onlinestore.thinktank.modules.user.entity.User;
@@ -10,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
@@ -26,7 +29,12 @@ public class OrderController {
 
     @PostMapping
     public ResponseEntity<OrderResponse> checkout(@Valid @RequestBody CheckoutRequest request) {
-        Order order = orderService.createOrder(request);
+        Order order;
+        try {
+            order = orderService.createOrder(request);
+        } catch (DataIntegrityViolationException ex) {
+            order = orderService.findByIdempotencyKey(request.getIdempotencyKey()).orElseThrow(() -> ex);
+        }
         return ResponseEntity.status(HttpStatus.CREATED).body(OrderResponse.from(order));
     }
 
@@ -34,14 +42,14 @@ public class OrderController {
     public ResponseEntity<List<OrderResponse>> getMyOrders() {
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
         User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("Current user not found with email: " + email));
+                .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy tài khoản hiện tại"));
         List<Order> orders = orderService.getMyOrders(user.getId());
         return ResponseEntity.ok(orders.stream().map(OrderResponse::from).toList());
     }
 
     @GetMapping("/track")
-    public ResponseEntity<OrderResponse> trackOrder(@RequestParam String orderId, @RequestParam String phone) {
-        Order order = orderService.trackOrder(orderId, phone);
-        return ResponseEntity.ok(OrderResponse.from(order));
+    public ResponseEntity<TrackOrderResponse> trackOrder(@RequestParam String trackingToken) {
+        Order order = orderService.trackOrder(trackingToken);
+        return ResponseEntity.ok(TrackOrderResponse.from(order));
     }
 }

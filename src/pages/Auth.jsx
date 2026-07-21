@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import CustomModal from '../components/CustomModal';
-import { api } from '../utils/api';
+import { api, setAuthSession } from '../utils/api';
 
 // Customer login/register page that stores JWT session data for the storefront.
 const Auth = () => {
@@ -49,15 +49,7 @@ const Auth = () => {
     try {
       const response = await api.auth.login(email.trim(), password.trim());
       
-      // Save current session
-      localStorage.setItem('token', response.token);
-      localStorage.setItem('currentUser', JSON.stringify({
-        email: response.email,
-        fullName: response.fullName,
-        role: response.role
-      }));
-      // Dispatch event to update Navbar session
-      window.dispatchEvent(new Event('storage'));
+      setAuthSession(response);
 
       openModal('Đăng nhập thành công', `Chào mừng ${response.fullName} quay trở lại!`, 'success');
     } catch (error) {
@@ -77,15 +69,9 @@ const Auth = () => {
 
       // Auto login after successful signup
       const loginRes = await api.auth.login(email.trim(), password.trim());
-      localStorage.setItem('token', loginRes.token);
-      localStorage.setItem('currentUser', JSON.stringify({
-        email: loginRes.email,
-        fullName: loginRes.fullName,
-        role: loginRes.role
-      }));
-      window.dispatchEvent(new Event('storage'));
+      setAuthSession(loginRes);
 
-      openModal('Tạo tài khoản thành công', `Chào mừng thành viên mới ${fullName}! Trải nghiệm Think Tank ngay nào.`, 'success');
+      openModal('Tạo tài khoản thành công', `Chào mừng thành viên mới ${fullName}! Trải nghiệm Balomayanh ngay nào.`, 'success');
     } catch (error) {
       openModal('Lỗi đăng ký', error.message || 'Không thể tạo tài khoản, vui lòng thử lại!', 'warning');
     }
@@ -100,13 +86,13 @@ const Auth = () => {
           {/* Tabs */}
           <div className="flex border-b border-slate-100">
             <button 
-              className={`flex-1 py-4 font-semibold text-sm transition-colors cursor-pointer ${isLogin ? 'text-blue-600 border-b-2 border-blue-600 bg-blue-50/30' : 'text-slate-500 hover:text-slate-700 hover:bg-slate-55'}`}
+              className={`flex-1 py-4 font-semibold text-sm transition-colors cursor-pointer ${isLogin ? 'text-blue-600 border-b-2 border-blue-600 bg-blue-50/30' : 'text-slate-500 hover:text-slate-700 hover:bg-slate-50'}`}
               onClick={() => setIsLogin(true)}
             >
               Đăng Nhập
             </button>
             <button 
-              className={`flex-1 py-4 font-semibold text-sm transition-colors cursor-pointer ${!isLogin ? 'text-blue-600 border-b-2 border-blue-600 bg-blue-50/30' : 'text-slate-500 hover:text-slate-700 hover:bg-slate-55'}`}
+              className={`flex-1 py-4 font-semibold text-sm transition-colors cursor-pointer ${!isLogin ? 'text-blue-600 border-b-2 border-blue-600 bg-blue-50/30' : 'text-slate-500 hover:text-slate-700 hover:bg-slate-50'}`}
               onClick={() => setIsLogin(false)}
             >
               Đăng Ký
@@ -139,10 +125,7 @@ const Auth = () => {
                   </div>
                   
                   <div className="space-y-1.5">
-                    <div className="flex justify-between items-center">
-                      <label htmlFor="login-password" className="text-sm font-semibold text-slate-700">Mật Khẩu</label>
-                      <a href="#" onClick={(e) => {e.preventDefault(); openModal('Khôi phục mật khẩu', 'Tính năng khôi phục mật khẩu sẽ gửi mã OTP về email của bạn. Vui lòng liên hệ hỗ trợ viên!', 'info')}} className="text-sm text-blue-600 hover:text-blue-700 font-medium">Quên mật khẩu?</a>
-                    </div>
+                    <label htmlFor="login-password" className="text-sm font-semibold text-slate-700">Mật Khẩu</label>
                     <input 
                       id="login-password"
                       name="password"

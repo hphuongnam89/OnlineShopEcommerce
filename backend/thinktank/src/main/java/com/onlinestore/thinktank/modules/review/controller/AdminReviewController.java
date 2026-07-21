@@ -1,6 +1,6 @@
 package com.onlinestore.thinktank.modules.review.controller;
 
-import com.onlinestore.thinktank.modules.review.entity.Review;
+import com.onlinestore.thinktank.modules.review.dto.ReviewResponse;
 import com.onlinestore.thinktank.modules.review.service.ReviewService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -17,7 +17,7 @@ public class AdminReviewController {
     private final ReviewService reviewService;
 
     @GetMapping
-    public ResponseEntity<List<Review>> getAdminReviews() {
+    public ResponseEntity<List<ReviewResponse>> getAdminReviews() {
         return ResponseEntity.ok(reviewService.getAdminReviews());
     }
 

@@ -10,6 +10,7 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
+// Tạo điều kiện lọc động cho màn hình tìm kiếm khách hàng của quản trị viên.
 public class CustomerSpecification {
 
     public static Specification<Customer> filter(String search, Long tierId, BigDecimal minSpent, BigDecimal maxSpent, Long minOrders, Long maxOrders) {

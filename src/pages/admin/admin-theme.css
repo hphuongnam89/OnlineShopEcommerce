@@ -1,45 +1,47 @@
-/* admin-theme.css - Premium Phoenix-Inspired Light Theme Design Tokens */
+/* Think Tank Photo admin theme */
 
-:root {
-  --admin-bg: #f8f9fa;
+.admin-shell,
+.admin-login {
+  --admin-bg: #f3f3f3;
   --admin-card-bg: #ffffff;
-  --admin-card-border: rgba(226, 232, 240, 0.8);
-  --admin-sidebar-bg: #ffffff;
-  --admin-sidebar-border: #e2e8f0;
+  --admin-card-border: #e5e7eb;
+  --admin-sidebar-bg: #1a1a1a;
+  --admin-sidebar-border: #333333;
   --admin-input-bg: #ffffff;
-  --admin-input-border: #cbd5e1;
-  --admin-text-primary: #0f172a;
-  --admin-text-secondary: #64748b;
-  --admin-accent: #2563eb; /* Phoenix blue */
-  --admin-accent-glow: rgba(37, 99, 235, 0.08);
+  --admin-input-border: #d1d5db;
+  --admin-text-primary: #1a1a1a;
+  --admin-text-secondary: #6b7280;
+  --admin-accent: #cc0000;
+  --admin-accent-glow: rgba(204, 0, 0, 0.08);
+  font-family: "Roboto", "Helvetica Neue", Arial, sans-serif;
 }
 
 /* Card Class */
 .admin-glass-card {
   background: var(--admin-card-bg);
   border: 1px solid var(--admin-card-border);
-  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05), 0 1px 2px -1px rgba(0, 0, 0, 0.05);
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: none;
+  transition: border-color 0.15s ease;
 }
 
 .admin-glass-card:hover {
-  border-color: rgba(203, 213, 225, 0.9);
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+  border-color: #9ca3af;
+  box-shadow: none;
 }
 
 /* Outlined/Filled buttons */
 .admin-glow-btn {
-  background: #2563eb;
-  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-  transition: all 0.2s ease;
+  background: #cc0000;
+  box-shadow: none;
+  transition: background 0.15s ease;
 }
 
 .admin-glow-btn:hover:not(:disabled) {
-  background: #1d4ed8;
+  background: #a90000;
 }
 
 .admin-glow-btn:active:not(:disabled) {
-  background: #1e40af;
+  background: #8f0000;
 }
 
 /* Custom Scrollbar for Admin Area */
@@ -91,9 +93,9 @@
   pointer-events: none;
   background: #ffffff;
   border: 1px solid #e2e8f0;
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+  box-shadow: none;
   color: #1e293b;
-  border-radius: 8px;
+  border-radius: 2px;
   padding: 10px;
 }
 
@@ -120,4 +122,136 @@
 
 .timeline-step.completed::after {
   background: #10b981;
+}
+
+.admin-shell :is(h1, h2, h3, h4),
+.admin-login :is(h1, h2, h3, h4) {
+  font-family: "Roboto", "Helvetica Neue", Arial, sans-serif;
+  font-weight: 900;
+  letter-spacing: -0.02em;
+  text-transform: uppercase;
+}
+
+.admin-shell :is(input, select, textarea),
+.admin-login :is(input, select, textarea) {
+  border-radius: 2px !important;
+  box-shadow: none !important;
+}
+
+.admin-shell :is(input, select, textarea):focus,
+.admin-login :is(input, select, textarea):focus {
+  border-color: #1a1a1a !important;
+  outline: 1px solid #1a1a1a !important;
+  --tw-ring-color: transparent !important;
+}
+
+.admin-shell [class~="rounded-md"],
+.admin-shell [class~="rounded-lg"],
+.admin-shell [class~="rounded-xl"],
+.admin-shell [class~="rounded-2xl"],
+.admin-shell [class~="rounded-3xl"],
+.admin-login [class~="rounded-md"],
+.admin-login [class~="rounded-lg"],
+.admin-login [class~="rounded-xl"],
+.admin-login [class~="rounded-2xl"],
+.admin-login [class~="rounded-3xl"] {
+  border-radius: 2px !important;
+}
+
+.admin-shell [class~="shadow-xs"],
+.admin-shell [class~="shadow-sm"],
+.admin-shell [class~="shadow-md"],
+.admin-shell [class~="shadow-lg"],
+.admin-shell [class~="shadow-xl"],
+.admin-shell [class~="shadow-2xl"],
+.admin-login [class*="shadow-"] {
+  box-shadow: none !important;
+}
+
+.admin-shell [class~="bg-blue-600"],
+.admin-login [class~="bg-blue-600"] {
+  background-color: #cc0000 !important;
+}
+
+.admin-shell [class~="hover:bg-blue-700"]:hover,
+.admin-login [class~="hover:bg-blue-700"]:hover {
+  background-color: #a90000 !important;
+}
+
+.admin-shell [class~="bg-blue-50"],
+.admin-login [class~="bg-blue-50"] {
+  background-color: #fff1f1 !important;
+}
+
+.admin-shell [class~="text-blue-500"],
+.admin-shell [class~="text-blue-600"],
+.admin-shell [class~="text-blue-700"],
+.admin-login [class~="text-blue-500"],
+.admin-login [class~="text-blue-600"],
+.admin-login [class~="text-blue-700"] {
+  color: #cc0000 !important;
+}
+
+.admin-shell [class~="border-blue-600"],
+.admin-login [class~="border-blue-600"] {
+  border-color: #cc0000 !important;
+}
+
+.admin-shell > aside {
+  background: #1a1a1a !important;
+  border-color: #333 !important;
+}
+
+.admin-shell > aside > div,
+.admin-shell > aside nav {
+  border-color: #333 !important;
+}
+
+.admin-shell > aside [class~="text-slate-400"],
+.admin-shell > aside [class~="text-slate-500"] {
+  color: #a3a3a3 !important;
+}
+
+.admin-shell > aside [class~="bg-blue-50"] {
+  background: #cc0000 !important;
+}
+
+.admin-shell > aside [class~="text-blue-600"],
+.admin-shell > aside [class~="bg-blue-50"] svg {
+  color: #fff !important;
+}
+
+.admin-shell > aside a:hover {
+  background: #2a2a2a !important;
+  color: #fff !important;
+}
+
+.admin-shell > div > header {
+  border-top: 3px solid #cc0000;
+  box-shadow: none !important;
+}
+
+.admin-shell > div > main {
+  background: #f3f3f3;
+}
+
+.admin-shell table {
+  border-collapse: collapse;
+}
+
+.admin-shell th {
+  color: #525252;
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.admin-login {
+  background: #1a1a1a !important;
+}
+
+.admin-login > div {
+  border: 1px solid #444 !important;
+  border-top: 4px solid #cc0000 !important;
+  box-shadow: none !important;
 }

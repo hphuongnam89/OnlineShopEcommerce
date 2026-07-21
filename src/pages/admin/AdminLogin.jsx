@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { api } from '../../utils/api';
+import { api, getValidToken, setAuthSession } from '../../utils/api';
 import CustomModal from '../../components/CustomModal';
+import './admin-theme.css';
 
 // Admin login page that routes authenticated admins into the dashboard.
 const AdminLogin = () => {
@@ -14,7 +15,7 @@ const AdminLogin = () => {
 
   useEffect(() => {
     const userStr = localStorage.getItem('currentUser');
-    const token = localStorage.getItem('token');
+    const token = getValidToken();
     if (userStr && token) {
       const user = JSON.parse(userStr);
       if (user.role === 'ROLE_ADMIN' || user.role === 'ADMIN') {
@@ -46,14 +47,7 @@ const AdminLogin = () => {
         throw new Error('Tài khoản của bạn không có quyền truy cập trang quản trị!');
       }
 
-      localStorage.setItem('token', response.token);
-      localStorage.setItem('currentUser', JSON.stringify({
-        email: response.email,
-        fullName: response.fullName,
-        role: response.role
-      }));
-      
-      window.dispatchEvent(new Event('storage'));
+      setAuthSession(response);
       navigate('/admin/dashboard');
     } catch (err) {
       setModalConfig({
@@ -68,11 +62,11 @@ const AdminLogin = () => {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 flex items-center justify-center px-4 pt-24 pb-12 font-sans">
+    <div className="admin-login min-h-screen bg-slate-50 flex items-center justify-center px-4 pt-24 pb-12">
       <div className="w-full max-w-md bg-white rounded-2xl border border-slate-200/80 shadow-md p-8">
         <div className="text-center mb-8">
           <div className="inline-block bg-blue-50 text-blue-600 p-4 rounded-2xl mb-4 border border-blue-100">
-            <span className="text-2xl font-extrabold tracking-wider uppercase font-heading">THINKTANK</span>
+            <span className="text-2xl font-extrabold tracking-wider uppercase font-heading">BALOMAYANH</span>
           </div>
           <h2 className="text-xl font-bold text-slate-900 font-heading">Quản Trị Hệ Thống</h2>
           <p className="text-slate-500 text-xs mt-1">Đăng nhập để tiếp tục quản lý cửa hàng</p>
@@ -80,20 +74,24 @@ const AdminLogin = () => {
 
         <form onSubmit={handleLogin} className="space-y-5">
           <div>
-            <label className="block text-slate-700 text-xs font-bold mb-2 uppercase tracking-wider">Email Quản Trị</label>
+            <label htmlFor="admin-email" className="block text-slate-700 text-xs font-bold mb-2 uppercase tracking-wider">Email Quản Trị</label>
             <input
+              id="admin-email"
               type="email"
+              autoComplete="username"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              placeholder="admin@thinktank.com"
+              placeholder="admin@balomayanh.vn"
               className="w-full bg-white border border-slate-200 text-slate-800 rounded-xl px-4 py-3 text-xs focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-100 placeholder-slate-400 font-medium"
             />
           </div>
 
           <div>
-            <label className="block text-slate-700 text-xs font-bold mb-2 uppercase tracking-wider">Mật Khẩu</label>
+            <label htmlFor="admin-password" className="block text-slate-700 text-xs font-bold mb-2 uppercase tracking-wider">Mật Khẩu</label>
             <input
+              id="admin-password"
               type="password"
+              autoComplete="current-password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="••••••••"
@@ -104,7 +102,7 @@ const AdminLogin = () => {
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-blue-600 hover:bg-blue-750 text-white font-bold py-3 px-4 rounded-xl transition-all duration-200 cursor-pointer flex justify-center items-center gap-2 mt-4 text-xs"
+            className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-xl transition-all duration-200 cursor-pointer flex justify-center items-center gap-2 mt-4 text-xs"
           >
             {loading ? 'Đang xác thực...' : 'Đăng Nhập'}
           </button>

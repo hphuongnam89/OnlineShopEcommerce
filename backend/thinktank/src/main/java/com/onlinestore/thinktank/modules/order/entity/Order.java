@@ -5,7 +5,7 @@ import com.onlinestore.thinktank.modules.customer.entity.Customer;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.SQLDelete;
-import org.hibernate.annotations.Where;
+import org.hibernate.annotations.SQLRestriction;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -19,13 +19,19 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 @SQLDelete(sql = "UPDATE orders SET deleted = true WHERE id = ?")
-@Where(clause = "deleted = false")
+@SQLRestriction("deleted = false")
 public class Order extends BaseEntity {
 
     // Customer order header with contact info, totals, status, and order lines.
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Column(name = "tracking_token", nullable = false, unique = true, length = 36)
+    private String trackingToken;
+
+    @Column(name = "idempotency_key", nullable = false, unique = true, length = 36)
+    private String idempotencyKey;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "customer_id")
@@ -60,7 +66,7 @@ public class Order extends BaseEntity {
     @Builder.Default
     private String status = "PENDING";
 
-    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @Builder.Default
     private List<OrderItem> items = new ArrayList<>();
 }

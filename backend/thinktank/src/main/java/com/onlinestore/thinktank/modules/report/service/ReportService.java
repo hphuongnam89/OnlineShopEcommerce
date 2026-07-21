@@ -20,8 +20,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.WeekFields;
-import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -42,7 +40,7 @@ public class ReportService {
 
         Map<String, List<Order>> grouped = orders.stream()
                 .filter(o -> o.getCreatedAt() != null)
-                .filter(o -> o.getStatus() == null || !o.getStatus().equalsIgnoreCase("CANCELLED"))
+                .filter(o -> "DELIVERED".equalsIgnoreCase(o.getStatus()))
                 .collect(Collectors.groupingBy(
                         o -> buildPeriodKey(o.getCreatedAt().toLocalDate(), normalizedPeriod),
                         TreeMap::new,
@@ -134,7 +132,7 @@ public class ReportService {
                 totalCell.setCellStyle(amountStyle);
 
                 Cell discountCell = row.createCell(6);
-                discountCell.setCellValue(order.getDiscountAmount().doubleValue());
+                discountCell.setCellValue(order.getDiscountAmount() != null ? order.getDiscountAmount().doubleValue() : 0.0);
                 discountCell.setCellStyle(amountStyle);
 
                 Cell finalCell = row.createCell(7);

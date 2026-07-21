@@ -1,5 +1,6 @@
 package com.onlinestore.thinktank.modules.user.service;
 
+import com.onlinestore.thinktank.common.exception.ResourceNotFoundException;
 import com.onlinestore.thinktank.modules.customer.entity.Customer;
 import com.onlinestore.thinktank.modules.customer.repository.CustomerRepository;
 import com.onlinestore.thinktank.modules.customertier.entity.CustomerTier;
@@ -13,6 +14,7 @@ import com.onlinestore.thinktank.modules.user.entity.User;
 import com.onlinestore.thinktank.modules.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
@@ -48,9 +50,9 @@ public class ProfileService {
 
     private User findActiveUser(String email) {
         User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy tài khoản"));
         if (Boolean.FALSE.equals(user.getEnabled())) {
-            throw new RuntimeException("Tài khoản đã bị vô hiệu hóa");
+            throw new BadCredentialsException("Phiên đăng nhập không hợp lệ");
         }
         return user;
     }
@@ -80,7 +82,7 @@ public class ProfileService {
                 .phone(user.getPhone())
                 .address(resolveAddress(user))
                 .role(roleName)
-                .tierName(resolvedTier != null ? resolvedTier.getName() : "SILVER")
+                .tierName(resolvedTier != null ? resolvedTier.getName() : "BRONZE")
                 .totalSpent(totalSpent)
                 .discountPercent(resolvedTier != null ? resolvedTier.getDiscountPercent() : 0)
                 .nextTierName(nextTier != null ? nextTier.getName() : null)
@@ -123,7 +125,7 @@ public class ProfileService {
 
     private CustomerTier resolveDefaultTier() {
         return customerTierRepository.findAllByOrderByMinSpendingAsc().stream()
-                .filter(tier -> "SILVER".equalsIgnoreCase(tier.getName()))
+                .filter(tier -> "BRONZE".equalsIgnoreCase(tier.getName()))
                 .findFirst()
                 .orElse(null);
     }

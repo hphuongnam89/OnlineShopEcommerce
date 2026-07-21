@@ -17,6 +17,7 @@ import lombok.Setter;
 public class ProfileUpdateRequest {
     // Customer profile update payload for editable personal information.
     @NotBlank(message = "Họ tên không được để trống")
+    @Size(max = 255, message = "Họ tên không được vượt quá 255 ký tự")
     private String fullName;
 
     @NotBlank(message = "Số điện thoại không được để trống")

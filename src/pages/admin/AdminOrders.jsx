@@ -10,10 +10,13 @@ const AdminOrders = () => {
   const [customers, setCustomers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [page, setPage] = useState(0);
+  const [totalPages, setTotalPages] = useState(0);
+  const [totalElements, setTotalElements] = useState(0);
   const [modalConfig, setModalConfig] = useState({ isOpen: false, title: '', message: '', type: 'info' });
 
   // Filters
-  const [search, setSearch] = useState('');
+  const [search, setSearch] = useState(() => new URLSearchParams(window.location.search).get('search') || '');
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
   const [status, setStatus] = useState('');
@@ -50,15 +53,19 @@ const AdminOrders = () => {
       if (startDate) params.startDate = `${startDate}T00:00:00`;
       if (endDate) params.endDate = `${endDate}T23:59:59`;
       if (status) params.status = status;
+      params.page = page;
+      params.size = 20;
 
       const data = await api.admin.orders.getAll(params);
-      setOrders(data || []);
+      setOrders(data?.content || []);
+      setTotalPages(data?.totalPages || 0);
+      setTotalElements(data?.totalElements || 0);
     } catch (err) {
       setError(err.message || 'Không thể tải danh sách đơn hàng.');
     } finally {
       setLoading(false);
     }
-  }, [search, startDate, endDate, status]);
+  }, [search, startDate, endDate, status, page]);
 
   const fetchProductsAndCustomers = useCallback(async () => {
     try {
@@ -75,14 +82,19 @@ const AdminOrders = () => {
   useEffect(() => {
     const timer = setTimeout(() => {
       void fetchOrders();
-      void fetchProductsAndCustomers();
-    }, 0);
+    }, 250);
     return () => clearTimeout(timer);
-  }, [fetchOrders, fetchProductsAndCustomers]);
+  }, [fetchOrders]);
+
+  useEffect(() => {
+    const timer = setTimeout(() => void fetchProductsAndCustomers(), 0);
+    return () => clearTimeout(timer);
+  }, [fetchProductsAndCustomers]);
 
   const handleSearchSubmit = (e) => {
     e.preventDefault();
-    fetchOrders();
+    if (page === 0) void fetchOrders();
+    else setPage(0);
   };
 
   const handleOpenCreate = () => {
@@ -192,6 +204,7 @@ const AdminOrders = () => {
     }
 
     const payload = {
+      idempotencyKey: crypto.randomUUID(),
       fullName: fullName.trim(),
       phone: phone.trim(),
       email: email.trim(),
@@ -255,7 +268,9 @@ const AdminOrders = () => {
 
     try {
       await api.admin.orders.delete(id);
-      setOrders(prev => prev.filter(o => o.id !== id));
+      const remainingOnPage = orders.length - 1;
+      if (remainingOnPage === 0 && page > 0) setPage(current => current - 1);
+      else void fetchOrders();
       setIsDetailsOpen(false);
       setModalConfig({
         isOpen: true,
@@ -285,9 +300,9 @@ const AdminOrders = () => {
   // Helper to render Order Progress Timeline
   const renderTimeline = (currentStatus) => {
     const steps = [
-      { key: 'PENDING', label: 'Chờ xử lý', icon: ShoppingBag, color: 'text-amber-705', bg: 'bg-amber-50 border-amber-200' },
-      { key: 'SHIPPING', label: 'Đang vận chuyển', icon: Truck, color: 'text-sky-705', bg: 'bg-sky-50 border-sky-200' },
-      { key: 'DELIVERED', label: 'Đã giao hàng', icon: CheckCircle, color: 'text-emerald-750', bg: 'bg-emerald-50 border-emerald-200' },
+      { key: 'PENDING', label: 'Chờ xử lý', icon: ShoppingBag, color: 'text-amber-700', bg: 'bg-amber-50 border-amber-200' },
+      { key: 'SHIPPING', label: 'Đang vận chuyển', icon: Truck, color: 'text-sky-700', bg: 'bg-sky-50 border-sky-200' },
+      { key: 'DELIVERED', label: 'Đã giao hàng', icon: CheckCircle, color: 'text-emerald-700', bg: 'bg-emerald-50 border-emerald-200' },
     ];
 
     const isCancelled = currentStatus === 'CANCELLED';
@@ -369,7 +384,7 @@ const AdminOrders = () => {
             {selectedOrder.status !== 'CANCELLED' && (
               <button
                 onClick={() => handleDeleteOrder(selectedOrder.id)}
-                className="flex-1 sm:flex-none bg-rose-55 hover:bg-rose-100 border border-rose-200 text-rose-600 font-bold py-2.5 px-4 rounded-xl text-xs transition-colors cursor-pointer shadow-sm"
+                className="flex-1 sm:flex-none bg-rose-50 hover:bg-rose-100 border border-rose-200 text-rose-600 font-bold py-2.5 px-4 rounded-xl text-xs transition-colors cursor-pointer shadow-sm"
               >
                 Hủy / Xóa đơn hàng
               </button>
@@ -392,18 +407,18 @@ const AdminOrders = () => {
               <div className="p-6 border-b border-slate-100 bg-slate-50/50">
                 <h3 className="text-xs font-bold text-slate-800 uppercase tracking-wider font-heading">Danh Sách Sản Phẩm</h3>
               </div>
-              <div className="divide-y divide-slate-150">
+              <div className="divide-y divide-slate-100">
                 {selectedOrder.items?.map((item) => (
                   <div key={item.id} className="p-4 flex justify-between items-center text-xs gap-3">
                     <div className="flex items-center gap-3">
                       <img 
-                        src={item.product?.image || item.product?.imageUrl || '/images/thinktanklogo.png'} 
+                        src={item.product?.image || item.product?.imageUrl || '/images/balomayanh-logo.png'} 
                         alt={item.product?.name}
                         className="w-12 h-12 object-cover bg-slate-50 border border-slate-200 rounded-xl flex-shrink-0"
-                        onError={(e) => { e.target.src = '/images/thinktanklogo.png'; }}
+                        onError={(e) => { e.target.src = '/images/balomayanh-logo.png'; }}
                       />
                       <div className="min-w-0">
-                        <p className="font-bold text-slate-850 text-sm truncate max-w-[280px]">
+                        <p className="font-bold text-slate-800 text-sm truncate max-w-[280px]">
                           {item.product?.name || `Product ID: ${item.productId}`}
                         </p>
                         {item.variant && (
@@ -416,7 +431,7 @@ const AdminOrders = () => {
                     </div>
                     <div className="text-right flex-shrink-0">
                       <p className="font-bold text-slate-800 text-xs">Số lượng: {item.quantity}</p>
-                      <p className="font-mono font-black text-slate-850 text-sm mt-1">
+                      <p className="font-mono font-black text-slate-800 text-sm mt-1">
                         {((item.price || 0) * (item.quantity || 0)).toLocaleString('vi-VN')} đ
                       </p>
                     </div>
@@ -437,7 +452,7 @@ const AdminOrders = () => {
                 </div>
                 <div className="flex justify-between">
                   <span>Phí vận chuyển</span>
-                  <span className="text-slate-850 font-bold">0 đ (Freeship)</span>
+                  <span className="text-slate-800 font-bold">0 đ (Miễn phí)</span>
                 </div>
                 <div className="flex justify-between border-t border-slate-100 pt-3 text-sm font-black text-slate-900">
                   <span>Tổng tiền thanh toán</span>
@@ -499,10 +514,10 @@ const AdminOrders = () => {
                       onClick={() => handleStatusChange(selectedOrder.id, st.key)}
                       className={`w-full py-2.5 rounded-xl text-xs font-bold cursor-pointer transition-all border flex items-center justify-center ${
                         selectedOrder.status === st.key
-                          ? 'bg-blue-600 text-white border-blue-650 font-black shadow-sm'
+                          ? 'bg-blue-600 text-white border-blue-600 font-black shadow-sm'
                           : st.key === 'CANCELLED'
                             ? 'bg-white border-rose-200 text-rose-600 hover:bg-rose-50'
-                            : 'bg-white border-slate-200 text-slate-650 hover:bg-slate-50'
+                            : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50'
                       }`}
                     >
                       {st.label}
@@ -601,7 +616,7 @@ const AdminOrders = () => {
                     value={address}
                     onChange={(e) => setAddress(e.target.value)}
                     placeholder="Số nhà, tên đường, phường/xã, quận/huyện..."
-                    className="w-full bg-white border border-slate-200 text-slate-850 rounded-xl px-4 py-2.5 text-xs focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-100 font-semibold"
+                    className="w-full bg-white border border-slate-200 text-slate-800 rounded-xl px-4 py-2.5 text-xs focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-100 font-semibold"
                   />
                 </div>
                 <div className="sm:col-span-2">
@@ -611,7 +626,7 @@ const AdminOrders = () => {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="email@example.com"
-                    className="w-full bg-white border border-slate-200 text-slate-850 rounded-xl px-4 py-2.5 text-xs focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-100 font-mono"
+                    className="w-full bg-white border border-slate-200 text-slate-800 rounded-xl px-4 py-2.5 text-xs focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-100 font-mono"
                   />
                 </div>
                 <div className="sm:col-span-2">
@@ -621,7 +636,7 @@ const AdminOrders = () => {
                     value={notes}
                     onChange={(e) => setNotes(e.target.value)}
                     placeholder="Ví dụ: Giao giờ hành chính, gọi trước khi đến..."
-                    className="w-full bg-white border border-slate-200 text-slate-850 rounded-xl px-4 py-2.5 text-xs focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-100 font-semibold"
+                    className="w-full bg-white border border-slate-200 text-slate-800 rounded-xl px-4 py-2.5 text-xs focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-100 font-semibold"
                   />
                 </div>
               </div>
@@ -632,7 +647,7 @@ const AdminOrders = () => {
               <div className="p-6 border-b border-slate-100 bg-slate-50/50">
                 <h3 className="text-xs font-bold text-slate-800 uppercase tracking-wider font-heading">Sản phẩm đã chọn</h3>
               </div>
-              <div className="divide-y divide-slate-150">
+              <div className="divide-y divide-slate-100">
                 {orderItems.length === 0 ? (
                   <div className="p-10 text-center text-slate-400 text-xs font-bold">Chưa có sản phẩm nào được thêm vào đơn hàng.</div>
                 ) : (
@@ -640,14 +655,14 @@ const AdminOrders = () => {
                     <div key={idx} className="p-4 flex justify-between items-center text-xs gap-3">
                       <div className="flex items-center gap-3">
                         <img 
-                          src={item.product?.image || item.product?.imageUrl || '/images/thinktanklogo.png'} 
+                          src={item.product?.image || item.product?.imageUrl || '/images/balomayanh-logo.png'} 
                           alt={item.product?.name}
                           className="w-10 h-10 object-cover bg-slate-50 border border-slate-200 rounded-xl flex-shrink-0"
-                          onError={(e) => { e.target.src = '/images/thinktanklogo.png'; }}
+                          onError={(e) => { e.target.src = '/images/balomayanh-logo.png'; }}
                         />
                         <div className="min-w-0">
-                          <p className="font-bold text-slate-850 text-xs truncate max-w-[280px]">{item.displayName}</p>
-                          <p className="text-[10px] text-slate-450 mt-0.5">Đơn giá: {item.price?.toLocaleString('vi-VN')} đ</p>
+                          <p className="font-bold text-slate-800 text-xs truncate max-w-[280px]">{item.displayName}</p>
+                          <p className="text-[10px] text-slate-400 mt-0.5">Đơn giá: {item.price?.toLocaleString('vi-VN')} đ</p>
                         </div>
                       </div>
                       <div className="flex items-center gap-4 flex-shrink-0">
@@ -669,7 +684,7 @@ const AdminOrders = () => {
               </div>
               {orderItems.length > 0 && (
                 <div className="p-6 bg-slate-50/50 border-t border-slate-100 flex justify-between items-center text-xs">
-                  <span className="font-bold text-slate-550 uppercase">Tổng chi phí tạm tính:</span>
+                  <span className="font-bold text-slate-500 uppercase">Tổng chi phí tạm tính:</span>
                   <span className="font-mono font-black text-blue-600 text-sm">
                     {orderItems.reduce((acc, i) => acc + (i.price * i.quantity), 0).toLocaleString('vi-VN')} đ
                   </span>
@@ -688,7 +703,7 @@ const AdminOrders = () => {
                 <select
                   value={selectedCustomerId}
                   onChange={(e) => setSelectedCustomerId(e.target.value)}
-                  className="w-full bg-white border border-slate-200 text-slate-850 rounded-xl px-3 py-2.5 text-xs focus:outline-none font-bold focus:ring-1 focus:ring-blue-100"
+                  className="w-full bg-white border border-slate-200 text-slate-800 rounded-xl px-3 py-2.5 text-xs focus:outline-none font-bold focus:ring-1 focus:ring-blue-100"
                 >
                   <option value="">-- Mua nhanh (Khách vãng lai) --</option>
                   {customers.map(c => (
@@ -710,7 +725,7 @@ const AdminOrders = () => {
                   <select
                     value={selectedProductId}
                     onChange={(e) => setSelectedProductId(e.target.value)}
-                    className="w-full bg-white border border-slate-200 text-slate-850 rounded-xl px-3 py-2.5 text-xs focus:outline-none font-bold focus:ring-1 focus:ring-blue-100"
+                    className="w-full bg-white border border-slate-200 text-slate-800 rounded-xl px-3 py-2.5 text-xs focus:outline-none font-bold focus:ring-1 focus:ring-blue-100"
                   >
                     {products.map(p => (
                       <option key={p.id} value={p.id}>{p.name}</option>
@@ -724,7 +739,7 @@ const AdminOrders = () => {
                     <select
                       value={selectedVariantId}
                       onChange={(e) => setSelectedVariantId(e.target.value)}
-                      className="w-full bg-white border border-slate-200 text-slate-850 rounded-xl px-3 py-2.5 text-xs focus:outline-none font-bold focus:ring-1 focus:ring-blue-100"
+                      className="w-full bg-white border border-slate-200 text-slate-800 rounded-xl px-3 py-2.5 text-xs focus:outline-none font-bold focus:ring-1 focus:ring-blue-100"
                     >
                       {selectedProductVariants.map(v => (
                         <option key={v.id} value={v.id}>
@@ -838,7 +853,7 @@ const AdminOrders = () => {
             <input
               type="date"
               value={startDate}
-              onChange={(e) => setStartDate(e.target.value)}
+              onChange={(e) => { setStartDate(e.target.value); setPage(0); }}
               className="w-full bg-white border border-slate-200 text-slate-800 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-100 font-bold"
             />
           </div>
@@ -847,7 +862,7 @@ const AdminOrders = () => {
             <input
               type="date"
               value={endDate}
-              onChange={(e) => setEndDate(e.target.value)}
+              onChange={(e) => { setEndDate(e.target.value); setPage(0); }}
               className="w-full bg-white border border-slate-200 text-slate-800 rounded-xl px-3 py-2 text-xs focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-100 font-bold"
             />
           </div>
@@ -855,7 +870,7 @@ const AdminOrders = () => {
             <label className="block text-slate-500 text-[10px] font-bold mb-1.5 uppercase tracking-wider">Trạng thái đơn</label>
             <select
               value={status}
-              onChange={(e) => setStatus(e.target.value)}
+              onChange={(e) => { setStatus(e.target.value); setPage(0); }}
               className="w-full bg-white border border-slate-200 text-slate-800 rounded-xl px-3 py-2.5 text-xs focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-100 font-semibold"
             >
               <option value="">Tất cả trạng thái</option>
@@ -888,7 +903,7 @@ const AdminOrders = () => {
                   <th className="px-6 py-4 text-right">Thao tác</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-100 text-slate-650 text-xs font-semibold">
+              <tbody className="divide-y divide-slate-100 text-slate-600 text-xs font-semibold">
                 {orders.map((o) => (
                   <tr key={o.id} className="hover:bg-slate-50/40 transition-colors">
                     <td className="px-6 py-4 font-mono font-bold text-slate-900 text-sm">
@@ -917,7 +932,7 @@ const AdminOrders = () => {
                           setSelectedOrder(o);
                           setIsDetailsOpen(true);
                         }}
-                        className="p-2 text-blue-600 hover:text-blue-705 hover:bg-blue-50 rounded-lg transition-colors cursor-pointer"
+                        className="p-2 text-blue-600 hover:text-blue-700 hover:bg-blue-50 rounded-lg transition-colors cursor-pointer"
                         title="Xem chi tiết"
                       >
                         <Eye size={14} />
@@ -930,6 +945,30 @@ const AdminOrders = () => {
           </div>
         )}
       </div>
+      {totalPages > 1 && (
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-500">
+          <span>{totalElements.toLocaleString('vi-VN')} đơn hàng</span>
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              disabled={page === 0}
+              onClick={() => setPage(current => current - 1)}
+              className="rounded-lg border border-slate-200 px-3 py-2 font-bold disabled:cursor-not-allowed disabled:opacity-40"
+            >
+              Trang trước
+            </button>
+            <span className="font-bold text-slate-700">{page + 1}/{totalPages}</span>
+            <button
+              type="button"
+              disabled={page + 1 >= totalPages}
+              onClick={() => setPage(current => current + 1)}
+              className="rounded-lg border border-slate-200 px-3 py-2 font-bold disabled:cursor-not-allowed disabled:opacity-40"
+            >
+              Trang sau
+            </button>
+          </div>
+        </div>
+      )}
       <CustomModal
         isOpen={modalConfig.isOpen}
         onClose={() => setModalConfig(prev => ({ ...prev, isOpen: false }))}

@@ -3,12 +3,17 @@ package com.onlinestore.thinktank.modules.review.service;
 import com.onlinestore.thinktank.modules.product.entity.Product;
 import com.onlinestore.thinktank.modules.product.repository.ProductRepository;
 import com.onlinestore.thinktank.modules.review.dto.ReviewRequest;
+import com.onlinestore.thinktank.modules.review.dto.ReviewResponse;
+import com.onlinestore.thinktank.common.exception.DuplicateResourceException;
+import com.onlinestore.thinktank.common.exception.ResourceNotFoundException;
 import com.onlinestore.thinktank.modules.review.entity.Review;
 import com.onlinestore.thinktank.modules.review.repository.ReviewRepository;
 import com.onlinestore.thinktank.modules.user.entity.User;
 import com.onlinestore.thinktank.modules.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
@@ -25,18 +30,21 @@ public class ReviewService {
     private final UserRepository userRepository;
     private final com.onlinestore.thinktank.modules.order.repository.OrderRepository orderRepository;
 
-    public Review addReview(String email, ReviewRequest request) {
+    public ReviewResponse addReview(String email, ReviewRequest request) {
         // Reviews are only allowed after a verified purchase for the requested product.
         User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("User not found with email: " + email));
+                .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy tài khoản"));
 
         Product product = productRepository.findById(request.getProductId())
-                .orElseThrow(() -> new RuntimeException("Product not found with id: " + request.getProductId()));
+                .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy sản phẩm với id: " + request.getProductId()));
 
         // Verified purchase guard keeps ratings tied to real order history.
         boolean hasPurchased = orderRepository.hasUserPurchasedProduct(email, request.getProductId());
         if (!hasPurchased) {
-            throw new RuntimeException("Bạn chỉ có thể đánh giá sản phẩm này sau khi đã mua và nhận hàng thành công!");
+            throw new AccessDeniedException("Bạn chỉ có thể đánh giá sản phẩm này sau khi đã mua và nhận hàng thành công!");
+        }
+        if (reviewRepository.existsByUserIdAndProductId(user.getId(), product.getId())) {
+            throw new DuplicateResourceException("Bạn đã đánh giá sản phẩm này rồi.");
         }
 
         Review review = Review.builder()
@@ -46,12 +54,17 @@ public class ReviewService {
                 .comment(request.getComment())
                 .build();
 
-        Review savedReview = reviewRepository.save(review);
+        Review savedReview;
+        try {
+            savedReview = reviewRepository.saveAndFlush(review);
+        } catch (DataIntegrityViolationException ex) {
+            throw new DuplicateResourceException("Bạn đã đánh giá sản phẩm này rồi.");
+        }
 
         // Rebuild product score after inserting the new review row.
         recalculateProductStats(product.getId());
 
-        return savedReview;
+        return ReviewResponse.from(savedReview, false);
     }
 
     @Transactional(readOnly = true)
@@ -60,21 +73,25 @@ public class ReviewService {
     }
 
     @Transactional(readOnly = true)
-    public List<Review> getProductReviews(Long productId) {
+    public List<ReviewResponse> getProductReviews(Long productId) {
         // Public review list stays filtered by the entity-level soft delete rule.
-        return reviewRepository.findByProductIdOrderByCreatedAtDesc(productId);
+        return reviewRepository.findByProductIdOrderByCreatedAtDesc(productId).stream()
+                .map(review -> ReviewResponse.from(review, false))
+                .toList();
     }
 
     @Transactional(readOnly = true)
-    public List<Review> getAdminReviews() {
+    public List<ReviewResponse> getAdminReviews() {
         // Admin view is the raw moderation queue for all active reviews.
-        return reviewRepository.findAll();
+        return reviewRepository.findAll().stream()
+                .map(review -> ReviewResponse.from(review, true))
+                .toList();
     }
 
     public void deleteReview(Long id) {
         // Soft delete the review and then refresh the product's aggregate rating.
         Review review = reviewRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Review not found with id: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy đánh giá với id: " + id));
         Long productId = review.getProduct().getId();
         reviewRepository.delete(review);
 
@@ -85,7 +102,7 @@ public class ReviewService {
     private void recalculateProductStats(Long productId) {
         // Aggregate data is always derived from the currently active review rows.
         Product product = productRepository.findById(productId)
-                .orElseThrow(() -> new RuntimeException("Product not found with id: " + productId));
+                .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy sản phẩm với id: " + productId));
 
         long count = reviewRepository.countByProductId(productId);
         Double avg = reviewRepository.getAverageRatingByProductId(productId);

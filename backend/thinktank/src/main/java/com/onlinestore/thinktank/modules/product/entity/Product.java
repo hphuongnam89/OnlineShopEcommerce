@@ -5,11 +5,12 @@ import com.onlinestore.thinktank.modules.category.entity.Category;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.SQLDelete;
-import org.hibernate.annotations.Where;
+import org.hibernate.annotations.SQLRestriction;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @Entity
 @Table(name = "products")
@@ -20,7 +21,7 @@ import java.util.List;
 @Builder
 @com.fasterxml.jackson.annotation.JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 @SQLDelete(sql = "UPDATE products SET deleted = true WHERE id = ? AND version = ?")
-@Where(clause = "deleted = false")
+@SQLRestriction("deleted = false")
 public class Product extends BaseEntity {
 
     // Main catalog item shown on storefront and managed from admin products.
@@ -55,8 +56,9 @@ public class Product extends BaseEntity {
     @Column(name = "image_url", length = 500)
     private String imageUrl;
 
-    @Column(name = "additional_images", columnDefinition = "TEXT")
-    private String additionalImages;
+    @org.hibernate.annotations.JdbcTypeCode(org.hibernate.type.SqlTypes.JSON)
+    @Column(name = "additional_images", columnDefinition = "json")
+    private List<String> additionalImages;
 
     @Column(length = 100)
     private String weight;
@@ -73,8 +75,9 @@ public class Product extends BaseEntity {
     @Column(length = 100)
     private String sku;
 
-    @Column(name = "highlights", columnDefinition = "TEXT")
-    private String highlights;
+    @org.hibernate.annotations.JdbcTypeCode(org.hibernate.type.SqlTypes.JSON)
+    @Column(name = "highlights", columnDefinition = "json")
+    private List<Map<String, String>> highlights;
 
     @Column(name = "average_rating", precision = 3, scale = 2)
     @Builder.Default
@@ -84,7 +87,7 @@ public class Product extends BaseEntity {
     @Builder.Default
     private Integer reviewCount = 0;
 
-    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @Builder.Default
     private List<ProductVariant> variants = new ArrayList<>();
 

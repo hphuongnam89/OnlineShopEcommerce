@@ -11,6 +11,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+// Xác định hạng thành viên phù hợp dựa trên tổng chi tiêu của khách hàng.
 public class CustomerTierResolver {
 
     private static final BigDecimal VIP_MIN = new BigDecimal("5000000");
@@ -49,10 +50,6 @@ public class CustomerTierResolver {
         List<CustomerTier> tiers = customerTierRepository.findAllByOrderByMinSpendingAsc();
         if (tiers.isEmpty()) {
             return null;
-        }
-        CustomerTier silver = findTierByName(tiers, "SILVER", null);
-        if (silver != null) {
-            return silver;
         }
         return findBronzeTier(tiers);
     }

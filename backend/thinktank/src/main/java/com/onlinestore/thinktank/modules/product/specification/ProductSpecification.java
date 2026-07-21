@@ -8,6 +8,7 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
+// Tạo điều kiện lọc động cho tìm kiếm sản phẩm theo từ khóa, danh mục và khoảng giá.
 public class ProductSpecification {
 
     public static Specification<Product> filter(Long categoryId, String search, BigDecimal minPrice, BigDecimal maxPrice) {

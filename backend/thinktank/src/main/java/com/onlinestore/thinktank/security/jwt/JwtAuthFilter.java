@@ -37,11 +37,20 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         }
 
         String token = authHeader.substring(7);
-        String email = null;
+
+        // Validate token FIRST before hitting the database — avoids wasted DB queries for invalid tokens
+        if (!jwtService.isValid(token)) {
+            filterChain.doFilter(request, response);
+            return;
+        }
+
+        String email;
         try {
             email = jwtService.extractEmail(token);
         } catch (Exception e) {
             // Token is invalid or expired, proceed as anonymous user
+            filterChain.doFilter(request, response);
+            return;
         }
 
         Authentication currentAuthentication = SecurityContextHolder.getContext().getAuthentication();
@@ -50,19 +59,16 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                 && !(currentAuthentication instanceof AnonymousAuthenticationToken);
 
         if (email != null && !hasRealAuthentication) {
-
             UserDetails userDetails = userDetailsService.loadUserByUsername(email);
 
-            if (jwtService.isValid(token)) {
-                UsernamePasswordAuthenticationToken auth =
-                        new UsernamePasswordAuthenticationToken(
-                                userDetails,
-                                null,
-                                userDetails.getAuthorities()
-                        );
+            UsernamePasswordAuthenticationToken auth =
+                    new UsernamePasswordAuthenticationToken(
+                            userDetails,
+                            null,
+                            userDetails.getAuthorities()
+                    );
 
-                SecurityContextHolder.getContext().setAuthentication(auth);
-            }
+            SecurityContextHolder.getContext().setAuthentication(auth);
         }
 
         filterChain.doFilter(request, response);

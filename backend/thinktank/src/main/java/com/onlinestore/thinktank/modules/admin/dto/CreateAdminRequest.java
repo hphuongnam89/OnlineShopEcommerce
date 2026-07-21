@@ -11,13 +11,15 @@ public class CreateAdminRequest {
     // Admin creation payload used by the protected admin-user endpoint.
     @NotBlank(message = "Email không được để trống")
     @Email(message = "Email không hợp lệ")
+    @Size(max = 255)
     private String email;
 
     @NotBlank(message = "Mật khẩu không được để trống")
-    @Size(min = 8, message = "Mật khẩu phải có ít nhất 8 ký tự")
+    @Size(min = 8, max = 128, message = "Mật khẩu phải có từ 8 đến 128 ký tự")
     private String password;
 
     @NotBlank(message = "Họ tên không được để trống")
+    @Size(max = 255)
     private String fullName;
 
     @NotBlank(message = "Số điện thoại không được để trống")

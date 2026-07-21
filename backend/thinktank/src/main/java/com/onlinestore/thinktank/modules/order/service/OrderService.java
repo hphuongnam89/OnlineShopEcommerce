@@ -1,5 +1,8 @@
 package com.onlinestore.thinktank.modules.order.service;
 
+import com.onlinestore.thinktank.common.exception.InsufficientStockException;
+import com.onlinestore.thinktank.common.exception.InvalidRequestException;
+import com.onlinestore.thinktank.common.exception.ResourceNotFoundException;
 import com.onlinestore.thinktank.modules.customer.entity.Customer;
 import com.onlinestore.thinktank.modules.customer.repository.CustomerRepository;
 import com.onlinestore.thinktank.modules.customertier.service.CustomerTierResolver;
@@ -8,7 +11,6 @@ import com.onlinestore.thinktank.modules.order.dto.CheckoutRequest;
 import com.onlinestore.thinktank.modules.order.dto.UpdateOrderRequest;
 import com.onlinestore.thinktank.modules.order.entity.Order;
 import com.onlinestore.thinktank.modules.order.entity.OrderItem;
-import com.onlinestore.thinktank.modules.order.repository.OrderItemRepository;
 import com.onlinestore.thinktank.modules.order.repository.OrderRepository;
 import com.onlinestore.thinktank.modules.order.specification.OrderSpecification;
 import com.onlinestore.thinktank.modules.product.entity.Product;
@@ -20,27 +22,37 @@ import com.onlinestore.thinktank.modules.role.repository.RoleRepository;
 import com.onlinestore.thinktank.modules.user.entity.User;
 import com.onlinestore.thinktank.modules.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.beans.factory.annotation.Value;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 import java.util.Set;
+import java.util.UUID;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional
 public class OrderService {
 
+    private static final Set<String> VALID_STATUSES = Set.of("PENDING", "PROCESSING", "SHIPPING", "DELIVERED", "CANCELLED");
+
     private final OrderRepository orderRepository;
-    private final OrderItemRepository orderItemRepository;
     private final CustomerRepository customerRepository;
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
@@ -49,9 +61,16 @@ public class OrderService {
     private final ProductVariantRepository productVariantRepository;
     private final PasswordEncoder passwordEncoder;
 
+    @Value("${app.orders.pending-timeout-minutes:30}")
+    private long pendingTimeoutMinutes;
+
     public Order createOrder(CheckoutRequest request) {
         if (request.getItems() == null || request.getItems().isEmpty()) {
-            throw new RuntimeException("Order must contain at least one item.");
+            throw new InvalidRequestException("Đơn hàng phải chứa ít nhất một sản phẩm.");
+        }
+        Optional<Order> existingOrder = orderRepository.findByIdempotencyKey(request.getIdempotencyKey());
+        if (existingOrder.isPresent()) {
+            return existingOrder.get();
         }
 
         // Checkout flow:
@@ -65,6 +84,8 @@ public class OrderService {
         List<OrderItem> orderItems = new ArrayList<>();
 
         Order order = Order.builder()
+                .trackingToken(UUID.randomUUID().toString())
+                .idempotencyKey(request.getIdempotencyKey())
                 .customer(customer)
                 .fullName(request.getFullName())
                 .phone(request.getPhone())
@@ -74,10 +95,19 @@ public class OrderService {
                 .status("PENDING")
                 .build();
 
-        for (CheckoutItemRequest itemReq : request.getItems()) {
+        List<CheckoutItemRequest> sortedItems = new ArrayList<>(request.getItems());
+        sortedItems.sort((a, b) -> {
+            int cmp = a.getProductId().compareTo(b.getProductId());
+            if (cmp != 0) return cmp;
+            Long vIdA = a.getVariantId() != null ? a.getVariantId() : 0L;
+            Long vIdB = b.getVariantId() != null ? b.getVariantId() : 0L;
+            return vIdA.compareTo(vIdB);
+        });
+
+        for (CheckoutItemRequest itemReq : sortedItems) {
             productRepository.initializeVersionIfNull(itemReq.getProductId());
             Product product = productRepository.findWithLockById(itemReq.getProductId())
-                    .orElseThrow(() -> new RuntimeException("Product not found: " + itemReq.getProductId()));
+                    .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy sản phẩm: " + itemReq.getProductId()));
             normalizeProductInventory(product);
 
             ProductVariant variant = null;
@@ -86,20 +116,23 @@ public class OrderService {
             if (itemReq.getVariantId() != null) {
                 productVariantRepository.initializeVersionIfNull(itemReq.getVariantId());
                 variant = productVariantRepository.findWithLockById(itemReq.getVariantId())
-                        .orElseThrow(() -> new RuntimeException("Product variant not found: " + itemReq.getVariantId()));
+                        .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy phiên bản sản phẩm: " + itemReq.getVariantId()));
+                if (variant.getProduct() == null || !product.getId().equals(variant.getProduct().getId())) {
+                    throw new InvalidRequestException("Phiên bản sản phẩm không thuộc về sản phẩm " + product.getId());
+                }
                 normalizeVariantInventory(variant);
                 price = variant.getPrice();
             }
 
             int qty = itemReq.getQuantity();
             if (qty <= 0) {
-                throw new RuntimeException("Quantity must be greater than zero.");
+                throw new InvalidRequestException("Số lượng sản phẩm phải lớn hơn 0.");
             }
 
             // Deduct stock immediately while the product/variant rows are locked.
             if (variant != null) {
                 if (variant.getStock() < qty) {
-                    throw new RuntimeException("Insufficient stock for variant " + variant.getName() + " (SKU: " + variant.getSku() + ")");
+                    throw new InsufficientStockException("Số lượng sản phẩm trong kho không đủ cho phiên bản " + variant.getName() + " (SKU: " + variant.getSku() + ")");
                 }
                 variant.setStock(variant.getStock() - qty);
                 productVariantRepository.save(variant);
@@ -107,7 +140,7 @@ public class OrderService {
                 productRepository.save(product);
             } else {
                 if (product.getStock() < qty) {
-                    throw new RuntimeException("Insufficient stock for product " + product.getName() + " (SKU: " + product.getSku() + ")");
+                    throw new InsufficientStockException("Số lượng sản phẩm trong kho không đủ cho sản phẩm " + product.getName() + " (SKU: " + product.getSku() + ")");
                 }
                 product.setStock(product.getStock() - qty);
                 productRepository.save(product);
@@ -161,59 +194,68 @@ public class OrderService {
         return orderRepository.findAll(spec, Sort.by(Sort.Direction.DESC, "createdAt"));
     }
 
+    @Transactional(readOnly = true)
+    public Page<Order> getAdminOrdersPage(String search, LocalDateTime startDate, LocalDateTime endDate,
+                                          String status, int page, int size) {
+        if (page < 0 || size < 1 || size > 100) {
+            throw new InvalidRequestException("Phân trang không hợp lệ");
+        }
+        Specification<Order> spec = OrderSpecification.filter(search, startDate, endDate, status);
+        PageRequest pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
+        Page<Order> orderPage = orderRepository.findAll(spec, pageable);
+        List<Long> ids = orderPage.getContent().stream().map(Order::getId).toList();
+        if (ids.isEmpty()) {
+            return new PageImpl<>(List.of(), pageable, orderPage.getTotalElements());
+        }
+
+        var positions = new java.util.HashMap<Long, Integer>();
+        for (int i = 0; i < ids.size(); i++) positions.put(ids.get(i), i);
+        List<Order> orders = new ArrayList<>(orderRepository.findAllByIdIn(ids));
+        orders.sort(java.util.Comparator.comparingInt(order -> positions.get(order.getId())));
+        return new PageImpl<>(orders, pageable, orderPage.getTotalElements());
+    }
+
+    @Transactional(readOnly = true)
+    public Optional<Order> findByIdempotencyKey(String idempotencyKey) {
+        return orderRepository.findByIdempotencyKey(idempotencyKey);
+    }
+
     public Order updateOrderStatus(Long id, String status) {
         // Status changes can affect stock and customer lifetime spending, so we handle them here.
         Order order = orderRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Order not found with id: " + id));
-        
+                .orElseThrow(() -> new ResourceNotFoundException("Order not found with id: " + id));
+
+        String newStatus = status == null ? "" : status.trim().toUpperCase(Locale.ROOT);
+        if (!VALID_STATUSES.contains(newStatus)) {
+            throw new InvalidRequestException("Trạng thái đơn hàng không hợp lệ: " + status);
+        }
+
         String oldStatus = order.getStatus();
-        if (status.equals(oldStatus)) {
+        if (newStatus.equals(oldStatus)) {
             return order;
         }
 
-        order.setStatus(status);
-
-        if ("DELIVERED".equals(status)) {
-            Customer customer = order.getCustomer();
-            if (customer != null) {
-                BigDecimal newTotalSpent = customer.getTotalSpent().add(order.getFinalAmount());
-                customer.setTotalSpent(newTotalSpent);
-
-                customer.setTier(customerTierResolver.resolveBySpent(newTotalSpent));
-                customerRepository.save(customer);
-            }
+        if ("CANCELLED".equals(oldStatus)) {
+            adjustStock(order, false);
+        } else if ("CANCELLED".equals(newStatus)) {
+            adjustStock(order, true);
         }
 
-        if ("CANCELLED".equals(status) && !"CANCELLED".equals(oldStatus)) {
-            // Refund stock when an order transitions into the cancelled state.
-            for (OrderItem item : order.getItems()) {
-                int qty = item.getQuantity();
-                ProductVariant variant = item.getVariant() != null
-                        ? productVariantRepository.findWithLockById(item.getVariant().getId())
-                        .orElseThrow(() -> new RuntimeException("Product variant not found with id: " + item.getVariant().getId()))
-                        : null;
-                Product product = productRepository.findWithLockById(item.getProduct().getId())
-                        .orElseThrow(() -> new RuntimeException("Product not found with id: " + item.getProduct().getId()));
-
-                if (variant != null) {
-                    variant.setStock(variant.getStock() + qty);
-                    productVariantRepository.save(variant);
-                    syncProductStock(product);
-                    productRepository.save(product);
-                } else if (product != null) {
-                    product.setStock(product.getStock() + qty);
-                    productRepository.save(product);
-                }
-            }
+        if ("DELIVERED".equals(oldStatus)) {
+            adjustCustomerSpent(order, false);
+        }
+        if ("DELIVERED".equals(newStatus)) {
+            adjustCustomerSpent(order, true);
         }
 
+        order.setStatus(newStatus);
         return orderRepository.save(order);
     }
 
     public Order updateOrder(Long id, UpdateOrderRequest request) {
         // Admin edit flow keeps only the editable contact fields in sync.
         Order order = orderRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Order not found with id: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Order not found with id: " + id));
 
         if (request.getFullName() != null) {
             order.setFullName(request.getFullName().trim());
@@ -237,44 +279,18 @@ public class OrderService {
     public void deleteOrder(Long id) {
         // Soft delete the order after stock and loyalty adjustments are settled.
         Order order = orderRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Order not found with id: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Order not found with id: " + id));
 
         String oldStatus = order.getStatus();
 
         // Restore stock if the order was not already cancelled.
         if (!"CANCELLED".equals(oldStatus)) {
-            for (OrderItem item : order.getItems()) {
-                int qty = item.getQuantity();
-                ProductVariant variant = item.getVariant() != null
-                        ? productVariantRepository.findWithLockById(item.getVariant().getId()).orElse(null)
-                        : null;
-                Product product = productRepository.findWithLockById(item.getProduct().getId()).orElse(null);
-
-                if (variant != null) {
-                    variant.setStock(variant.getStock() + qty);
-                    productVariantRepository.save(variant);
-                    syncProductStock(product);
-                    productRepository.save(product);
-                } else if (product != null) {
-                    product.setStock(product.getStock() + qty);
-                    productRepository.save(product);
-                }
-            }
+            adjustStock(order, true);
         }
 
         // Roll back customer lifetime spending if this order had already contributed to it.
         if ("DELIVERED".equals(oldStatus)) {
-            Customer customer = order.getCustomer();
-            if (customer != null) {
-                BigDecimal newTotalSpent = customer.getTotalSpent().subtract(order.getFinalAmount());
-                if (newTotalSpent.compareTo(BigDecimal.ZERO) < 0) {
-                    newTotalSpent = BigDecimal.ZERO;
-                }
-                customer.setTotalSpent(newTotalSpent);
-
-                customer.setTier(customerTierResolver.resolveBySpent(newTotalSpent));
-                customerRepository.save(customer);
-            }
+            adjustCustomerSpent(order, false);
         }
 
         // The entity annotation converts this into a soft delete update.
@@ -283,32 +299,19 @@ public class OrderService {
         orderRepository.delete(order);
     }
 
-    public Order trackOrder(String orderIdStr, String phone) {
-        if (orderIdStr == null || orderIdStr.trim().isEmpty() || phone == null || phone.trim().isEmpty()) {
-            throw new RuntimeException("Mã đơn hàng và số điện thoại không được để trống.");
+    public Order trackOrder(String trackingToken) {
+        if (trackingToken == null || !trackingToken.matches("^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$")) {
+            throw new ResourceNotFoundException("Không tìm thấy đơn hàng.");
         }
-        
-        String cleanId = orderIdStr.toUpperCase().replace("TT-", "").trim();
-        Long id;
-        try {
-            id = Long.parseLong(cleanId);
-        } catch (NumberFormatException e) {
-            throw new RuntimeException("Mã đơn hàng không hợp lệ.");
-        }
+        return orderRepository.findByTrackingToken(trackingToken)
+                .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy đơn hàng."));
+    }
 
-        Order order = orderRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Không tìm thấy đơn hàng nào với mã cung cấp."));
-
-        if (order.getCustomer() == null || order.getCustomer().getUser() == null) {
-            throw new RuntimeException("Dữ liệu đơn hàng bị lỗi (không có thông tin khách hàng).");
-        }
-
-        String orderPhone = order.getCustomer().getUser().getPhone();
-        if (!phone.trim().equals(orderPhone)) {
-            throw new RuntimeException("Số điện thoại không khớp với thông tin đặt hàng.");
-        }
-
-        return order;
+    @Scheduled(fixedDelayString = "${app.orders.cleanup-delay-ms:900000}")
+    public void cancelExpiredPendingOrders() {
+        LocalDateTime cutoff = LocalDateTime.now().minusMinutes(pendingTimeoutMinutes);
+        orderRepository.findTop100ByStatusAndCreatedAtBeforeOrderByCreatedAtAsc("PENDING", cutoff)
+                .forEach(order -> updateOrderStatus(order.getId(), "CANCELLED"));
     }
 
     private Customer lookupOrCreateCustomer(CheckoutRequest request) {
@@ -321,7 +324,7 @@ public class OrderService {
 
         if (authenticatedEmail != null) {
             User loggedInUser = userRepository.findByEmail(authenticatedEmail)
-                    .orElseThrow(() -> new RuntimeException("Current user not found with email: " + auth.getName()));
+                    .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy tài khoản với email: " + auth.getName()));
 
             // Find or create the customer profile attached to the logged-in user.
             Customer customer = customerRepository.findByUserId(loggedInUser.getId())
@@ -358,7 +361,8 @@ public class OrderService {
         }
 
         // Guest checkout path: match by phone number first so repeat buyers stay on the same profile.
-        Optional<Customer> existingCustomer = customerRepository.findByUserPhone(request.getPhone());
+        Optional<Customer> existingCustomer = customerRepository.findByUserPhone(request.getPhone())
+                .filter(customer -> customer.getUser() != null && Boolean.FALSE.equals(customer.getUser().getEnabled()));
         if (existingCustomer.isPresent()) {
             Customer customer = existingCustomer.get();
             User user = customer.getUser();
@@ -378,25 +382,17 @@ public class OrderService {
 
         // Create a new guest customer account when no phone match exists.
         Role customerRole = roleRepository.findByName("ROLE_CUSTOMER")
-                .orElseThrow(() -> new RuntimeException("ROLE_CUSTOMER role not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy quyền ROLE_CUSTOMER"));
 
-        String email = request.getEmail();
-        if (email == null || email.trim().isEmpty()) {
-            email = request.getPhone() + "@thinktank.com";
-        }
-
-        // If email is already taken, generate a unique guest email as a fallback.
-        if (userRepository.existsByEmail(email)) {
-            email = request.getPhone() + "_" + System.currentTimeMillis() + "@thinktank.com";
-        }
+        String guestId = UUID.randomUUID().toString();
 
         User user = User.builder()
-                .email(email)
-                .passwordHash(passwordEncoder.encode(request.getPhone()))
+                .email("guest-" + guestId + "@thinktank.invalid")
+                .passwordHash(passwordEncoder.encode(UUID.randomUUID().toString()))
                 .fullName(request.getFullName())
                 .phone(request.getPhone())
                 .address(request.getAddress())
-                .enabled(true)
+                .enabled(false)
                 .roles(Set.of(customerRole))
                 .build();
         userRepository.save(user);
@@ -414,6 +410,43 @@ public class OrderService {
     private void syncProductStock(Product product) {
         Integer total = productVariantRepository.sumStockByProductId(product.getId());
         product.setStock(total != null ? total : 0);
+    }
+
+    private void adjustStock(Order order, boolean restore) {
+        for (OrderItem item : order.getItems()) {
+            int qty = item.getQuantity();
+            Product product = productRepository.findWithLockById(item.getProduct().getId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy sản phẩm với id: " + item.getProduct().getId()));
+            ProductVariant variant = item.getVariant() == null ? null
+                    : productVariantRepository.findWithLockById(item.getVariant().getId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy phiên bản sản phẩm với id: " + item.getVariant().getId()));
+
+            if (variant != null) {
+                if (!restore && variant.getStock() < qty) {
+                    throw new InsufficientStockException("Số lượng trong kho không đủ cho phiên bản " + variant.getName());
+                }
+                variant.setStock(variant.getStock() + (restore ? qty : -qty));
+                productVariantRepository.save(variant);
+                syncProductStock(product);
+            } else {
+                if (!restore && product.getStock() < qty) {
+                    throw new InsufficientStockException("Số lượng trong kho không đủ cho sản phẩm " + product.getName());
+                }
+                product.setStock(product.getStock() + (restore ? qty : -qty));
+            }
+            productRepository.save(product);
+        }
+    }
+
+    private void adjustCustomerSpent(Order order, boolean add) {
+        Customer customer = order.getCustomer();
+        if (customer == null) return;
+
+        BigDecimal totalSpent = customer.getTotalSpent() == null ? BigDecimal.ZERO : customer.getTotalSpent();
+        totalSpent = add ? totalSpent.add(order.getFinalAmount()) : totalSpent.subtract(order.getFinalAmount()).max(BigDecimal.ZERO);
+        customer.setTotalSpent(totalSpent);
+        customer.setTier(customerTierResolver.resolveBySpent(totalSpent));
+        customerRepository.save(customer);
     }
 
     private void normalizeProductInventory(Product product) {

@@ -8,6 +8,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+// Tạo điều kiện lọc đơn hàng theo từ khóa, trạng thái và khoảng thời gian.
 public class OrderSpecification {
 
     public static Specification<Order> filter(String search, LocalDateTime startDate, LocalDateTime endDate, String status) {

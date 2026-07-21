@@ -54,7 +54,7 @@ const MyOrders = () => {
     switch (status) {
       case 'DELIVERED':
         return 'Đã giao';
-      case 'SHIPPED':
+      case 'SHIPPING':
         return 'Đang giao';
       case 'CANCELLED':
         return 'Đã hủy';
@@ -69,7 +69,7 @@ const MyOrders = () => {
     switch (status) {
       case 'DELIVERED':
         return 'bg-green-50 text-green-600 border-green-200/50';
-      case 'SHIPPED':
+      case 'SHIPPING':
       case 'PROCESSING':
         return 'bg-blue-50 text-blue-600 border-blue-200/50';
       case 'CANCELLED':
@@ -107,11 +107,11 @@ const MyOrders = () => {
         <div className="mb-10 text-center sm:text-left flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
             <h1 className="text-3xl font-semibold text-slate-900 leading-tight">Đơn hàng của tôi</h1>
-            <p className="text-slate-500 text-sm mt-1">Quản lý và theo dõi tiến độ các đơn hàng phụ kiện Think Tank của bạn.</p>
+            <p className="text-slate-500 text-sm mt-1">Quản lý và theo dõi tiến độ các đơn hàng phụ kiện máy ảnh của bạn.</p>
           </div>
           <Link
             to="/products"
-            className="bg-white hover:bg-slate-50 text-slate-700 font-semibold px-4 py-2.5 rounded-lg border border-slate-200 hover:border-slate-350 transition-colors text-sm flex items-center gap-1.5 justify-center"
+            className="bg-white hover:bg-slate-50 text-slate-700 font-semibold px-4 py-2.5 rounded-lg border border-slate-200 hover:border-slate-300 transition-colors text-sm flex items-center gap-1.5 justify-center"
           >
             <ShoppingBag size={16} />
             Tiếp tục mua sắm
@@ -182,7 +182,7 @@ const MyOrders = () => {
                                       Phân loại: {item.variant.name || `${item.variant.color || ''}${item.variant.color && item.variant.size ? ' / ' : ''}${item.variant.size || ''}`}
                                     </p>
                                   )}
-                                  <div className="text-[10px] sm:text-xs text-slate-450 mt-0.5">
+                                  <div className="text-[10px] sm:text-xs text-slate-400 mt-0.5">
                                     Đơn giá: {item.price.toLocaleString('vi-VN')}đ | Số lượng: {item.quantity}
                                   </div>
                                 </div>

@@ -12,8 +12,22 @@ import org.springframework.data.repository.query.Param;
 
 import java.util.Optional;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
+import org.springframework.data.jpa.repository.EntityGraph;
+
 @Repository
+// Truy vấn sản phẩm, tìm kiếm, phân trang và khóa bản ghi khi cập nhật tồn kho.
 public interface ProductRepository extends JpaRepository<Product, Long>, JpaSpecificationExecutor<Product> {
+    
+    @Override
+    @EntityGraph(attributePaths = {"category", "variants"})
+    Page<Product> findAll(Specification<Product> spec, Pageable pageable);
+
+    @Override
+    @EntityGraph(attributePaths = {"category", "variants"})
+    Optional<Product> findById(Long id);
     Optional<Product> findBySlug(String slug);
     boolean existsBySlug(String slug);
 

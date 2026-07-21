@@ -34,6 +34,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
 @Transactional
+// Kiểm tra API hồ sơ chỉ cho phép người dùng đã xác thực truy cập và cập nhật.
 class ProfileSecurityIntegrationTest {
 
     @Autowired

@@ -3,25 +3,23 @@ import { useCart } from '../context/CartContext';
 import { Trash2, Plus, Minus, ShoppingBag, ArrowRight, CheckCircle2, ChevronLeft, MapPin, ShieldCheck } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import CustomModal from '../components/CustomModal';
-import { api } from '../utils/api';
-
-const MOCK_STORES = [
-  'Showroom Quận 1: 150 Huỳnh Thúc Kháng, Bến Nghé, Quận 1, TP.HCM',
-  'Showroom Cầu Giấy: 78 Cầu Giấy, Nghĩa Tân, Cầu Giấy, Hà Nội'
-];
+import { api, getValidToken } from '../utils/api';
 
 // Cart and checkout page, including quantity edits, address selection, and order creation.
 const Cart = () => {
   const { cartItems, updateQuantity, removeFromCart, cartTotal, clearCart } = useCart();
   const [checkoutStep, setCheckoutStep] = useState(1); // 1: Cart list, 2: Info form, 3: Success
   const [showGuestModal, setShowGuestModal] = useState(false);
+  const [idempotencyKey] = useState(() => crypto.randomUUID());
 
   // Dynamic location state
   const [locationData, setLocationData] = useState({});
   useEffect(() => {
-    fetch('https://provinces.open-api.vn/api/?depth=3')
-      .then(res => res.json())
-      .then(data => {
+    const loadLocations = async () => {
+      try {
+        const response = await fetch('https://provinces.open-api.vn/api/?depth=3');
+        if (!response.ok) throw new Error('Province service unavailable');
+        const data = await response.json();
         const mappedData = {};
         data.forEach(p => {
           mappedData[p.name] = {
@@ -33,8 +31,12 @@ const Cart = () => {
           });
         });
         setLocationData(mappedData);
-      })
-      .catch(() => setLocationData({}));
+      } catch {
+        const response = await fetch('/data/locations.json');
+        setLocationData(response.ok ? await response.json() : {});
+      }
+    };
+    void loadLocations();
   }, []);
 
   // Custom alert modal state
@@ -44,29 +46,48 @@ const Cart = () => {
   };
   const closeModal = () => setModalConfig({ ...modalConfig, isOpen: false });
 
-  // Coupon state
-  const [couponCode, setCouponCode] = useState('');
-  const [appliedDiscount, setAppliedDiscount] = useState(0);
-  const [appliedCouponName, setAppliedCouponName] = useState('');
-  const [couponError, setCouponError] = useState('');
-
   // Form state
-  const [formData, setFormData] = useState({
-    gender: 'Anh',
-    name: '',
-    phone: '',
-    email: '',
-    deliveryMethod: 'delivery', // 'delivery' or 'pickup'
-    province: '',
-    district: '',
-    ward: '',
-    street: '',
-    pickupStore: MOCK_STORES[0],
-    requestInvoice: false,
-    companyName: '',
-    companyAddress: '',
-    taxCode: '',
-    notes: ''
+  const [formData, setFormData] = useState(() => {
+    const base = {
+      gender: 'Anh',
+      name: '',
+      phone: '',
+      email: '',
+      province: '',
+      district: '',
+      ward: '',
+      street: '',
+      requestInvoice: false,
+      companyName: '',
+      companyAddress: '',
+      taxCode: '',
+      notes: '',
+      saveInfo: false
+    };
+    try {
+      const userStr = localStorage.getItem('currentUser');
+      const userObj = userStr ? JSON.parse(userStr) : null;
+
+      const savedInfoStr = localStorage.getItem('savedCheckoutInfo');
+      if (savedInfoStr) {
+        const savedInfo = JSON.parse(savedInfoStr);
+        if (!userObj || savedInfo.email === userObj.email) {
+          return { ...base, ...savedInfo };
+        }
+      }
+
+      if (userObj) {
+        return {
+          ...base,
+          name: userObj.fullName || '',
+          phone: userObj.phone || '',
+          email: userObj.email || ''
+        };
+      }
+    } catch (err) {
+      console.warn("Error restoring checkout info from storage", err);
+    }
+    return base;
   });
 
   // Success screen state
@@ -75,25 +96,30 @@ const Cart = () => {
   const [orderedTotal, setOrderedTotal] = useState(0);
   const [orderedDiscount, setOrderedDiscount] = useState(0);
 
-  const totalItems = cartItems.reduce((acc, item) => acc + item.quantity, 0);
-  const discountAmount = Math.round(cartTotal * (appliedDiscount / 100));
-  const finalTotal = cartTotal - discountAmount;
+  // Customer Loyalty Tier Discount
+  const [userTier, setUserTier] = useState(null);
+  const [tierDiscount, setTierDiscount] = useState(0);
 
-  const handleApplyCoupon = (e) => {
-    e.preventDefault();
-    const cleanCode = couponCode.trim().toUpperCase();
-    if (cleanCode === 'THINKTANK30') {
-      setAppliedDiscount(30);
-      setAppliedCouponName('THINKTANK30');
-      setCouponError('');
-    } else if (cleanCode === 'WELCOME10') {
-      setAppliedDiscount(10);
-      setAppliedCouponName('WELCOME10');
-      setCouponError('');
-    } else {
-      setCouponError('Mã giảm giá không hợp lệ hoặc đã hết hạn.');
+  useEffect(() => {
+    const token = getValidToken();
+    const userStr = localStorage.getItem('currentUser');
+    if (token && userStr) {
+      api.profile.get()
+        .then(profile => {
+          if (profile) {
+            setUserTier(profile.tierName || 'BRONZE');
+            setTierDiscount(profile.discountPercent || 0);
+          }
+        })
+        .catch(err => {
+          console.warn("Failed to fetch user profile for discount", err);
+        });
     }
-  };
+  }, []);
+
+  const totalItems = cartItems.reduce((acc, item) => acc + item.quantity, 0);
+  const tierDiscountAmount = Math.round(cartTotal * (tierDiscount / 100));
+  const finalTotal = cartTotal - tierDiscountAmount;
 
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -135,11 +161,9 @@ const Cart = () => {
       openModal('Cảnh báo', 'Vui lòng nhập số điện thoại hợp lệ (tối thiểu 10 chữ số)!', 'warning');
       return;
     }
-    if (formData.deliveryMethod === 'delivery') {
-      if (!formData.province || !formData.district || !formData.ward || !formData.street.trim()) {
-        openModal('Cảnh báo', 'Vui lòng nhập đầy đủ địa chỉ giao hàng (Tỉnh/Thành, Quận/Huyện, Phường/Xã, Số nhà)!', 'warning');
-        return;
-      }
+    if (!formData.province || !formData.district || !formData.ward || !formData.street.trim()) {
+      openModal('Cảnh báo', 'Vui lòng nhập đầy đủ địa chỉ giao hàng (Tỉnh/Thành, Quận/Huyện, Phường/Xã, Số nhà)!', 'warning');
+      return;
     }
     if (formData.requestInvoice) {
       if (!formData.companyName.trim() || !formData.companyAddress.trim() || !formData.taxCode.trim()) {
@@ -148,11 +172,10 @@ const Cart = () => {
       }
     }
 
-    const addressStr = formData.deliveryMethod === 'delivery' 
-      ? `${formData.street.trim()}, ${formData.ward}, ${formData.district}, ${formData.province}`
-      : formData.pickupStore;
+    const addressStr = `${formData.street.trim()}, ${formData.ward}, ${formData.district}, ${formData.province}`;
 
     const orderPayload = {
+      idempotencyKey,
       fullName: formData.name.trim(),
       phone: phone,
       address: addressStr,
@@ -170,11 +193,21 @@ const Cart = () => {
     try {
       const createdOrder = await api.orders.create(orderPayload);
       
+      // Save checkout info if checked
+      if (formData.saveInfo && localStorage.getItem('currentUser')) {
+        const infoToSave = { ...formData };
+        delete infoToSave.notes;
+        delete infoToSave.saveInfo;
+        localStorage.setItem('savedCheckoutInfo', JSON.stringify(infoToSave));
+      } else {
+        localStorage.removeItem('savedCheckoutInfo');
+      }
+
       // Update local ordered details for confirmation screen
-      setOrderId(`TT-${createdOrder.id}`);
+      setOrderId(createdOrder.trackingToken);
       setOrderedItems([...cartItems]);
-      setOrderedTotal(finalTotal);
-      setOrderedDiscount(discountAmount);
+      setOrderedTotal(Number(createdOrder.finalAmount ?? finalTotal));
+      setOrderedDiscount(Number(createdOrder.discountAmount ?? tierDiscountAmount));
       setCheckoutStep(3);
 
       // Clear actual cart state
@@ -194,7 +227,7 @@ const Cart = () => {
         </div>
         <h2 className="text-3xl font-extrabold text-slate-900 mb-2">Đặt hàng thành công!</h2>
         <p className="text-slate-500 text-sm mb-8">
-          Cảm ơn {formData.gender} <strong className="text-slate-800 font-bold">{formData.name}</strong> đã tin tưởng mua sắm phụ kiện nhiếp ảnh chuyên nghiệp tại Think Tank Photo.
+          Cảm ơn {formData.gender} <strong className="text-slate-800 font-bold">{formData.name}</strong> đã tin tưởng mua sắm phụ kiện nhiếp ảnh chuyên nghiệp tại Balomayanh.
         </p>
         
         {!localStorage.getItem('currentUser') && (
@@ -226,17 +259,13 @@ const Cart = () => {
             <div>
               <h4 className="font-bold text-slate-800 text-xs uppercase tracking-wider mb-2.5 flex items-center gap-1.5">
                 <MapPin size={14} className="text-blue-600" />
-                Thông tin nhận nhận hàng
+                Thông tin nhận hàng
               </h4>
               <div className="text-xs text-slate-600 space-y-1 bg-slate-50 p-4 rounded-2xl border border-slate-100">
                 <div>Người nhận: <strong className="text-slate-800 font-semibold">{formData.name} - {formData.phone}</strong></div>
                 {formData.email && <div>Email: {formData.email}</div>}
-                <div>Hình thức: {formData.deliveryMethod === 'delivery' ? 'Giao hàng tận nơi' : 'Nhận tại Showroom'}</div>
-                {formData.deliveryMethod === 'delivery' ? (
-                  <div>Địa chỉ: {formData.street}, {formData.ward}, {formData.district}, {formData.province}</div>
-                ) : (
-                  <div>Địa điểm showroom: {formData.pickupStore}</div>
-                )}
+                <div>Hình thức: Giao hàng tận nơi</div>
+                <div>Địa chỉ: {formData.street}, {formData.ward}, {formData.district}, {formData.province}</div>
                 {formData.requestInvoice && (
                   <div className="pt-2 mt-2 border-t border-slate-200/50">
                     <div className="font-semibold text-slate-700">Yêu cầu xuất hoá đơn VAT:</div>
@@ -313,7 +342,7 @@ const Cart = () => {
         </div>
         <h2 className="text-2xl font-bold text-slate-900 mb-3">Giỏ hàng của bạn đang trống</h2>
         <p className="text-slate-500 mb-8 max-w-md mx-auto">
-          Hãy duyệt qua các sản phẩm cao cấp của Think Tank và chọn cho mình chiếc balo ưng ý nhé.
+          Hãy duyệt qua các sản phẩm cao cấp tại Balomayanh và chọn cho mình chiếc balo ưng ý nhé.
         </p>
         <Link
           to="/products"
@@ -329,52 +358,16 @@ const Cart = () => {
   // ---------------- STEP 1 & 2: FILLED RENDER ----------------
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-36 pb-24">
-      {/* Progress Step Bar */}
-      <div className="max-w-xl mx-auto mb-12 relative">
-        <div className="absolute left-0 right-0 top-4 -translate-y-1/2 h-1 bg-slate-100 z-0"></div>
-        <div 
-          className="absolute left-0 top-4 -translate-y-1/2 h-1 bg-blue-600 transition-all duration-300 z-0"
-          style={{ width: checkoutStep === 1 ? '0%' : '100%' }}
-        ></div>
-        
-        <div className="flex justify-between relative z-10 text-center">
-          <div className="flex flex-col items-center">
-            <button 
-              onClick={() => setCheckoutStep(1)}
-              className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-xs cursor-pointer border ${
-                checkoutStep >= 1 ? 'bg-blue-600 border-blue-600 text-white' : 'bg-white border-slate-200 text-slate-400'
-              }`}
-            >
-              1
-            </button>
-            <span className="text-[10px] font-bold text-slate-700 mt-2 bg-white px-2">Giỏ hàng ({totalItems})</span>
-          </div>
 
-          <div className="flex flex-col items-center">
-            <button 
-              onClick={() => {
-                if (checkoutStep > 1) setCheckoutStep(2);
-              }}
-              disabled={checkoutStep < 2}
-              className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-xs border ${
-                checkoutStep >= 2 ? 'bg-blue-600 border-blue-600 text-white' : 'bg-white border-slate-200 text-slate-400'
-              }`}
-            >
-              2
-            </button>
-            <span className="text-[10px] font-bold text-slate-700 mt-2 bg-white px-2">Thông tin giao nhận</span>
-          </div>
-        </div>
-      </div>
 
       <h1 className="text-3xl font-extrabold text-slate-900 mb-8 border-l-4 border-blue-600 pl-4">
         {checkoutStep === 1 ? 'Giỏ hàng của bạn' : 'Thông tin đặt hàng'}
       </h1>
 
-      <div className="grid lg:grid-cols-3 gap-8 items-start">
+      <div className="grid min-w-0 lg:grid-cols-3 gap-8 items-start">
         
         {/* LEFT COLUMN: Switch depending on current step */}
-        <div className="lg:col-span-2 space-y-6">
+        <div className="min-w-0 lg:col-span-2 space-y-6">
           
           {checkoutStep === 1 ? (
             // --- STEP 1: CART LIST ---
@@ -382,20 +375,27 @@ const Cart = () => {
               <div className="bg-white rounded-3xl border border-slate-100 overflow-hidden shadow-sm">
                 <ul className="divide-y divide-slate-100">
                   {cartItems.map((item) => (
-                    <li key={item.id} className="p-6 flex flex-col sm:flex-row items-start sm:items-center gap-6">
+                    <li key={item.id} className="p-4 sm:p-6 flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-6">
                       {/* Image */}
-                      <div className="w-20 h-20 bg-slate-50 rounded-xl flex items-center justify-center p-2 border border-slate-100 flex-shrink-0">
-                        <img src={item.image} alt={item.title} className="w-full h-full object-contain" />
-                      </div>
+                      <Link 
+                        to={`/product/${item.productId || item.id}`}
+                        className="w-20 h-20 bg-slate-50 rounded-xl flex items-center justify-center p-2 border border-slate-100 flex-shrink-0 hover:opacity-80 transition-opacity cursor-pointer"
+                      >
+                        <img src={item.image} alt={item.title} loading="lazy" decoding="async" className="w-full h-full object-contain" />
+                      </Link>
                       
                       {/* Info */}
-                      <div className="flex-grow min-w-0">
-                        <h3 className="text-base font-bold text-slate-900 truncate">{item.title}</h3>
+                      <div className="w-full min-w-0 flex-grow">
+                        <h3 className="min-w-0 text-base font-bold text-slate-900 hover:text-[#2f5f88] transition-colors">
+                          <Link to={`/product/${item.productId || item.id}`} className="block truncate">
+                            {item.title}
+                          </Link>
+                        </h3>
                         <p className="text-xs text-slate-400 mt-0.5 flex items-center gap-1.5 flex-wrap">
                           <span>{item.category}</span>
                           {item.variantName && (
                             <>
-                              <span className="text-slate-350">•</span>
+                              <span className="text-slate-300">•</span>
                               <span className="bg-[#2f5f88]/5 text-[#2f5f88] px-2 py-0.5 rounded text-[10px] font-bold">
                                 Phân loại: {item.variantName}
                               </span>
@@ -412,6 +412,7 @@ const Cart = () => {
                         <button
                           onClick={() => updateQuantity(item.id, item.quantity - 1)}
                           className="p-1.5 hover:bg-white rounded-md transition-colors text-slate-500 hover:text-slate-800 cursor-pointer"
+                          aria-label={`Giảm số lượng ${item.title}`}
                         >
                           <Minus size={14} />
                         </button>
@@ -419,6 +420,7 @@ const Cart = () => {
                         <button
                           onClick={() => updateQuantity(item.id, item.quantity + 1)}
                           className="p-1.5 hover:bg-white rounded-md transition-colors text-slate-500 hover:text-slate-800 cursor-pointer"
+                          aria-label={`Tăng số lượng ${item.title}`}
                         >
                           <Plus size={14} />
                         </button>
@@ -428,7 +430,7 @@ const Cart = () => {
                       <button
                         onClick={() => removeFromCart(item.id)}
                         className="p-2 text-slate-400 hover:text-rose-600 transition-colors cursor-pointer rounded-lg hover:bg-rose-50"
-                        aria-label="Remove item"
+                        aria-label={`Xóa ${item.title} khỏi giỏ hàng`}
                       >
                         <Trash2 size={20} />
                       </button>
@@ -496,8 +498,9 @@ const Cart = () => {
                 {/* Name and Phone */}
                 <div className="grid sm:grid-cols-2 gap-4">
                   <div className="space-y-1.5">
-                    <label className="font-semibold text-slate-600">Họ và tên *</label>
+                    <label htmlFor="checkout-name" className="font-semibold text-slate-600">Họ và tên *</label>
                     <input 
+                      id="checkout-name"
                       type="text" 
                       name="name" 
                       value={formData.name} 
@@ -508,8 +511,9 @@ const Cart = () => {
                     />
                   </div>
                   <div className="space-y-1.5">
-                    <label className="font-semibold text-slate-600">Số điện thoại *</label>
+                    <label htmlFor="checkout-phone" className="font-semibold text-slate-600">Số điện thoại *</label>
                     <input 
+                      id="checkout-phone"
                       type="tel" 
                       name="phone" 
                       value={formData.phone} 
@@ -523,8 +527,9 @@ const Cart = () => {
 
                 {/* Email */}
                 <div className="space-y-1.5">
-                  <label className="font-semibold text-slate-600">Email (Để nhận hóa đơn điện tử)</label>
+                  <label htmlFor="checkout-email" className="font-semibold text-slate-600">Email (Để nhận hóa đơn điện tử)</label>
                   <input 
+                    id="checkout-email"
                     type="email" 
                     name="email" 
                     value={formData.email} 
@@ -534,51 +539,13 @@ const Cart = () => {
                   />
                 </div>
 
-                {/* Delivery Method Selector */}
-                <div className="border-t border-slate-100 pt-6 space-y-3">
-                  <span className="font-semibold text-slate-600 block mb-2">Hình thức nhận hàng:</span>
-                  <div className="grid grid-cols-2 gap-4">
-                    <label className={`border rounded-2xl p-4 flex flex-col gap-1 cursor-pointer transition-all ${
-                      formData.deliveryMethod === 'delivery' ? 'border-blue-600 bg-blue-50/10 ring-2 ring-blue-100' : 'border-slate-200 hover:border-slate-300'
-                    }`}>
-                      <input 
-                        type="radio" 
-                        name="deliveryMethod" 
-                        value="delivery" 
-                        checked={formData.deliveryMethod === 'delivery'} 
-                        onChange={handleInputChange}
-                        className="sr-only"
-                      />
-                      <strong className="font-bold text-slate-800">Giao hàng tận nơi</strong>
-                      <span className="text-[10px] text-slate-500">Miễn phí ship nhanh 2-4 ngày</span>
-                    </label>
-                    
-                    <label className={`border rounded-2xl p-4 flex flex-col gap-1 cursor-pointer transition-all ${
-                      formData.deliveryMethod === 'pickup' ? 'border-blue-600 bg-blue-50/10 ring-2 ring-blue-100' : 'border-slate-200 hover:border-slate-300'
-                    }`}>
-                      <input 
-                        type="radio" 
-                        name="deliveryMethod" 
-                        value="pickup" 
-                        checked={formData.deliveryMethod === 'pickup'} 
-                        onChange={handleInputChange}
-                        className="sr-only"
-                      />
-                      <strong className="font-bold text-slate-800">Nhận tại showroom</strong>
-                      <span className="text-[10px] text-slate-500">Trải nghiệm và mua tại showroom</span>
-                    </label>
-                  </div>
-                </div>
-
-                {/* Conditional Fields based on Delivery Method */}
-                {formData.deliveryMethod === 'delivery' ? (
-                  // DELIVERY ADDRESS SELECTORS
-                  <div className="space-y-4 bg-slate-50 p-5 rounded-2xl border border-slate-100">
+                <div className="space-y-4 bg-slate-50 p-5 rounded-2xl border border-slate-100">
                     <div className="grid sm:grid-cols-3 gap-4">
                       {/* Province */}
                       <div className="space-y-1.5">
-                        <label className="font-semibold text-slate-500">Tỉnh / Thành phố *</label>
+                        <label htmlFor="checkout-province" className="font-semibold text-slate-500">Tỉnh / Thành phố *</label>
                         <select 
+                          id="checkout-province"
                           name="province" 
                           value={formData.province} 
                           onChange={handleProvinceChange}
@@ -594,8 +561,9 @@ const Cart = () => {
 
                       {/* District */}
                       <div className="space-y-1.5">
-                        <label className="font-semibold text-slate-500">Quận / Huyện *</label>
+                        <label htmlFor="checkout-district" className="font-semibold text-slate-500">Quận / Huyện *</label>
                         <select 
+                          id="checkout-district"
                           name="district" 
                           value={formData.district} 
                           onChange={handleDistrictChange}
@@ -612,8 +580,9 @@ const Cart = () => {
 
                       {/* Ward */}
                       <div className="space-y-1.5">
-                        <label className="font-semibold text-slate-500">Phường / Xã *</label>
+                        <label htmlFor="checkout-ward" className="font-semibold text-slate-500">Phường / Xã *</label>
                         <select 
+                          id="checkout-ward"
                           name="ward" 
                           value={formData.ward} 
                           onChange={handleInputChange}
@@ -631,8 +600,9 @@ const Cart = () => {
 
                     {/* Street details */}
                     <div className="space-y-1.5">
-                      <label className="font-semibold text-slate-500">Số nhà, tên đường *</label>
+                      <label htmlFor="checkout-street" className="font-semibold text-slate-500">Số nhà, tên đường *</label>
                       <input 
+                        id="checkout-street"
                         type="text" 
                         name="street" 
                         value={formData.street} 
@@ -643,24 +613,6 @@ const Cart = () => {
                       />
                     </div>
                   </div>
-                ) : (
-                  // PICKUP SHOWROOM SELECTION
-                  <div className="space-y-3 bg-slate-50 p-5 rounded-2xl border border-slate-100">
-                    <label className="font-semibold text-slate-500 block">Chọn Showroom nhận hàng *</label>
-                    <select 
-                      name="pickupStore" 
-                      value={formData.pickupStore} 
-                      onChange={handleInputChange}
-                      required
-                      className="w-full bg-white border border-slate-200 rounded-xl px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-blue-500 text-slate-700"
-                    >
-                      {MOCK_STORES.map(store => (
-                        <option key={store} value={store}>{store}</option>
-                      ))}
-                    </select>
-                    <span className="text-[10px] text-slate-400 italic block">Lưu ý: Bộ phận showroom sẽ chuẩn bị mẫu sản phẩm mới nguyên seal trước khi quý khách ghé nhận.</span>
-                  </div>
-                )}
 
                 {/* Company invoice toggle (VAT) */}
                 <div className="border-t border-slate-100 pt-6">
@@ -678,8 +630,9 @@ const Cart = () => {
                   {formData.requestInvoice && (
                     <div className="mt-4 bg-slate-50 p-5 rounded-2xl border border-slate-100 space-y-4 animate-in slide-in-from-top-2 duration-300">
                       <div className="space-y-1.5">
-                        <label className="font-semibold text-slate-500">Tên công ty *</label>
+                        <label htmlFor="invoice-company-name" className="font-semibold text-slate-500">Tên công ty *</label>
                         <input 
+                          id="invoice-company-name"
                           type="text" 
                           name="companyName" 
                           value={formData.companyName} 
@@ -691,8 +644,9 @@ const Cart = () => {
                       </div>
                       <div className="grid sm:grid-cols-2 gap-4">
                         <div className="space-y-1.5">
-                          <label className="font-semibold text-slate-500">Mã số thuế *</label>
+                          <label htmlFor="invoice-tax-code" className="font-semibold text-slate-500">Mã số thuế *</label>
                           <input 
+                            id="invoice-tax-code"
                             type="text" 
                             name="taxCode" 
                             value={formData.taxCode} 
@@ -703,8 +657,9 @@ const Cart = () => {
                           />
                         </div>
                         <div className="space-y-1.5">
-                          <label className="font-semibold text-slate-500">Địa chỉ công ty *</label>
+                          <label htmlFor="invoice-company-address" className="font-semibold text-slate-500">Địa chỉ công ty *</label>
                           <input 
+                            id="invoice-company-address"
                             type="text" 
                             name="companyAddress" 
                             value={formData.companyAddress} 
@@ -719,10 +674,25 @@ const Cart = () => {
                   )}
                 </div>
 
+                {/* Save Info toggle */}
+                <div className="border-t border-slate-100 pt-6">
+                  <label className="flex items-center gap-2 cursor-pointer font-bold text-slate-800">
+                    <input 
+                      type="checkbox" 
+                      name="saveInfo" 
+                      checked={formData.saveInfo} 
+                      onChange={handleInputChange}
+                      className="w-4.5 h-4.5 text-blue-600 focus:ring-blue-500 rounded border-slate-300 cursor-pointer"
+                    />
+                    <span>Lưu thông tin giao hàng cho lần thanh toán sau</span>
+                  </label>
+                </div>
+
                 {/* Customer notes */}
-                <div className="space-y-1.5 pt-2">
-                  <label className="font-semibold text-slate-600">Ghi chú giao nhận / thời gian liên hệ</label>
+                <div className="space-y-1.5 pt-6">
+                  <label htmlFor="checkout-notes" className="font-semibold text-slate-600">Ghi chú giao nhận / thời gian liên hệ</label>
                   <textarea 
+                    id="checkout-notes"
                     name="notes" 
                     value={formData.notes} 
                     onChange={handleInputChange}
@@ -753,10 +723,10 @@ const Cart = () => {
               <span className="font-semibold text-green-600">Miễn phí</span>
             </div>
             
-            {appliedDiscount > 0 && (
+            {tierDiscount > 0 && (
               <div className="flex justify-between text-green-600">
-                <span>Khuyến mãi ({appliedDiscount}%)</span>
-                <span className="font-semibold">-{discountAmount.toLocaleString('vi-VN')}đ</span>
+                <span>Ưu đãi hạng {userTier === 'SILVER' ? 'Bạc' : userTier === 'GOLD' ? 'Vàng' : userTier === 'PLATINUM' ? 'Bạch kim' : userTier === 'VIP' ? 'VIP' : 'Đồng'} ({tierDiscount}%)</span>
+                <span className="font-semibold">-{tierDiscountAmount.toLocaleString('vi-VN')}đ</span>
               </div>
             )}
             
@@ -766,49 +736,6 @@ const Cart = () => {
             </div>
           </div>
 
-          {/* Coupon Code Section (Only in step 1 for clarity) */}
-          {checkoutStep === 1 && (
-            <div className="border-t border-slate-100 pt-6">
-              <form onSubmit={handleApplyCoupon} className="flex gap-2">
-                <input
-                  type="text"
-                  placeholder="Nhập mã giảm giá..."
-                  value={couponCode}
-                  onChange={(e) => setCouponCode(e.target.value)}
-                  disabled={appliedDiscount > 0}
-                  className="flex-grow bg-slate-50 text-slate-700 border border-slate-200 rounded-xl px-4 py-2.5 text-xs focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white disabled:opacity-50"
-                />
-                <button
-                  type="submit"
-                  disabled={appliedDiscount > 0 || !couponCode.trim()}
-                  className="bg-slate-900 hover:bg-slate-800 text-white px-4 py-2.5 rounded-xl text-xs font-semibold transition-colors disabled:opacity-50 cursor-pointer"
-                >
-                  Áp dụng
-                </button>
-              </form>
-              
-              {couponError && (
-                <p className="text-[11px] text-rose-500 mt-2 font-medium">{couponError}</p>
-              )}
-              
-              {appliedDiscount > 0 && (
-                <div className="mt-2 flex items-center justify-between bg-green-50 border border-green-100 px-3 py-2 rounded-xl text-[11px] text-green-700">
-                  <span className="font-semibold">Đã áp dụng: {appliedCouponName} (-{appliedDiscount}%)</span>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setAppliedDiscount(0);
-                      setAppliedCouponName('');
-                      setCouponCode('');
-                    }}
-                    className="font-bold text-green-900 hover:underline cursor-pointer"
-                  >
-                    Gỡ bỏ
-                  </button>
-                </div>
-              )}
-            </div>
-          )}
 
           {/* Checkout triggers */}
           <div className="pt-2">

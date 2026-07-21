@@ -93,7 +93,7 @@ const AdminReviews = () => {
         </div>
         <button 
           onClick={fetchReviews} 
-          className="w-full sm:w-auto bg-white hover:bg-slate-50 text-slate-705 border border-slate-200 font-bold py-2.5 px-4 rounded-xl flex items-center justify-center gap-2 text-xs transition-colors cursor-pointer shadow-sm"
+          className="w-full sm:w-auto bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 font-bold py-2.5 px-4 rounded-xl flex items-center justify-center gap-2 text-xs transition-colors cursor-pointer shadow-sm"
         >
           <RefreshCw size={14} className={loading ? 'animate-spin' : ''} />
           <span>Làm mới</span>
@@ -117,7 +117,7 @@ const AdminReviews = () => {
           <div>
             <p className="text-slate-400 text-[10px] font-bold uppercase tracking-wider">Điểm trung bình</p>
             <p className="text-lg font-black text-slate-800 mt-0.5">{avgRating} / 5.0</p>
-            <p className="text-[10px] text-slate-450 font-bold">{reviews.length} đánh giá tích lũy</p>
+            <p className="text-[10px] text-slate-400 font-bold">{reviews.length} đánh giá tích lũy</p>
           </div>
         </div>
 
@@ -132,7 +132,7 @@ const AdminReviews = () => {
           <select
             value={starFilter}
             onChange={(e) => setStarFilter(e.target.value)}
-            className="bg-white border border-slate-200 text-slate-850 rounded-xl px-4 py-2.5 text-xs focus:outline-none focus:ring-1 focus:ring-blue-100 font-bold min-w-[150px] shadow-sm"
+            className="bg-white border border-slate-200 text-slate-800 rounded-xl px-4 py-2.5 text-xs focus:outline-none focus:ring-1 focus:ring-blue-100 font-bold min-w-[150px] shadow-sm"
           >
             <option value="">Tất cả đánh giá</option>
             <option value="5">5 Sao ⭐⭐⭐⭐⭐</option>
@@ -163,28 +163,28 @@ const AdminReviews = () => {
                   <th className="px-6 py-4 text-right">Thao tác</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-100 text-slate-655 text-xs font-semibold">
+              <tbody className="divide-y divide-slate-100 text-slate-600 text-xs font-semibold">
                 {filteredReviews.map((rev) => (
                   <tr key={rev.id} className="hover:bg-slate-50/40 transition-colors">
                     <td className="px-6 py-4 font-bold text-slate-900 max-w-[220px]">
                       <div className="flex items-center gap-3">
                         <img 
-                          src={rev.product?.image || rev.product?.imageUrl || '/images/thinktanklogo.png'} 
-                          alt={rev.product?.name}
+                          src={rev.productImageUrl || '/images/balomayanh-logo.png'}
+                          alt={rev.productName}
                           className="w-10 h-10 object-cover bg-slate-50 border border-slate-200 rounded-xl flex-shrink-0"
-                          onError={(e) => { e.target.src = '/images/thinktanklogo.png'; }}
+                          onError={(e) => { e.target.src = '/images/balomayanh-logo.png'; }}
                         />
-                        <span className="truncate text-slate-850 font-bold block text-xs" title={rev.product?.name}>
-                          {rev.product?.name || `ID: ${rev.productId}`}
+                        <span className="truncate text-slate-800 font-bold block text-xs" title={rev.productName}>
+                          {rev.productName || `ID: ${rev.productId}`}
                         </span>
                       </div>
                     </td>
                     <td className="px-6 py-4">
                       <div>
-                        <p className="font-bold text-slate-850 text-xs">{rev.customer?.user?.fullName || 'Khách vãng lai'}</p>
-                        <p className="text-[10px] text-slate-400 font-mono font-medium mt-0.5">{rev.customer?.user?.email || 'N/A'}</p>
-                        {rev.customer?.user && (
-                          <span className="inline-flex items-center gap-0.5 bg-emerald-50 text-emerald-750 border border-emerald-150 px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider mt-1.5">
+                        <p className="font-bold text-slate-800 text-xs">{rev.reviewerName || 'Khách vãng lai'}</p>
+                        <p className="text-[10px] text-slate-400 font-mono font-medium mt-0.5">{rev.reviewerEmail || 'N/A'}</p>
+                        {rev.reviewerName && (
+                          <span className="inline-flex items-center gap-0.5 bg-emerald-50 text-emerald-700 border border-emerald-200 px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider mt-1.5">
                             ✓ Đã mua hàng
                           </span>
                         )}
@@ -206,7 +206,7 @@ const AdminReviews = () => {
                     <td className="px-6 py-4 text-right">
                       <button
                         onClick={() => handleDeleteReview(rev.id)}
-                        className="p-2 text-rose-600 hover:text-rose-705 hover:bg-rose-50 rounded-lg transition-colors cursor-pointer"
+                        className="p-2 text-rose-600 hover:text-rose-700 hover:bg-rose-50 rounded-lg transition-colors cursor-pointer"
                         title="Xóa đánh giá"
                       >
                         <Trash2 size={14} />

@@ -17,6 +17,7 @@ const AdminDashboard = () => {
   const [customerReport, setCustomerReport] = useState([]);
   const [products, setProducts] = useState([]);
   const [orders, setOrders] = useState([]);
+  const [orderCounts, setOrderCounts] = useState({ total: 0, pending: 0, cancelled: 0 });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   
@@ -42,8 +43,17 @@ const AdminDashboard = () => {
       setCustomerReport(customerData || []);
       const prodData = await api.products.getAll();
       setProducts(prodData || []);
-      const ordData = await api.admin.orders.getAll();
-      setOrders(ordData || []);
+      const [ordData, pendingData, cancelledData] = await Promise.all([
+        api.admin.orders.getAll({ page: 0, size: 5 }),
+        api.admin.orders.getAll({ page: 0, size: 1, status: 'PENDING' }),
+        api.admin.orders.getAll({ page: 0, size: 1, status: 'CANCELLED' }),
+      ]);
+      setOrders(ordData?.content || []);
+      setOrderCounts({
+        total: ordData?.totalElements || 0,
+        pending: pendingData?.totalElements || 0,
+        cancelled: cancelledData?.totalElements || 0,
+      });
     } catch (err) {
       setError(err.message || 'Không thể tải báo cáo doanh thu.');
     } finally {
@@ -85,8 +95,9 @@ const AdminDashboard = () => {
  
   // Calculations
   const totalRevenue = revenueReport.reduce((acc, curr) => acc + (curr.revenue || 0), 0);
-  const totalOrdersCount = orders.length;
-  const cancelledOrdersCount = orders.filter(o => o.status === 'CANCELLED').length;
+  const totalOrdersCount = orderCounts.total;
+  const pendingOrdersCount = orderCounts.pending;
+  const cancelledOrdersCount = orderCounts.cancelled;
   
   // Products out of stock / low stock alerts
   const outOfStockProducts = products.filter(p => (p.stock || 0) === 0);
@@ -107,10 +118,10 @@ const AdminDashboard = () => {
  
   const getStatusClass = (statusStr) => {
     switch (statusStr) {
-      case 'DELIVERED': return 'bg-emerald-50 text-emerald-700 border border-emerald-250/50';
-      case 'SHIPPING': return 'bg-blue-50 text-blue-700 border border-blue-250/50';
-      case 'CANCELLED': return 'bg-rose-50 text-rose-700 border border-rose-250/50';
-      default: return 'bg-amber-50 text-amber-700 border border-amber-250/50';
+      case 'DELIVERED': return 'bg-emerald-50 text-emerald-700 border border-emerald-200/50';
+      case 'SHIPPING': return 'bg-blue-50 text-blue-700 border border-blue-200/50';
+      case 'CANCELLED': return 'bg-rose-50 text-rose-700 border border-rose-200/50';
+      default: return 'bg-amber-50 text-amber-700 border border-amber-200/50';
     }
   };
  
@@ -144,8 +155,8 @@ const AdminDashboard = () => {
         <svg viewBox={`0 0 ${width} ${height}`} className="w-full h-auto">
           <defs>
             <linearGradient id="chartGrad" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="#2563eb" stopOpacity="0.15" />
-              <stop offset="100%" stopColor="#2563eb" stopOpacity="0.0" />
+              <stop offset="0%" stopColor="#cc0000" stopOpacity="0.15" />
+              <stop offset="100%" stopColor="#cc0000" stopOpacity="0.0" />
             </linearGradient>
           </defs>
           
@@ -169,7 +180,7 @@ const AdminDashboard = () => {
           <path d={fillPathData} fill="url(#chartGrad)" />
  
           {/* Line Chart */}
-          <path d={pathData} fill="none" stroke="#2563eb" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
+          <path d={pathData} fill="none" stroke="#cc0000" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
  
           {/* interactive Hover Line */}
           {hoveredPoint && (
@@ -191,7 +202,7 @@ const AdminDashboard = () => {
                 cx={p.x} 
                 cy={p.y} 
                 r={hoveredPoint && hoveredPoint.date === p.date ? "6.5" : "4"} 
-                fill={hoveredPoint && hoveredPoint.date === p.date ? "#3b82f6" : "#2563eb"} 
+                fill={hoveredPoint && hoveredPoint.date === p.date ? "#d13205" : "#cc0000"} 
                 stroke="#ffffff" 
                 strokeWidth="2" 
                 className="cursor-pointer transition-all duration-150"
@@ -303,9 +314,9 @@ const AdminDashboard = () => {
           <p className="text-xs font-semibold">{error}</p>
         </div>
       )}
- 
+
       {/* Cards Row */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6">
         <div className="bg-white border border-slate-200/80 shadow-xs rounded-2xl p-5 flex items-center gap-4">
           <div className="bg-blue-50 text-blue-600 p-3 rounded-xl border border-blue-100/50">
             <TrendingUp size={20} />
@@ -326,6 +337,18 @@ const AdminDashboard = () => {
             <p className="text-slate-500 text-[10px] font-bold uppercase tracking-wider">Tổng đơn hàng</p>
             <h3 className="text-base font-black text-slate-900 mt-1">
               {loading ? '---' : totalOrdersCount} đơn
+            </h3>
+          </div>
+        </div>
+
+        <div className="bg-white border border-slate-200/80 shadow-xs rounded-2xl p-5 flex items-center gap-4">
+          <div className="bg-amber-50 text-amber-600 p-3 rounded-xl border border-amber-100/50">
+            <RefreshCw size={20} className={`text-amber-600 ${pendingOrdersCount > 0 ? 'animate-spin' : ''}`} />
+          </div>
+          <div>
+            <p className="text-slate-500 text-[10px] font-bold uppercase tracking-wider">Đơn hàng chờ duyệt</p>
+            <h3 className="text-base font-black text-slate-900 mt-1 text-amber-600">
+              {loading ? '---' : pendingOrdersCount} đơn
             </h3>
           </div>
         </div>
@@ -411,7 +434,7 @@ const AdminDashboard = () => {
               <div className="overflow-x-auto">
                 <table className="w-full text-left border-collapse">
                   <thead>
-                    <tr className="border-b border-slate-200/80 text-slate-500 text-[10px] font-bold uppercase tracking-wider bg-slate-55/30">
+                    <tr className="border-b border-slate-200/80 text-slate-500 text-[10px] font-bold uppercase tracking-wider bg-slate-50/30">
                       <th className="px-6 py-3.5">Mã đơn</th>
                       <th className="px-6 py-3.5">Người nhận</th>
                       <th className="px-6 py-3.5">Ngày tạo</th>
@@ -419,7 +442,7 @@ const AdminDashboard = () => {
                       <th className="px-6 py-3.5 text-right">Tổng tiền</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-slate-100 text-slate-650 text-xs font-semibold">
+                  <tbody className="divide-y divide-slate-100 text-slate-600 text-xs font-semibold">
                     {recentOrders.map((o) => (
                       <tr key={o.id} className="hover:bg-slate-50/40 transition-colors">
                         <td className="px-6 py-3.5 font-mono text-slate-900 font-bold">TT-{o.id}</td>

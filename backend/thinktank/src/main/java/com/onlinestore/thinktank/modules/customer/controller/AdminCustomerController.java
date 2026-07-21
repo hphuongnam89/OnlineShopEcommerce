@@ -5,6 +5,7 @@ import com.onlinestore.thinktank.modules.customer.dto.CustomerRequest;
 import com.onlinestore.thinktank.modules.customer.entity.Customer;
 import com.onlinestore.thinktank.modules.customer.service.CustomerService;
 import lombok.RequiredArgsConstructor;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -34,7 +35,7 @@ public class AdminCustomerController {
     }
 
     @PostMapping
-    public ResponseEntity<AdminCustomerResponse> createCustomer(@RequestBody CustomerRequest request) {
+    public ResponseEntity<AdminCustomerResponse> createCustomer(@Valid @RequestBody CustomerRequest request) {
         Customer customer = customerService.createCustomer(request);
         return ResponseEntity.ok(customerService.getAdminCustomerById(customer.getId()));
     }
@@ -42,7 +43,7 @@ public class AdminCustomerController {
     @PutMapping("/{id}")
     public ResponseEntity<AdminCustomerResponse> updateCustomer(
             @PathVariable(name = "id") Long id,
-            @RequestBody CustomerRequest request
+            @Valid @RequestBody CustomerRequest request
     ) {
         Customer customer = customerService.updateCustomer(id, request);
         return ResponseEntity.ok(customerService.getAdminCustomerById(customer.getId()));

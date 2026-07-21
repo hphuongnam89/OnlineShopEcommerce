@@ -8,7 +8,9 @@ import lombok.Data;
 public class AuthResponse {
     // Authentication response returned after login/register with token and user summary.
     private String token;
+    private String refreshToken;
     private String email;
     private String fullName;
+    private String phone;
     private String role;
 }

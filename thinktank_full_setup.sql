@@ -14,6 +14,7 @@ DROP TABLE IF EXISTS products;
 DROP TABLE IF EXISTS categories;
 DROP TABLE IF EXISTS customers;
 DROP TABLE IF EXISTS customer_tiers;
+DROP TABLE IF EXISTS refresh_tokens;
 DROP TABLE IF EXISTS permissions;
 DROP TABLE IF EXISTS roles;
 DROP TABLE IF EXISTS users;
@@ -32,14 +33,25 @@ CREATE TABLE users (
     password_hash VARCHAR(255) NOT NULL,
     full_name VARCHAR(255),
     phone VARCHAR(20),
+    address VARCHAR(500),
     enabled BOOLEAN DEFAULT TRUE,
+    deleted BOOLEAN NOT NULL DEFAULT FALSE,
     created_at DATETIME,
     updated_at DATETIME
+);
+
+CREATE TABLE refresh_tokens (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    token CHAR(64) NOT NULL UNIQUE,
+    user_id BIGINT NOT NULL UNIQUE,
+    expiry_date DATETIME NOT NULL,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
 
 CREATE TABLE roles (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(100) NOT NULL UNIQUE,
+    deleted BOOLEAN NOT NULL DEFAULT FALSE,
     created_at DATETIME,
     updated_at DATETIME
 );
@@ -47,6 +59,7 @@ CREATE TABLE roles (
 CREATE TABLE permissions (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(100) NOT NULL UNIQUE,
+    deleted BOOLEAN NOT NULL DEFAULT FALSE,
     created_at DATETIME,
     updated_at DATETIME
 );
@@ -72,6 +85,7 @@ CREATE TABLE customer_tiers (
     name VARCHAR(100) NOT NULL UNIQUE,
     min_spending DECIMAL(15,2) DEFAULT 0,
     discount_percent INT DEFAULT 0,
+    deleted BOOLEAN NOT NULL DEFAULT FALSE,
     created_at DATETIME,
     updated_at DATETIME
 );
@@ -81,6 +95,7 @@ CREATE TABLE customers (
     user_id BIGINT UNIQUE,
     tier_id BIGINT,
     total_spent DECIMAL(15,2) DEFAULT 0,
+    deleted BOOLEAN NOT NULL DEFAULT FALSE,
     created_at DATETIME,
     updated_at DATETIME,
     FOREIGN KEY (user_id) REFERENCES users(id),
@@ -138,6 +153,7 @@ CREATE TABLE categories (
     name VARCHAR(255) NOT NULL UNIQUE,
     slug VARCHAR(255) NOT NULL UNIQUE,
     description TEXT,
+    deleted BOOLEAN NOT NULL DEFAULT FALSE,
     created_at DATETIME,
     updated_at DATETIME
 );
@@ -151,14 +167,17 @@ CREATE TABLE products (
     price DECIMAL(15,2) NOT NULL,
     stock INT DEFAULT 0,
     image_url VARCHAR(500),
-    additional_images TEXT,
+    additional_images JSON,
     weight VARCHAR(100),
     volume VARCHAR(100),
     material VARCHAR(255),
     dimensions VARCHAR(255),
     sku VARCHAR(100),
+    highlights JSON,
     average_rating DECIMAL(3,2) DEFAULT 0.00,
     review_count INT DEFAULT 0,
+    version BIGINT NOT NULL DEFAULT 0,
+    deleted BOOLEAN NOT NULL DEFAULT FALSE,
     created_at DATETIME,
     updated_at DATETIME,
     FOREIGN KEY (category_id) REFERENCES categories(id) ON DELETE SET NULL
@@ -174,6 +193,8 @@ CREATE TABLE product_variants (
     color VARCHAR(50),
     size VARCHAR(50),
     image_url VARCHAR(500),
+    version BIGINT NOT NULL DEFAULT 0,
+    deleted BOOLEAN NOT NULL DEFAULT FALSE,
     created_at DATETIME,
     updated_at DATETIME,
     FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE
@@ -181,6 +202,8 @@ CREATE TABLE product_variants (
 
 CREATE TABLE orders (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    tracking_token VARCHAR(36) NOT NULL UNIQUE,
+    idempotency_key VARCHAR(36) NOT NULL UNIQUE,
     customer_id BIGINT,
     full_name VARCHAR(255) NOT NULL,
     phone VARCHAR(20) NOT NULL,
@@ -191,6 +214,7 @@ CREATE TABLE orders (
     discount_amount DECIMAL(15,2) DEFAULT 0,
     final_amount DECIMAL(15,2) NOT NULL,
     status VARCHAR(50) DEFAULT 'PENDING',
+    deleted BOOLEAN NOT NULL DEFAULT FALSE,
     created_at DATETIME,
     updated_at DATETIME,
     FOREIGN KEY (customer_id) REFERENCES customers(id) ON DELETE SET NULL
@@ -204,6 +228,7 @@ CREATE TABLE order_items (
     quantity INT NOT NULL,
     price DECIMAL(15,2) NOT NULL,
     subtotal DECIMAL(15,2) NOT NULL,
+    deleted BOOLEAN NOT NULL DEFAULT FALSE,
     FOREIGN KEY (order_id) REFERENCES orders(id) ON DELETE CASCADE,
     FOREIGN KEY (product_id) REFERENCES products(id),
     FOREIGN KEY (variant_id) REFERENCES product_variants(id) ON DELETE SET NULL
@@ -215,8 +240,10 @@ CREATE TABLE reviews (
     user_id BIGINT NOT NULL,
     rating INT NOT NULL,
     comment TEXT,
+    deleted BOOLEAN NOT NULL DEFAULT FALSE,
     created_at DATETIME,
     updated_at DATETIME,
+    UNIQUE KEY uk_reviews_user_product (user_id, product_id),
     FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE,
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
@@ -242,14 +269,7 @@ INSERT INTO categories (id, name, slug, description, created_at, updated_at) VAL
 (2, 'Vali Máy Ảnh', 'vali-may-anh', 'Các dòng vali máy ảnh chuyên nghiệp có bánh xe kéo tiện lợi', NOW(), NOW()),
 (3, 'Túi Máy Ảnh', 'tui-may-anh', 'Các dòng túi máy ảnh đeo chéo, phụ kiện tiện ích', NOW(), NOW());
 
--- SEED USERS & ROLES
-INSERT INTO users (id, email, password_hash, full_name, phone, enabled, created_at, updated_at) VALUES
-(1, 'admin@thinktank.com', '$2a$10$X.pT3W55FvJm5jYw9vTTeedS4f6wXJ6U6ZzM7hQG7d8u8N4f7c2yG', 'Administrator', '0999999999', TRUE, NOW(), NOW());
-INSERT INTO user_roles (user_id, role_id) VALUES (1, 1);
-INSERT INTO users (id, email, password_hash, full_name, phone, enabled, created_at, updated_at) VALUES
-(2, 'customer@thinktank.com', '$2a$10$O0Wv1q4m.2g7zX.R6K1PXeL/1eMhI.f.0fT2uQ5x8R2d/vjN67vK2', 'Nguyễn Văn A', '0901234567', TRUE, NOW(), NOW());
-INSERT INTO user_roles (user_id, role_id) VALUES (2, 2);
-INSERT INTO customers (id, user_id, tier_id, total_spent, created_at, updated_at) VALUES (1, 2, 1, 0.00, NOW(), NOW());
+-- Tài khoản quản trị được tạo một lần từ ADMIN_BOOTSTRAP_EMAIL/ADMIN_BOOTSTRAP_PASSWORD.
 
 -- INSERT PRODUCTS
 INSERT INTO products (id, category_id, name, slug, description, price, stock, image_url, additional_images, weight, volume, material, dimensions, sku, average_rating, review_count, created_at, updated_at) VALUES
@@ -645,21 +665,8 @@ INSERT INTO product_variants (id, product_id, sku, name, price, stock, color, si
 
 
 -- ==========================================================
--- MIGRATION: V5__reset_admin_password.sql
--- ==========================================================
-
-UPDATE users
-SET password_hash = '$2a$10$WWJDJj6CmaCnaR.Pz5Xi6eo8D0IGlQNbkxs3f1Lrg.3rMrsaQOxHi'
-WHERE id = 1
-  AND email = 'admin@thinktank.com';
-
-
-
--- ==========================================================
 -- MIGRATION: V6__add_product_highlights.sql
 -- ==========================================================
-
-ALTER TABLE products ADD COLUMN highlights TEXT NULL;
 
 -- Seed highlights for Balo máy ảnh Think Tank FocusPoint RollTop 30L (ID: 1071589874)
 UPDATE products 
@@ -671,3 +678,13 @@ UPDATE products
 SET highlights = '[{"title": "Thiết kế roll-top linh hoạt, nhỏ gọn hơn", "description": "Phiên bản 22L sở hữu thiết kế roll-top thông minh có thể mở rộng thêm dung tích khi cần thiết, lý tưởng cho việc đi lại hàng ngày hoặc đi chụp nhanh trong ngày. Vải nylon chống thấm cao cấp kết hợp khóa đóng tiện lợi.", "imageUrl": "https://cdn.hstatic.net/products/200001063950/focuspoint-22l-side-golden-hour_96eee87d57754a7aae65107fb15c847b.jpg"}, {"title": "Ngăn truy cập nhanh từ hông balo", "description": "Cho phép lấy máy ảnh ra chỉ trong vài giây mà không cần đặt balo xuống đất. Vách ngăn đệm chống va đập dày và mềm giúp bảo vệ body và lens luôn an toàn trong suốt chuyến hành trình.", "imageUrl": "https://cdn.hstatic.net/products/200001063950/focuspoint-22l-hero-right-golden-hour-gear_1a115caccae24af0b3ac2b3d0f78ad4d.jpg"}]'
 WHERE id = 1073362756;
 
+-- Rating totals must come from real review rows, not imported catalog placeholders.
+UPDATE products p
+LEFT JOIN (
+    SELECT product_id, COUNT(*) AS review_count, COALESCE(AVG(rating), 0) AS average_rating
+    FROM reviews
+    WHERE deleted = FALSE
+    GROUP BY product_id
+) r ON r.product_id = p.id
+SET p.review_count = COALESCE(r.review_count, 0),
+    p.average_rating = COALESCE(r.average_rating, 0);

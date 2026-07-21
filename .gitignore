@@ -12,6 +12,8 @@ dist
 dist-ssr
 *.local
 .venv_pdf/
+*.pptx
+uploads/
 
 # Editor directories and files
 .vscode/*
@@ -31,3 +33,7 @@ build/
 *.class
 *.jar
 *.war
+
+# MemPalace per-project files (issue #185)
+mempalace.yaml
+entities.json

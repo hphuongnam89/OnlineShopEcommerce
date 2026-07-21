@@ -343,13 +343,13 @@ const AdminProducts = () => {
       description: description.trim(),
       price: parseFloat(price),
       stock: parseInt(stock),
-      imageUrl: imageUrl.trim() || '/images/thinktanklogo.png',
+      imageUrl: imageUrl.trim() || '/images/balomayanh-logo.png',
       weight: weight.trim(),
       volume: volume.trim(),
       material: material.trim(),
       dimensions: dimensions.trim(),
       sku: sku.trim() || `TT-${Date.now()}`,
-      highlights: JSON.stringify(highlights),
+      highlights,
       variants: formVariants.map(v => ({
         id: v.id || null,
         sku: v.sku || `TT-VAR-${Date.now()}-${Math.random().toString(36).substr(2, 5)}`,
@@ -521,28 +521,28 @@ const AdminProducts = () => {
                   <button
                     type="button"
                     onClick={() => setDescription(description + '<h3>Tiêu đề mới</h3>')}
-                    className="bg-slate-50 hover:bg-slate-100 text-slate-650 text-[9px] px-2 py-1 rounded-md border border-slate-200 cursor-pointer font-bold transition-colors"
+                    className="bg-slate-50 hover:bg-slate-100 text-slate-600 text-[9px] px-2 py-1 rounded-md border border-slate-200 cursor-pointer font-bold transition-colors"
                   >
                     + Tiêu đề
                   </button>
                   <button
                     type="button"
                     onClick={() => setDescription(description + '<p>Đoạn văn mới...</p>')}
-                    className="bg-slate-50 hover:bg-slate-100 text-slate-650 text-[9px] px-2 py-1 rounded-md border border-slate-200 cursor-pointer font-bold transition-colors"
+                    className="bg-slate-50 hover:bg-slate-100 text-slate-600 text-[9px] px-2 py-1 rounded-md border border-slate-200 cursor-pointer font-bold transition-colors"
                   >
                     + Đoạn văn
                   </button>
                   <button
                     type="button"
                     onClick={() => setDescription(description + '<strong>chữ đậm</strong>')}
-                    className="bg-slate-50 hover:bg-slate-100 text-slate-650 text-[9px] px-2 py-1 rounded-md border border-slate-200 cursor-pointer font-bold transition-colors"
+                    className="bg-slate-50 hover:bg-slate-100 text-slate-600 text-[9px] px-2 py-1 rounded-md border border-slate-200 cursor-pointer font-bold transition-colors"
                   >
                     + Chữ đậm
                   </button>
                   <button
                     type="button"
                     onClick={() => setDescription(description + '\n<div class="aspect-video my-4">\n  <iframe class="w-full h-full" src="https://www.youtube.com/embed/VIDEO_ID" frameborder="0" allowfullscreen></iframe>\n</div>\n')}
-                    className="bg-blue-50 text-blue-650 hover:bg-blue-100 text-[9px] px-2 py-1 rounded-md border border-blue-200/30 font-bold cursor-pointer transition-colors"
+                    className="bg-blue-50 text-blue-600 hover:bg-blue-100 text-[9px] px-2 py-1 rounded-md border border-blue-200/30 font-bold cursor-pointer transition-colors"
                   >
                     + Nhúng YouTube Video
                   </button>
@@ -597,14 +597,14 @@ const AdminProducts = () => {
                         src={imageUrl}
                         alt="Xem trước"
                         className="w-32 h-32 object-contain bg-white rounded-xl border border-slate-200 shadow-xs"
-                        onError={(e) => { e.target.src = '/images/thinktanklogo.png'; }}
+                        onError={(e) => { e.target.src = '/images/balomayanh-logo.png'; }}
                       />
                     </div>
                   ) : (
                     <div className="space-y-2 py-4">
                       <p className="text-xs text-slate-500 font-semibold">Nhập URL ảnh phía trên hoặc kéo thả tệp tại đây (Giả lập)</p>
                       <p className="text-[10px] text-slate-400 font-medium">Độ phân giải khuyến nghị: 1000 x 1000 pixels</p>
-                      <div className="inline-block px-3.5 py-1.5 bg-white border border-slate-200 text-slate-650 text-[10px] font-bold rounded-lg cursor-pointer hover:bg-slate-50 shadow-2xs">Chọn tệp</div>
+                      <div className="inline-block px-3.5 py-1.5 bg-white border border-slate-200 text-slate-600 text-[10px] font-bold rounded-lg cursor-pointer hover:bg-slate-50 shadow-2xs">Chọn tệp</div>
                     </div>
                   )}
                 </div>
@@ -1098,16 +1098,16 @@ const AdminProducts = () => {
                   <th className="px-6 py-4 text-right">Thao tác</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-100 text-slate-650 text-xs font-semibold">
+              <tbody className="divide-y divide-slate-100 text-slate-600 text-xs font-semibold">
                 {filteredProducts.map((p) => (
                   <tr key={p.id} className="hover:bg-slate-50/40 transition-colors">
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-3">
                         <img 
-                          src={p.image || p.imageUrl || '/images/thinktanklogo.png'} 
+                          src={p.image || p.imageUrl || '/images/balomayanh-logo.png'} 
                           alt={p.name || p.title} 
                           className="w-10 h-10 object-cover rounded-xl bg-slate-50 border border-slate-200 flex-shrink-0"
-                          onError={(e) => { e.target.src = '/images/thinktanklogo.png'; }}
+                          onError={(e) => { e.target.src = '/images/balomayanh-logo.png'; }}
                         />
                         <div className="min-w-0">
                           <p className="font-bold text-slate-800 text-sm truncate max-w-[280px]">{p.name || p.title}</p>

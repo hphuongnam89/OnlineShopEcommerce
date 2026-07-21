@@ -201,7 +201,7 @@ const AdminCustomers = () => {
       case 'GOLD': return 'badge-metallic-gold';
       case 'SILVER': return 'badge-metallic-silver';
       case 'VIP': return 'badge-metallic-vip';
-      default: return 'bg-slate-100 text-slate-655 border border-slate-200';
+      default: return 'bg-slate-100 text-slate-600 border border-slate-200';
     }
   };
 
@@ -298,7 +298,7 @@ const AdminCustomers = () => {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     placeholder={formMode === 'create' ? "Nhập mật khẩu tài khoản" : "••••••••"}
-                    className="w-full bg-white border border-slate-200 text-slate-850 rounded-xl px-4 py-2.5 text-xs focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-100 font-semibold"
+                    className="w-full bg-white border border-slate-200 text-slate-800 rounded-xl px-4 py-2.5 text-xs focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-100 font-semibold"
                   />
                 </div>
               </div>
@@ -317,7 +317,7 @@ const AdminCustomers = () => {
                   value={totalSpent}
                   onChange={(e) => setTotalSpent(e.target.value)}
                   placeholder="0"
-                  className="w-full bg-white border border-slate-200 text-slate-850 rounded-xl px-4 py-2.5 text-xs focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-100 font-semibold"
+                  className="w-full bg-white border border-slate-200 text-slate-800 rounded-xl px-4 py-2.5 text-xs focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-100 font-semibold"
                 />
                 <p className="text-[10px] text-slate-400 mt-2 font-medium">Hệ thống sẽ tự động đối chiếu doanh số này để nâng cấp thứ hạng thành viên tương ứng.</p>
               </div>
@@ -344,7 +344,7 @@ const AdminCustomers = () => {
                   <span className="font-semibold text-slate-700">&gt; 5.000.000 đ</span>
                 </div>
                 <div className="flex justify-between items-center">
-                  <span className="bg-slate-100 text-slate-655 px-2 py-0.5 border border-slate-250 rounded text-[9px] font-bold">BRONZE</span>
+                  <span className="bg-slate-100 text-slate-600 px-2 py-0.5 border border-slate-200 rounded text-[9px] font-bold">BRONZE</span>
                   <span className="font-semibold text-slate-500">Khác</span>
                 </div>
               </div>
@@ -391,7 +391,7 @@ const AdminCustomers = () => {
         <div className="flex gap-3 w-full sm:w-auto">
           <button
             onClick={handleExportCustomers}
-            className="flex-1 sm:flex-none bg-white hover:bg-slate-50 text-slate-705 font-bold py-2.5 px-4 rounded-xl border border-slate-200 flex items-center justify-center gap-2 text-xs transition-colors cursor-pointer shadow-sm"
+            className="flex-1 sm:flex-none bg-white hover:bg-slate-50 text-slate-700 font-bold py-2.5 px-4 rounded-xl border border-slate-200 flex items-center justify-center gap-2 text-xs transition-colors cursor-pointer shadow-sm"
           >
             <Download size={14} />
             <span>Xuất Excel</span>
@@ -428,7 +428,7 @@ const AdminCustomers = () => {
           </div>
           <button 
             type="submit"
-            className="bg-white hover:bg-slate-50 text-slate-750 font-bold py-2.5 px-6 rounded-xl border border-slate-200 text-xs transition-colors cursor-pointer shadow-2xs"
+            className="bg-white hover:bg-slate-50 text-slate-700 font-bold py-2.5 px-6 rounded-xl border border-slate-200 text-xs transition-colors cursor-pointer shadow-2xs"
           >
             Tìm kiếm
           </button>
@@ -551,7 +551,7 @@ const AdminCustomers = () => {
                   <th className="px-6 py-4 text-right">Thao tác</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-100 text-slate-655 text-xs font-semibold">
+              <tbody className="divide-y divide-slate-100 text-slate-600 text-xs font-semibold">
                 {customers.map((c) => (
                   <tr key={c.id} className="hover:bg-slate-50/40 transition-colors">
                     <td className="px-6 py-4 font-bold text-slate-900 text-sm">
@@ -578,7 +578,7 @@ const AdminCustomers = () => {
                       <div className="flex justify-end gap-2">
                         <button
                           onClick={() => handleOpenEdit(c)}
-                          className="p-2 text-blue-600 hover:text-blue-705 hover:bg-blue-50 rounded-lg transition-colors cursor-pointer"
+                          className="p-2 text-blue-600 hover:text-blue-700 hover:bg-blue-50 rounded-lg transition-colors cursor-pointer"
                           title="Sửa khách hàng"
                         >
                           <Edit3 size={14} />
