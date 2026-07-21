@@ -10,11 +10,11 @@ const ProductCard = ({ product }) => {
   const interiorImage = product.images?.length > 1 ? product.images.at(-1) : null;
 
   return (
-    <article className="group bg-white overflow-hidden border border-[#e5e7eb] flex flex-col h-full">
+    <article className="group bg-white overflow-hidden border border-[#e5e7eb] flex flex-col h-full rounded-lg">
       {/* Image Container */}
       <Link 
         to={`/product/${product.id}`}
-        className="relative aspect-square bg-slate-50 flex items-center justify-center p-5 overflow-hidden block cursor-pointer"
+        className="relative aspect-square bg-[#f7f8fa] flex items-center justify-center p-5 overflow-hidden block cursor-pointer"
       >
         {isOutOfStock ? (
           <span className="absolute top-3 right-3 z-10 px-2.5 py-1 text-[11px] font-semibold text-white bg-slate-500 rounded-md">
@@ -89,7 +89,7 @@ const ProductCard = ({ product }) => {
           ) : (
             <button 
               onClick={() => addToCart(product)}
-              className="bg-[#cc0000] hover:bg-[#a90000] text-white px-3.5 py-2 text-xs font-black uppercase whitespace-nowrap transition-colors duration-200 flex items-center gap-1.5 cursor-pointer"
+              className="bg-[#cc0000] hover:bg-[#a90000] text-white px-3.5 py-2 rounded-md text-xs font-black uppercase whitespace-nowrap transition-colors duration-200 flex items-center gap-1.5 cursor-pointer"
             >
               <ShoppingCart size={13} />
               <span>Thêm</span>

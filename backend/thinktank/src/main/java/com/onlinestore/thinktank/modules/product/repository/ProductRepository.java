@@ -10,6 +10,7 @@ import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.math.BigDecimal;
 import java.util.Optional;
 
 import org.springframework.data.domain.Page;
@@ -24,6 +25,22 @@ public interface ProductRepository extends JpaRepository<Product, Long>, JpaSpec
     @Override
     @EntityGraph(attributePaths = {"category", "variants"})
     Page<Product> findAll(Specification<Product> spec, Pageable pageable);
+
+    @EntityGraph(attributePaths = {"category", "variants"})
+    @Query("SELECT p FROM Product p " +
+           "WHERE (:categoryId IS NULL OR p.category.id = :categoryId) " +
+           "AND (:search IS NULL OR LOWER(p.name) LIKE LOWER(CONCAT('%', :search, '%')) OR LOWER(p.description) LIKE LOWER(CONCAT('%', :search, '%'))) " +
+           "AND (:minPrice IS NULL OR p.price >= :minPrice) " +
+           "AND (:maxPrice IS NULL OR p.price <= :maxPrice) " +
+           "ORDER BY (SELECT COALESCE(SUM(oi.quantity), 0) FROM OrderItem oi " +
+           "          WHERE oi.product = p AND oi.deleted = false " +
+           "          AND oi.order.status <> 'CANCELLED' AND oi.order.deleted = false) DESC, p.id DESC")
+    Page<Product> findAllSortedBySales(
+            @Param("categoryId") Long categoryId,
+            @Param("search") String search,
+            @Param("minPrice") BigDecimal minPrice,
+            @Param("maxPrice") BigDecimal maxPrice,
+            Pageable pageable);
 
     @Override
     @EntityGraph(attributePaths = {"category", "variants"})

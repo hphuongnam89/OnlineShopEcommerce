@@ -57,6 +57,11 @@ public class ProductService {
                 case "created_at_asc" -> springSort = Sort.by(Sort.Direction.ASC, "createdAt");
             }
         }
+        if ("sales_desc".equals(sort)) {
+            Pageable pageable = PageRequest.of(page, limit);
+            return productRepository.findAllSortedBySales(categoryId, search, minPrice, maxPrice, pageable);
+        }
+
         Pageable pageable = PageRequest.of(page, limit, springSort);
         Specification<Product> spec = ProductSpecification.filter(categoryId, search, minPrice, maxPrice);
         return productRepository.findAll(spec, pageable);

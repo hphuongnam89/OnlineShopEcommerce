@@ -28,7 +28,7 @@ const Home = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [featuredProducts, setFeaturedProducts] = useState([]);
   useEffect(() => {
-    api.products.getPage({ page: 0, limit: 4, sort: 'rating_desc' }).then(res => {
+    api.products.getPage({ page: 0, limit: 4, sort: 'sales_desc' }).then(res => {
       if (res && res.items) {
         setFeaturedProducts(res.items);
       }

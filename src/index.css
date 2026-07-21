@@ -1,4 +1,6 @@
+/* Hallmark · genre: modern-minimal · macrostructure: Catalogue/Workbench · design-system: design.md · designed-as-app */
 @import url('https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&family=Roboto:wght@400;500;700;900&display=swap');
+@import "./tokens.css";
 @import "tailwindcss";
 
 @theme {
@@ -179,5 +181,49 @@
 
 .storefront button:not(:disabled),
 .storefront a {
-  transition-duration: 150ms !important;
+  transition-duration: var(--dur-fast) !important;
+  transition-timing-function: var(--ease-out) !important;
+}
+
+/* Hallmark commerce pass: calm surfaces, stronger hierarchy and accessible focus. */
+.storefront {
+  background: var(--color-paper);
+  color: var(--color-ink);
+}
+
+.storefront :is(a, button, input, select, textarea):focus-visible {
+  outline: 2px solid var(--color-focus) !important;
+  outline-offset: 3px;
+}
+
+.storefront article {
+  border-radius: var(--radius-card);
+  transition: transform var(--dur-normal) var(--ease-out), box-shadow var(--dur-normal) var(--ease-out), border-color var(--dur-normal) var(--ease-out);
+}
+
+.storefront article:hover {
+  border-color: color-mix(in srgb, var(--color-brand) 35%, var(--color-rule));
+  box-shadow: 0 16px 32px rgb(15 23 42 / 0.08);
+  transform: translateY(-3px);
+}
+
+.storefront :is(button, a[class*="bg-[#cc0000"], a[class*="bg-red"]) {
+  border-radius: var(--radius-control);
+}
+
+@media (max-width: 767px) {
+  .storefront article:hover {
+    transform: none;
+    box-shadow: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .storefront *,
+  .storefront *::before,
+  .storefront *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }
