@@ -13,6 +13,7 @@ const Cart = () => {
   const [showPaymentDemoModal, setShowPaymentDemoModal] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState('COD');
   const [paymentDemoProcessing, setPaymentDemoProcessing] = useState(false);
+  const [paymentDemoData, setPaymentDemoData] = useState({ payerName: '', bank: 'Demo Bank', transactionCode: '' });
   const [idempotencyKey] = useState(() => crypto.randomUUID());
 
   // Dynamic location state
@@ -224,10 +225,19 @@ const Cart = () => {
 
   const handleOpenPaymentDemo = () => {
     setPaymentMethod('ONLINE_DEMO');
+    setPaymentDemoData({ payerName: formData.name.trim(), bank: 'Demo Bank', transactionCode: '' });
     setShowPaymentDemoModal(true);
   };
 
   const handleConfirmDemoPayment = () => {
+    if (!paymentDemoData.payerName.trim() || paymentDemoData.payerName.trim().length < 2) {
+      openModal('Thiếu thông tin thanh toán', 'Vui lòng nhập tên người thanh toán.', 'warning');
+      return;
+    }
+    if (!paymentDemoData.transactionCode.trim() || !/^[A-Za-z0-9-]{6,30}$/.test(paymentDemoData.transactionCode.trim())) {
+      openModal('Thiếu thông tin thanh toán', 'Vui lòng nhập mã giao dịch demo từ 6 đến 30 ký tự.', 'warning');
+      return;
+    }
     setPaymentDemoProcessing(true);
     window.setTimeout(() => {
       setShowPaymentDemoModal(false);
@@ -884,6 +894,42 @@ const Cart = () => {
                 <p className="text-xs text-slate-500 mt-4">
                   Quét mã giả lập hoặc bấm xác nhận để hoàn tất demo.
                 </p>
+              </div>
+
+              <div className="space-y-3 mb-6">
+                <label className="block text-xs font-bold text-slate-700">
+                  Tên người thanh toán
+                  <input
+                    value={paymentDemoData.payerName}
+                    onChange={(e) => setPaymentDemoData(prev => ({ ...prev, payerName: e.target.value }))}
+                    placeholder="Nguyễn Văn A"
+                    maxLength={100}
+                    className="mt-1.5 w-full rounded-xl border border-slate-200 px-3.5 py-3 text-sm font-normal outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+                  />
+                </label>
+                <label className="block text-xs font-bold text-slate-700">
+                  Ngân hàng / phương thức
+                  <select
+                    value={paymentDemoData.bank}
+                    onChange={(e) => setPaymentDemoData(prev => ({ ...prev, bank: e.target.value }))}
+                    className="mt-1.5 w-full rounded-xl border border-slate-200 px-3.5 py-3 text-sm font-normal outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+                  >
+                    <option>Demo Bank</option>
+                    <option>Ví điện tử demo</option>
+                    <option>Thẻ ngân hàng demo</option>
+                  </select>
+                </label>
+                <label className="block text-xs font-bold text-slate-700">
+                  Mã giao dịch demo
+                  <input
+                    value={paymentDemoData.transactionCode}
+                    onChange={(e) => setPaymentDemoData(prev => ({ ...prev, transactionCode: e.target.value }))}
+                    placeholder="DEMO-123456"
+                    maxLength={30}
+                    className="mt-1.5 w-full rounded-xl border border-slate-200 px-3.5 py-3 text-sm font-normal outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+                  />
+                </label>
+                <p className="text-[11px] text-slate-500">Chỉ nhập dữ liệu giả lập. Không nhập số thẻ, CVV hoặc mật khẩu thật.</p>
               </div>
 
               <div className="space-y-3">
