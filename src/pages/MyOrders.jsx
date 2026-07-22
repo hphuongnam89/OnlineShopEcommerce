@@ -152,6 +152,9 @@ const MyOrders = () => {
                     </div>
 
                     <div className="flex items-center justify-between sm:justify-end gap-3 mt-2 sm:mt-0">
+                      <span className={`px-3 py-1 rounded-full text-xs font-semibold border ${order.paymentStatus === 'PAID' ? 'text-emerald-700 bg-emerald-50 border-emerald-200' : 'text-amber-700 bg-amber-50 border-amber-200'}`}>
+                        {order.paymentStatus === 'PAID' ? 'Đã thanh toán' : 'Chưa thanh toán'}
+                      </span>
                       <span className={`px-3 py-1 rounded-full text-xs font-semibold border ${getStatusBadgeClass(order.status)}`}>
                         {getStatusLabel(order.status)}
                       </span>
@@ -161,6 +164,14 @@ const MyOrders = () => {
 
                   {isExpanded && (
                     <div className="border-t border-slate-50 bg-slate-50/30 p-5 sm:p-6 space-y-6 animate-in slide-in-from-top-2 duration-300">
+                      <div className="flex flex-wrap gap-2 text-xs font-semibold">
+                        <span className="px-3 py-1.5 rounded-lg bg-white border border-slate-200 text-slate-700">
+                          Phương thức: {order.paymentMethod === 'ONLINE_DEMO' ? 'Online (demo)' : 'COD'}
+                        </span>
+                        <span className={`px-3 py-1.5 rounded-lg border ${order.paymentStatus === 'PAID' ? 'text-emerald-700 bg-emerald-50 border-emerald-200' : 'text-amber-700 bg-amber-50 border-amber-200'}`}>
+                          {order.paymentStatus === 'PAID' ? 'Đã thanh toán' : 'Thanh toán khi nhận hàng'}
+                        </span>
+                      </div>
                       <div>
                         <h4 className="font-semibold text-slate-800 text-xs mb-3.5 flex items-center gap-1.5">
                           <Package size={14} className="text-blue-600" />

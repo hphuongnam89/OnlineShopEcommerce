@@ -13,6 +13,8 @@ import java.util.List;
 public class TrackOrderResponse {
     private Long id;
     private String status;
+    private String paymentMethod;
+    private String paymentStatus;
     private BigDecimal finalAmount;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
@@ -22,6 +24,8 @@ public class TrackOrderResponse {
         return TrackOrderResponse.builder()
                 .id(order.getId())
                 .status(order.getStatus())
+                .paymentMethod(order.getPaymentMethod())
+                .paymentStatus(order.getPaymentStatus())
                 .finalAmount(order.getFinalAmount())
                 .createdAt(order.getCreatedAt())
                 .updatedAt(order.getUpdatedAt())

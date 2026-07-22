@@ -135,6 +135,12 @@ const TrackOrder = () => {
               </div>
 
               <div className="border-t border-slate-200 pt-5 space-y-2 text-sm font-sans">
+                <div className="flex justify-between items-center text-xs font-bold">
+                  <span className="text-slate-500">Thanh toán</span>
+                  <span className={order.paymentStatus === 'PAID' ? 'text-emerald-700' : 'text-amber-700'}>
+                    {order.paymentStatus === 'PAID' ? 'Đã thanh toán' : 'Thanh toán khi nhận hàng (COD)'}
+                  </span>
+                </div>
                 <div className="flex justify-between text-base font-black mt-2 pt-2 border-t border-slate-100">
                   <span className="text-slate-800 uppercase tracking-wide text-xs self-center">Tổng thanh toán:</span>
                   <span className="text-[#2f5f88] text-xl font-mono">{order.finalAmount?.toLocaleString('vi-VN')}đ</span>
