@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useCart } from '../context/CartContext';
-import { Trash2, Plus, Minus, ShoppingBag, ArrowRight, CheckCircle2, ChevronLeft, MapPin, ShieldCheck } from 'lucide-react';
+import { Trash2, Plus, Minus, ShoppingBag, ArrowRight, CheckCircle2, ChevronLeft, MapPin, ShieldCheck, QrCode, CreditCard, LoaderCircle, CircleCheckBig } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import CustomModal from '../components/CustomModal';
 import { api, getValidToken } from '../utils/api';
@@ -10,6 +10,9 @@ const Cart = () => {
   const { cartItems, updateQuantity, removeFromCart, cartTotal, clearCart } = useCart();
   const [checkoutStep, setCheckoutStep] = useState(1); // 1: Cart list, 2: Info form, 3: Success
   const [showGuestModal, setShowGuestModal] = useState(false);
+  const [showPaymentDemoModal, setShowPaymentDemoModal] = useState(false);
+  const [paymentMethod, setPaymentMethod] = useState('COD');
+  const [paymentDemoProcessing, setPaymentDemoProcessing] = useState(false);
   const [idempotencyKey] = useState(() => crypto.randomUUID());
 
   // Dynamic location state
@@ -218,17 +221,35 @@ const Cart = () => {
     }
   };
 
+  const handleOpenPaymentDemo = () => {
+    setPaymentMethod('ONLINE_DEMO');
+    setShowPaymentDemoModal(true);
+  };
+
+  const handleConfirmDemoPayment = () => {
+    setPaymentDemoProcessing(true);
+    window.setTimeout(() => {
+      setShowPaymentDemoModal(false);
+      setPaymentDemoProcessing(false);
+      document.getElementById('submitOrderBtn')?.click();
+    }, 900);
+  };
+
   // ---------------- STEP 3: SUCCESS RENDER ----------------
   if (checkoutStep === 3) {
     return (
       <div className="max-w-3xl mx-auto px-4 pt-36 pb-24 text-center animate-in fade-in duration-300">
-        <div className="w-20 h-20 bg-green-50 text-green-500 rounded-full flex items-center justify-center mx-auto mb-6 shadow-sm">
-          <CheckCircle2 size={48} />
-        </div>
-        <h2 className="text-3xl font-extrabold text-slate-900 mb-2">Đặt hàng thành công!</h2>
-        <p className="text-slate-500 text-sm mb-8">
+              <div className="w-20 h-20 bg-green-50 text-green-500 rounded-full flex items-center justify-center mx-auto mb-6 shadow-sm">
+                <CheckCircle2 size={48} />
+              </div>
+              <h2 className="text-3xl font-extrabold text-slate-900 mb-2">Đặt hàng thành công!</h2>
+              <p className="text-slate-500 text-sm mb-8">
           Cảm ơn {formData.gender} <strong className="text-slate-800 font-bold">{formData.name}</strong> đã tin tưởng mua sắm phụ kiện nhiếp ảnh chuyên nghiệp tại Balomayanh.
-        </p>
+              </p>
+              <div className="inline-flex items-center gap-2 mb-8 px-4 py-2 rounded-full bg-slate-100 text-slate-700 text-xs font-semibold">
+                <CircleCheckBig size={14} className={paymentMethod === 'ONLINE_DEMO' ? 'text-blue-600' : 'text-green-600'} />
+                {paymentMethod === 'ONLINE_DEMO' ? 'Thanh toán online (demo)' : 'COD'}
+              </div>
         
         {!localStorage.getItem('currentUser') && (
           <div className="max-w-md mx-auto mb-8 bg-blue-50 border border-blue-100 p-4 rounded-2xl text-blue-800 text-xs text-left">
@@ -753,12 +774,24 @@ const Cart = () => {
                 Tiến hành thanh toán
               </button>
             ) : (
-              <button
-                onClick={() => document.getElementById('submitOrderBtn').click()}
-                className="w-full bg-green-600 hover:bg-green-700 text-white py-4 rounded-xl font-bold transition-all shadow-lg shadow-green-600/20 hover:shadow-green-600/30 text-center cursor-pointer block text-xs"
-              >
-                XÁC NHẬN ĐẶT HÀNG (COD)
-              </button>
+              <div className="space-y-3">
+                <button
+                  onClick={() => {
+                    setPaymentMethod('COD');
+                    document.getElementById('submitOrderBtn').click();
+                  }}
+                  className="w-full bg-green-600 hover:bg-green-700 text-white py-4 rounded-xl font-bold transition-all shadow-lg shadow-green-600/20 hover:shadow-green-600/30 text-center cursor-pointer block text-xs"
+                >
+                  XÁC NHẬN ĐẶT HÀNG (COD)
+                </button>
+                <button
+                  onClick={handleOpenPaymentDemo}
+                  className="w-full bg-slate-900 hover:bg-slate-800 text-white py-4 rounded-xl font-bold transition-all shadow-lg shadow-slate-900/15 text-center cursor-pointer flex items-center justify-center gap-2 text-xs"
+                >
+                  <CreditCard size={14} />
+                  THANH TOÁN ONLINE (DEMO)
+                </button>
+              </div>
             )}
             <p className="text-[10px] text-slate-400 text-center mt-2.5">(Giá đã bao gồm VAT và đầy đủ hóa đơn chứng từ)</p>
           </div>
@@ -813,6 +846,59 @@ const Cart = () => {
                   className="w-full bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-3.5 rounded-xl transition-colors text-sm cursor-pointer"
                 >
                   Tiếp tục mua hàng nhanh
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showPaymentDemoModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 animate-in fade-in duration-200">
+          <div className="bg-white rounded-3xl border border-slate-100 shadow-2xl max-w-md w-full overflow-hidden animate-in zoom-in-95 duration-200">
+            <div className="p-8">
+              <div className="flex items-center gap-3 mb-5">
+                <div className="w-12 h-12 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center">
+                  <QrCode size={24} />
+                </div>
+                <div>
+                  <h3 className="font-extrabold text-slate-900 text-xl leading-tight">Thanh toán online</h3>
+                  <p className="text-slate-500 text-sm">Mô phỏng cho demo, không trừ tiền thật.</p>
+                </div>
+              </div>
+
+              <div className="bg-slate-50 border border-dashed border-slate-200 rounded-3xl p-6 text-center mb-6">
+                <div className="w-40 h-40 mx-auto bg-white border border-slate-200 rounded-2xl flex items-center justify-center shadow-sm">
+                  <div className="grid grid-cols-6 gap-1 p-4">
+                    {Array.from({ length: 36 }).map((_, index) => (
+                      <span
+                        key={index}
+                        className={`block w-3 h-3 rounded-[2px] ${
+                          index % 3 === 0 || index % 7 === 0 || index % 11 === 0 ? 'bg-slate-900' : 'bg-slate-100'
+                        }`}
+                      />
+                    ))}
+                  </div>
+                </div>
+                <p className="text-xs text-slate-500 mt-4">
+                  Quét mã giả lập hoặc bấm xác nhận để hoàn tất demo.
+                </p>
+              </div>
+
+              <div className="space-y-3">
+                <button
+                  onClick={handleConfirmDemoPayment}
+                  disabled={paymentDemoProcessing}
+                  className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white font-bold py-3.5 rounded-xl transition-all shadow-lg shadow-blue-600/20 text-sm cursor-pointer disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                >
+                  {paymentDemoProcessing ? <LoaderCircle size={16} className="animate-spin" /> : <CreditCard size={16} />}
+                  {paymentDemoProcessing ? 'Đang xác nhận...' : 'Xác nhận đã thanh toán (demo)'}
+                </button>
+                <button
+                  onClick={() => setShowPaymentDemoModal(false)}
+                  className="w-full bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-3.5 rounded-xl transition-colors text-sm cursor-pointer"
+                >
+                  Hủy
                 </button>
               </div>
             </div>
