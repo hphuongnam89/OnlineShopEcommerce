@@ -175,7 +175,7 @@ const MyOrders = () => {
                       <div>
                         <h4 className="font-semibold text-slate-800 text-xs mb-3.5 flex items-center gap-1.5">
                           <Package size={14} className="text-blue-600" />
-                          Sản phẩm đã mua ({order.items.reduce((acc, item) => acc + item.quantity, 0)})
+                          {order.status === 'DELIVERED' ? 'Sản phẩm đã giao' : 'Sản phẩm trong đơn'} ({order.items.reduce((acc, item) => acc + item.quantity, 0)})
                         </h4>
                         <div className="space-y-3">
                           {order.items.map((item, index) => {

@@ -120,7 +120,7 @@ const TrackOrder = () => {
 
             <div className="p-6 space-y-6">
               <div>
-                <h4 className="font-bold text-slate-800 text-xs uppercase tracking-wider mb-3 font-heading">Sản phẩm đã mua</h4>
+                <h4 className="font-bold text-slate-800 text-xs uppercase tracking-wider mb-3 font-heading">Sản phẩm trong đơn</h4>
                 <ul className="divide-y divide-slate-100 border border-slate-200 rounded-2xl overflow-hidden">
                   {order.items?.map((item) => (
                     <li key={item.id} className="p-4 flex items-center gap-4 bg-white text-sm font-sans">
