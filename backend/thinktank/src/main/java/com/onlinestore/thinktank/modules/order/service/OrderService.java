@@ -64,6 +64,9 @@ public class OrderService {
     @Value("${app.orders.pending-timeout-minutes:30}")
     private long pendingTimeoutMinutes;
 
+    @Value("${app.orders.auto-cancel-pending:false}")
+    private boolean autoCancelPendingOrders;
+
     public Order createOrder(CheckoutRequest request) {
         if (request.getItems() == null || request.getItems().isEmpty()) {
             throw new InvalidRequestException("Đơn hàng phải chứa ít nhất một sản phẩm.");
@@ -309,6 +312,9 @@ public class OrderService {
 
     @Scheduled(fixedDelayString = "${app.orders.cleanup-delay-ms:900000}")
     public void cancelExpiredPendingOrders() {
+        if (!autoCancelPendingOrders) {
+            return;
+        }
         LocalDateTime cutoff = LocalDateTime.now().minusMinutes(pendingTimeoutMinutes);
         orderRepository.findTop100ByStatusAndCreatedAtBeforeOrderByCreatedAtAsc("PENDING", cutoff)
                 .forEach(order -> updateOrderStatus(order.getId(), "CANCELLED"));
