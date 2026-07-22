@@ -177,8 +177,9 @@ const Cart = () => {
 
     const addressStr = `${formData.street.trim()}, ${formData.ward}, ${formData.district}, ${formData.province}`;
 
-    const orderPayload = {
-      idempotencyKey,
+      const orderPayload = {
+        idempotencyKey,
+        paymentMethod,
       fullName: formData.name.trim(),
       phone: phone,
       address: addressStr,
@@ -335,7 +336,7 @@ const Cart = () => {
                 </div>
               )}
               <div className="flex justify-between text-sm font-extrabold">
-                <span className="text-slate-800">Tổng tiền thanh toán (COD):</span>
+                <span className="text-slate-800">Tổng tiền thanh toán ({paymentMethod === 'ONLINE_DEMO' ? 'Online demo' : 'COD'}):</span>
                 <span className="text-blue-600 text-base">{orderedTotal.toLocaleString('vi-VN')}đ</span>
               </div>
               <p className="text-[10px] text-slate-400 italic text-center pt-2">Nhân viên tổng đài sẽ liên hệ xác nhận đơn hàng với Anh/Chị trong vòng 10 phút.</p>

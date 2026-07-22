@@ -96,6 +96,8 @@ public class OrderService {
                 .email(request.getEmail())
                 .notes(request.getNotes())
                 .status("PENDING")
+                .paymentMethod(request.getPaymentMethod() == null ? "COD" : request.getPaymentMethod())
+                .paymentStatus("ONLINE_DEMO".equals(request.getPaymentMethod()) ? "PAID" : "UNPAID")
                 .build();
 
         List<CheckoutItemRequest> sortedItems = new ArrayList<>(request.getItems());

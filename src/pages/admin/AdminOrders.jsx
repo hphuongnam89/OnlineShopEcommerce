@@ -466,6 +466,18 @@ const AdminOrders = () => {
 
           {/* Sidebar Column (Right - 1/3 width) */}
           <div className="space-y-6">
+            {/* Payment Status */}
+            <div className="bg-white border border-slate-200/80 p-6 rounded-2xl shadow-xs space-y-3">
+              <h3 className="text-xs font-bold text-slate-800 uppercase tracking-wider border-b border-slate-100 pb-3 font-heading">Trạng Thái Thanh Toán</h3>
+              <div className={`rounded-xl border px-4 py-3 ${selectedOrder.paymentStatus === 'PAID' ? 'bg-emerald-50 border-emerald-200' : 'bg-amber-50 border-amber-200'}`}>
+                <p className={`font-extrabold text-sm ${selectedOrder.paymentStatus === 'PAID' ? 'text-emerald-700' : 'text-amber-700'}`}>
+                  {selectedOrder.paymentStatus === 'PAID' ? 'Đã thanh toán' : 'Chưa thanh toán'}
+                </p>
+                <p className="text-xs text-slate-600 mt-1">
+                  Phương thức: {selectedOrder.paymentMethod === 'ONLINE_DEMO' ? 'Online (demo)' : 'COD'}
+                </p>
+              </div>
+            </div>
             {/* Recipient Profile */}
             <div className="bg-white border border-slate-200/80 p-6 rounded-2xl shadow-xs space-y-4">
               <h3 className="text-xs font-bold text-slate-800 uppercase tracking-wider border-b border-slate-100 pb-3 font-heading">Hồ Sơ Nhận Hàng</h3>

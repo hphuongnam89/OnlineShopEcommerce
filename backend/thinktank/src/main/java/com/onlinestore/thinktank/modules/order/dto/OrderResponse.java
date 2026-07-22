@@ -26,6 +26,8 @@ public class OrderResponse {
     private BigDecimal discountAmount;
     private BigDecimal finalAmount;
     private String status;
+    private String paymentMethod;
+    private String paymentStatus;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private List<OrderItemResponse> items;
@@ -43,6 +45,8 @@ public class OrderResponse {
                 .discountAmount(order.getDiscountAmount())
                 .finalAmount(order.getFinalAmount())
                 .status(order.getStatus())
+                .paymentMethod(order.getPaymentMethod())
+                .paymentStatus(order.getPaymentStatus())
                 .createdAt(order.getCreatedAt())
                 .updatedAt(order.getUpdatedAt())
                 .items(order.getItems().stream().map(OrderItemResponse::from).toList())

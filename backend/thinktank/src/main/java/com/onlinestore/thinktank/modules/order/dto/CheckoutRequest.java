@@ -38,6 +38,8 @@ public class CheckoutRequest {
     private String email;
     @Size(max = 2000, message = "Ghi chú không được vượt quá 2000 ký tự")
     private String notes;
+    @Pattern(regexp = "^(COD|ONLINE_DEMO)$", message = "Phương thức thanh toán không hợp lệ")
+    private String paymentMethod = "COD";
     @NotEmpty(message = "Đơn hàng phải có ít nhất một sản phẩm")
     @Size(max = 50, message = "Đơn hàng không được vượt quá 50 dòng sản phẩm")
     @Valid

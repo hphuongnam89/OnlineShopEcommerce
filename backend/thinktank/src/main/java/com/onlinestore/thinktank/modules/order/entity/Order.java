@@ -66,6 +66,14 @@ public class Order extends BaseEntity {
     @Builder.Default
     private String status = "PENDING";
 
+    @Column(name = "payment_method", nullable = false, length = 30)
+    @Builder.Default
+    private String paymentMethod = "COD";
+
+    @Column(name = "payment_status", nullable = false, length = 30)
+    @Builder.Default
+    private String paymentStatus = "UNPAID";
+
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @Builder.Default
     private List<OrderItem> items = new ArrayList<>();
