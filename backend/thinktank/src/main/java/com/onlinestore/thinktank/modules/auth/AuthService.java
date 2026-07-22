@@ -48,6 +48,10 @@ public class AuthService {
             log.warn("Registration attempt with duplicate email");
             throw new DuplicateResourceException("Email đã được sử dụng!");
         }
+        String phone = req.getPhone().trim();
+        if (userRepository.existsByPhone(phone)) {
+            throw new DuplicateResourceException("Số điện thoại đã được sử dụng!");
+        }
 
         Role customerRole = roleRepository.findByName("ROLE_CUSTOMER")
                 .orElseThrow(() -> new ResourceNotFoundException("Không tìm thấy quyền khách hàng mặc định (ROLE_CUSTOMER)"));
@@ -56,7 +60,7 @@ public class AuthService {
                 .email(email)
                 .passwordHash(passwordEncoder.encode(req.getPassword()))
                 .fullName(req.getFullName())
-                .phone(req.getPhone())
+                .phone(phone)
                 .enabled(true)
                 .roles(Set.of(customerRole))
                 .build();

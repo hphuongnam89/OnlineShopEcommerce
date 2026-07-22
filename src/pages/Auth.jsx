@@ -65,12 +65,22 @@ const Auth = () => {
       openModal('Cảnh báo', 'Vui lòng điền đầy đủ các thông tin bắt buộc!', 'warning');
       return;
     }
+    const normalizedEmail = email.trim().toLowerCase();
+    const normalizedPhone = phone.trim();
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalizedEmail)) {
+      openModal('Cảnh báo', 'Vui lòng nhập email hợp lệ.', 'warning');
+      return;
+    }
+    if (!/^\d{9,15}$/.test(normalizedPhone)) {
+      openModal('Cảnh báo', 'Số điện thoại phải gồm 9 đến 15 chữ số.', 'warning');
+      return;
+    }
 
     try {
-      await api.auth.register(email.trim(), password.trim(), fullName.trim(), phone.trim());
+      await api.auth.register(normalizedEmail, password.trim(), fullName.trim(), normalizedPhone);
 
       // Auto login after successful signup
-      const loginRes = await api.auth.login(email.trim(), password.trim());
+      const loginRes = await api.auth.login(normalizedEmail, password.trim());
       setAuthSession(loginRes);
 
       openModal('Tạo tài khoản thành công', `Chào mừng thành viên mới ${fullName}! Trải nghiệm Balomayanh ngay nào.`, 'success');
